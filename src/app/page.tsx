@@ -14,8 +14,6 @@ const Home = () => {
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     setuserdata(parsedUserData);
-
-    console.log("Parsed User Data:", parsedUserData?.name);
     const checkAuth = async () => {
       await new Promise((resolve) => setTimeout(resolve, 50));
     };
@@ -32,19 +30,19 @@ const Home = () => {
   return (
     <>
       <SeoMeta />
-      <section className="section pt-14">
+      <section className="section pt-14 mb-10">
         <div className="container">
           <div className="row justify-center">
-            <div className="mb-16 text-center lg:col-7">
+            <div className="mt-10 mb-16 text-center lg:col-7">
               <center>
-              {userdata?.login === "true" ?
-                <Image
-                  src={userdata?.profileurl}
-                  width={100}
-                  height={100}
-                  alt="Profile Photo"
-                  className="rounded-full w-25"
-                />:""
+                {userdata?.login === "true" ?
+                  <Image
+                    src={userdata?.profileurl}
+                    width={100}
+                    height={100}
+                    alt="Profile Photo"
+                    className="rounded-full w-25"
+                  /> : ""
                 }              </center>
               {userdata?.login === "true" ?
                 <h1
@@ -67,12 +65,10 @@ const Home = () => {
                   Login
                 </button>
               }
-
             </div>
           </div>
         </div>
       </section>
-
     </>
   );
 };

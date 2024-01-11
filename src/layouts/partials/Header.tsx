@@ -21,7 +21,6 @@ const Header = () => {
   const { navigation_button, settings } = config;
   const pathname = usePathname();
   const [userdata, setuserdata] = useState<any>();
-  console.log(userdata, "userdatauserdatauserdata");
   useEffect(() => {
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -85,13 +84,28 @@ const Header = () => {
             ""
           }
           <li className="nav-item">
+            <Link href="/learn">
+              <div className={`nav-link block ${pathname === "/learn" && "active"}`}>
+                Learn
+              </div>
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link href="/certificate">
+              <div className={`nav-link block ${pathname === "/certificate" && "active"}`}>
+                certificate
+              </div>
+            </Link>
+          </li>
+          {/* <li className="nav-item">
             <Link href="/elements">
               <div className={`nav-link block ${pathname === "/elements" && "active"}`}>
                 Elements
               </div>
             </Link>
-          </li>
-          <li className="nav-item nav-dropdown group relative">
+          </li> */}
+          {/* <li className="nav-item nav-dropdown group relative">
             <span className={`nav-link inline-flex items-center ${pathname.includes("/pages") && "active"}`}>
               Pages
               <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
@@ -142,7 +156,7 @@ const Header = () => {
                 </Link>
               </li>
             </ul>
-          </li>
+          </li> */}
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
