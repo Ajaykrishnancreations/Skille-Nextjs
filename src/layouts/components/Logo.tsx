@@ -5,6 +5,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import LogoLight from "@/assets/LogoLight.png";
+import LogoDrake from "@/assets/LogoDrake.png";
 
 const Logo = ({ src }: { src?: string }) => {
   // destructuring items from config object
@@ -30,8 +32,8 @@ const Logo = ({ src }: { src?: string }) => {
 
   const resolvedLogo =
     mounted && (theme === "dark" || resolvedTheme === "dark")
-      ? logo_darkmode
-      : logo;
+      ? LogoLight
+      : LogoDrake;
   const logoPath = src ? src : resolvedLogo;
 
   return (
@@ -39,12 +41,12 @@ const Logo = ({ src }: { src?: string }) => {
       {logoPath ? (
         <Image
           width={logo_width.replace("px", "") * 2}
-          height={logo_height.replace("px", "") * 2}
+          // height={logo_height.replace("px", "") * 2}
           src={logoPath}
           alt={title}
           priority
           style={{
-            height: logo_height.replace("px", "") + "px",
+            // height: logo_height.replace("px", "") + "px",
             width: logo_width.replace("px", "") + "px",
           }}
         />
