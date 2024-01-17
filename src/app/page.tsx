@@ -4,16 +4,17 @@ import { UserAuth } from "@/context/AuthContext";
 import SeoMeta from "@/partials/SeoMeta";
 import Image from "next/image";
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auths } from "./firebase";
+import { auth } from "./firebase";
+import { signOut, useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const Home = () => {
+  const { data: session, status } = useSession();
   const data = UserAuth();
   const { user, googleSignIn } = data;
   const [userdata, setuserdata] = useState<any>();
   const [isPopOpen, setisPopOpen] = useState(false);
-  const router = useRouter();
   const { logOut } = data;
   useEffect(() => {
     const storedUserData = localStorage.getItem("userdata");
@@ -29,36 +30,47 @@ const Home = () => {
   };
   const handleSignOut = async () => {
     logOut && logOut();
+    signOut && signOut();
     localStorage.removeItem('userdata');
     window.open("http://localhost:3000/", "_self");
   };
   const handlePopToggle = () => {
     setisPopOpen(!isPopOpen);
   };
-
-  // -------register-------------------------------------------
-
   const [register, setRegister] = useState(true);
   const Register = () => {
     setRegister((prev) => !prev);
   };
-
   const [emailid, setEmailid] = useState("");
   const [passwords, setPasswords] = useState("");
-
-  const registerNewUser = () => {
-    createUserWithEmailAndPassword(auths, emailid, passwords);
+  const registerNewUser = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    createUserWithEmailAndPassword(auth, emailid, passwords);
   };
-  // ---------login-----------------------------------------
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const login = () => {
+  const login = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
     signIn('credentials',
       { email, password, redirect: true, callbackUrl: '/' }
     )
   };
-  // --------------------------------------------------
+  useEffect(() => {
+    if (localStorage.getItem("userdata")) {
+      return;
+    }
+    if (status === "authenticated") {
+      const data = {
+        name:  session?.user?.email?.split('@')[0],
+        email: session?.user?.email,
+        profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
+        login: "true"
+      };
+      localStorage.setItem("userdata", JSON.stringify(data));
+      window.open("http://localhost:3000/", "_self");
+      // redirect('/');
+    }
+  }, [session, status])
   return (
     <>
       <SeoMeta />
