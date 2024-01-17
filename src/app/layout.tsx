@@ -8,6 +8,7 @@ import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
 import "@/styles/main.scss";
 import { usePathname } from "next/navigation";
+import SessionProvider from "./SessionProvider";
 
 export default function RootLayout({
   children,
@@ -31,7 +32,7 @@ export default function RootLayout({
         {/* favicon */}
         <link rel="shortcut icon" href={config.site.favicon} />
         {/* theme meta */}
-        <meta name="theme-name" content="nextplate" />
+        <meta name="theme-name" content="Skille" />
         <meta name="msapplication-TileColor" content="#000000" />
         <meta
           name="theme-color"
@@ -59,13 +60,15 @@ export default function RootLayout({
 
       <body suppressHydrationWarning={true}>
         <TwSizeIndicator />
-        <Providers>
-          <Header />
-          <SearchModal />
-          <main>{children}</main>
-          {pathname === "/courseReadMe" ?
-            "" : <Footer />}
-        </Providers>
+        <SessionProvider>
+          <Providers>
+            <Header />
+            <SearchModal />
+            <main>{children}</main>
+            {pathname === "/courseReadMe" ?
+              "" : <Footer />}
+          </Providers>
+        </SessionProvider>
       </body>
     </html>
   );

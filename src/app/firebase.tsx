@@ -1,10 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { getAuth } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getFirestore,  } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAcMfOo4z34VrDK03f_tq0-tq_L0Xe82q0",
   authDomain: "skille-nextjs.firebaseapp.com",
@@ -16,5 +13,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
+const apps = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore();
+const auths = getAuth();
+
 
 export const auth = getAuth(app)
+
+
+export { apps, db, auths }

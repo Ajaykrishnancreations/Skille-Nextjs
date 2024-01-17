@@ -2,13 +2,18 @@
 import { useState, useEffect } from "react";
 import { UserAuth } from "@/context/AuthContext";
 import SeoMeta from "@/partials/SeoMeta";
-import Link from "next/link";
 import Image from "next/image";
-import { FaCheck } from "react-icons/fa6";
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auths } from "./firebase";
+
 const Home = () => {
   const data = UserAuth();
   const { user, googleSignIn } = data;
   const [userdata, setuserdata] = useState<any>();
+  const [isPopOpen, setisPopOpen] = useState(false);
+  const router = useRouter();
   const { logOut } = data;
   useEffect(() => {
     const storedUserData = localStorage.getItem("userdata");
@@ -27,6 +32,33 @@ const Home = () => {
     localStorage.removeItem('userdata');
     window.open("http://localhost:3000/", "_self");
   };
+  const handlePopToggle = () => {
+    setisPopOpen(!isPopOpen);
+  };
+
+  // -------register-------------------------------------------
+
+  const [register, setRegister] = useState(true);
+  const Register = () => {
+    setRegister((prev) => !prev);
+  };
+
+  const [emailid, setEmailid] = useState("");
+  const [passwords, setPasswords] = useState("");
+
+  const registerNewUser = () => {
+    createUserWithEmailAndPassword(auths, emailid, passwords);
+  };
+  // ---------login-----------------------------------------
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const login = () => {
+    signIn('credentials',
+      { email, password, redirect: true, callbackUrl: '/' }
+    )
+  };
+  // --------------------------------------------------
   return (
     <>
       <SeoMeta />
@@ -61,10 +93,105 @@ const Home = () => {
                   SignOut
                 </button>
                 :
-                <button onClick={handleFirebaseLogin} className="btn btn-primary">
+                <button onClick={handlePopToggle} className="btn btn-primary">
                   Login
                 </button>
               }
+              <>
+                {isPopOpen && (
+                  <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white w-full max-w-xl p-4 rounded-lg shadow-lg">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold text-gray-900"></h3>
+                        <button
+                          onClick={handlePopToggle}
+                          className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                          </svg>
+                        </button>
+                      </div>
+                      <div>
+                        <div className="flex flex-col justify-center items-center h-full gap-3">
+                          <div>
+                            {register === true ? (
+                              <div className="shadow-lg p-5 rounded-lg border-t-4 border-gray-400">
+                                <h1 className="text-xl font-bold my-4">Login</h1>
+                                <form className="flex flex-col gap-3" onSubmit={login}>
+                                  <input
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    type="text"
+                                    placeholder="Email"
+                                  />
+                                  <input
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    type="password"
+                                    placeholder="Password"
+                                  />
+                                  <button className="bg-gray-600 text-white font-bold cursor-pointer px-6 py-2">
+                                    Login
+                                  </button>
+                                  <a onClick={Register} className="text-sm mt-3 text-right">
+                                    Don't have an account?{" "}
+                                    <span className="underline cursor-pointer">Register</span>
+                                  </a>
+                                </form>
+                              </div>
+                            ) : (
+                              <div className="shadow-lg p-5 rounded-lg border-t-4 border-gray-400">
+                                <h1 className="text-xl font-bold my-4">Register</h1>
+                                <form
+                                  onSubmit={registerNewUser}
+                                  className="flex flex-col gap-3"
+                                >
+                                  <input
+                                    onChange={(e) => setEmailid(e.target.value)}
+                                    type="text"
+                                    placeholder="Email-id"
+                                  />
+                                  <input
+                                    onChange={(e) => setPasswords(e.target.value)}
+                                    type="password"
+                                    placeholder="-Password"
+                                  />
+                                  <button className="bg-gray-600 text-white font-bold cursor-pointer px-6 py-2">
+                                    Register
+                                  </button>
+
+                                  <p onClick={Register} className="text-sm mt-3 text-right">
+                                    Already have an account?{" "}
+                                    <span className="underline cursor-pointer">Login</span>
+                                  </p>
+                                </form>
+                              </div>
+                            )}
+                          </div>
+                          <p>{"(Or)"}</p>
+                          <button
+                            type="submit"
+                            className="px-14 py-2 focus:outline-none text-white bg-gray-700 hover:bg-gray-500 rounded-lg"
+                            onClick={handleFirebaseLogin}
+                          >
+                            Sign In with Google
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             </div>
           </div>
         </div>
