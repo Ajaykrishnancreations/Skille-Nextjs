@@ -8,8 +8,7 @@ export default function LearnPage() {
     const [imgUrl, setimgUrl] = useState("");
     const [summary, setsummary] = useState("");
     const [CourseData, setCourseData] = useState([]);
-    console.log(CourseData, "UserDataUserDataUserData");
-
+    const [UserData, setUserData] = useState<any>("")
     const addData = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
@@ -19,16 +18,16 @@ export default function LearnPage() {
             }
         });
     };
-
     useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        setUserData(parsedUserData);
         const fetchData = async () => {
             const data: any = await getUserDatafromFirestore();
             setCourseData(data);
         };
-
         fetchData();
     }, []);
-
     return (
         <div>
             <div className="p-10">
@@ -39,7 +38,7 @@ export default function LearnPage() {
                             <div className="p-5">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
                                     <a href="#">
-                                        <img className="rounded-t-lg" style={{height:"200px"}} src={item?.imgUrl} alt="" />
+                                        <img className="rounded-t-lg" style={{ height: "200px" }} src={item?.imgUrl} alt="" />
                                     </a>
                                     <div className="p-5 h-50">
                                         <a href="#">
@@ -58,30 +57,35 @@ export default function LearnPage() {
                         </div>
                     ))}
                 </div>
-                <div className="p-10">
-                    Add New Course
-                    <form onSubmit={addData}>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Title"
-                        />
-                        <input
-                            type="text"
-                            value={imgUrl}
-                            onChange={(e) => setimgUrl(e.target.value)}
-                            placeholder="ImgUrl"
-                        />
-                        <input
-                            type="text"
-                            value={summary}
-                            onChange={(e) => setsummary(e.target.value)}
-                            placeholder="Summary"
-                        />
-                        <input type="submit" value="Submit" />
-                    </form>
-                </div>
+                {UserData?.role === "admin" ?
+                    <div className="p-10">
+                        Add New Course
+                        <form onSubmit={addData}>
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Title"
+                            />
+                            <input
+                                type="text"
+                                value={imgUrl}
+                                onChange={(e) => setimgUrl(e.target.value)}
+                                placeholder="ImgUrl"
+                            />
+                            <input
+                                type="text"
+                                value={summary}
+                                onChange={(e) => setsummary(e.target.value)}
+                                placeholder="Summary"
+                            />
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </div>
+                    :
+                    ""
+                }
+
             </div>
         </div>
     );

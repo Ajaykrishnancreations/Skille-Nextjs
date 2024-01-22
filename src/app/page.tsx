@@ -4,10 +4,11 @@ import { UserAuth } from "@/context/AuthContext";
 import SeoMeta from "@/partials/SeoMeta";
 import Image from "next/image";
 import { signIn } from 'next-auth/react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "./firebase";
 import { signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { getUsersDetails, addNewUserData } from "@/api/Api";
 
 const Home = () => {
   const { data: session, status } = useSession();
@@ -31,7 +32,9 @@ const Home = () => {
   const handleSignOut = async () => {
     logOut && logOut();
     signOut && signOut();
-    localStorage.removeItem('userdata');
+    // localStorage.removeItem('userdata');
+    localStorage.clear();
+    localStorage.setItem("theme", "light");
     window.open("http://localhost:3000/", "_self");
   };
   const handlePopToggle = () => {
@@ -51,26 +54,55 @@ const Home = () => {
   const [password, setPassword] = useState('');
   const login = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    signIn('credentials',
-      { email, password, redirect: true, callbackUrl: '/' }
-    )
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      if (result.user) {
+        const data: any = await getUsersDetails();
+        const uidToCheck = result.user.uid;
+        const isUidInData = data.find((item: { uid: string; }) => item.uid === uidToCheck);
+        if (isUidInData) {
+          signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
+          const data = {
+            name: isUidInData?.name?.split('@')[0],
+            email: isUidInData?.email,
+            profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
+            login: "true",
+            role: isUidInData?.role,
+            uid: isUidInData?.uid
+          };
+          localStorage.setItem("userdata", JSON.stringify(data));
+          window.open("http://localhost:3000/", "_self");
+        } else {
+          const dob = "";
+          const imgUrl = "";
+          const email: any = result?.user?.email;
+          const name: any = result?.user?.email;
+          const role = "user";
+          const uid = uidToCheck;
+          addNewUserData(dob, imgUrl, email, name, role, uid).then((added) => {
+            if (added) {
+              alert("Data added");
+            }
+            signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
+            const data = {
+              name: result?.user?.email?.split('@')[0],
+              email: result?.user?.email,
+              uid: isUidInData?.uid,
+              profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
+              login: "true",
+              role: "user"
+            };
+            localStorage.setItem("userdata", JSON.stringify(data));
+            window.open("http://localhost:3000/", "_self");
+          });
+        }
+      } else {
+        console.error("Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
-  useEffect(() => {
-    if (localStorage.getItem("userdata")) {
-      return;
-    }
-    if (status === "authenticated") {
-      const data = {
-        name:  session?.user?.email?.split('@')[0],
-        email: session?.user?.email,
-        profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
-        login: "true"
-      };
-      localStorage.setItem("userdata", JSON.stringify(data));
-      window.open("http://localhost:3000/", "_self");
-      // redirect('/');
-    }
-  }, [session, status])
   return (
     <>
       <SeoMeta />
