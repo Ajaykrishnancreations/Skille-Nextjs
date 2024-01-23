@@ -68,7 +68,6 @@ export function addNewUserData(dob: string, imgUrl: string, email: string, name:
 }
 
 export async function updateUserData(uid: string, updatedData: any) {
-  console.log("khdkjh")
   const q = query(collection(db, "users"), where("uid", "==", uid));
   const querySnapshot = await getDocs(q);
   if (querySnapshot.empty) return false
@@ -88,7 +87,6 @@ export async function updateUserData(uid: string, updatedData: any) {
 export function getUserDetailsByUID(uid: string) {
   const usersCollection = collection(db, "users");
   const userQuery = query(usersCollection, where("uid", "==", uid));
-
   return getDocs(userQuery)
     .then((querySnapshot) => {
       if (!querySnapshot.empty) {
@@ -101,6 +99,32 @@ export function getUserDetailsByUID(uid: string) {
     })
     .catch((error) => {
       console.error(error);
+      return false;
+    });
+}
+
+export async function updateCourseData(courseId: string, updatedData: any, uid: string) {
+  const userQuery = query(collection(db, "users"), where("uid", "==", uid));
+  const userQuerySnapshot = await getDocs(userQuery);
+  if (userQuerySnapshot.empty) {
+    console.error("User not found or doesn't have admin role");
+    return false;
+  }
+  const userDoc = userQuerySnapshot.docs[0];
+  console.log(userDoc.data()?.role, "userDoc");
+
+  if (!userDoc.data()?.role) {
+    console.error("User doesn't have admin role");
+    return false;
+  }
+  const courseRef = doc(db, "Course", courseId);
+  return updateDoc(courseRef, updatedData)
+    .then(() => {
+      console.log("Course document updated successfully");
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error updating Course document: ", error);
       return false;
     });
 }
