@@ -92,11 +92,9 @@ export function getUserDetailsByUID(uid: string) {
   return getDocs(userQuery)
     .then((querySnapshot) => {
       if (!querySnapshot.empty) {
-        // If a user with the specified UID is found, return the user details
         const userDoc = querySnapshot.docs[0];
         return { id: userDoc.id, ...userDoc.data() };
       } else {
-        // If no user with the specified UID is found, return null or handle accordingly
         console.log("User not found");
         return null;
       }
