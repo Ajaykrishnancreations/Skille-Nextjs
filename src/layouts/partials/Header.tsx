@@ -86,7 +86,7 @@ const Header = () => {
           <li className="nav-item">
             <Link href="/learn">
               <div className={`nav-link block ${pathname === "/learn" && "active"}`}>
-                {userdata?.role==="admin"?"Add Coures":"Learn"}
+                {userdata?.role==="creator"?"Add Coures":"Learn"}
               </div>
             </Link>
           </li>

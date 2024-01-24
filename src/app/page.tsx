@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { auth } from "./firebase";
 import { signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { getUsersDetails, addNewUserData } from "@/api/Api";
+import { getUsersDetails, addNewUserData,getUserDetailsByUID} from "@/api/Api";
 
 const Home = () => {
   const { data: session, status } = useSession();
@@ -49,6 +49,10 @@ const Home = () => {
   const registerNewUser = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, emailid, passwords);
+    console.log(createUserWithEmailAndPassword,"auth, emailid, passwords");
+    console.log(auth, emailid, passwords,"auth, emailid, passwords");
+    alert("")
+    setRegister(true);
   };
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,38 +66,57 @@ const Home = () => {
         const isUidInData = data.find((item: { uid: string; }) => item.uid === uidToCheck);
         if (isUidInData) {
           signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
-          const data = {
-            name: isUidInData?.name?.split('@')[0],
-            email: isUidInData?.email,
-            profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
-            login: "true",
-            role: isUidInData?.role,
-            uid: isUidInData?.uid
-          };
-          localStorage.setItem("userdata", JSON.stringify(data));
-          window.open("http://localhost:3000/", "_self");
+          getUserDetailsByUID(isUidInData?.uid)
+                .then((userDetails: any) => {
+                  if (userDetails) {
+                    console.log("User details:", userDetails);
+                    const data = {
+                      name: userDetails?.name,
+                      email: userDetails?.email,
+                      profileurl: userDetails?.imgUrl,
+                      uid: userDetails?.uid,
+                      login: "true",
+                      role: userDetails?.role
+                    };
+                    localStorage.setItem("userdata", JSON.stringify(data));
+                    window.open("http://localhost:3000/", "_self");
+                  } else {
+                    console.log("User not found");
+                  }
+                })
         } else {
-          const dob = "";
-          const imgUrl = "";
+          const courses:any = [""];
+          const imgUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
           const email: any = result?.user?.email;
           const name: any = result?.user?.email;
-          const role = "user";
+          const role:any = null;
           const uid = uidToCheck;
-          addNewUserData(dob, imgUrl, email, name, role, uid).then((added) => {
+          addNewUserData(courses, imgUrl, email, name, role, uid).then((added) => {
             if (added) {
               alert("Data added");
             }
             signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
-            const data = {
-              name: result?.user?.email?.split('@')[0],
-              email: result?.user?.email,
-              uid: isUidInData?.uid,
-              profileurl: "https://lh3.googleusercontent.com/a/ACg8ocJ_Y5iKOOg5EGz69wWi6UymJjDwVblcw3YV-1tfFxUz=s96-c",
-              login: "true",
-              role: "user"
-            };
-            localStorage.setItem("userdata", JSON.stringify(data));
-            window.open("http://localhost:3000/", "_self");
+            getUserDetailsByUID(isUidInData?.uid)
+                .then((userDetails: any) => {
+                  if (userDetails) {
+                    console.log("User details:", userDetails);
+                    const data = {
+                      name: userDetails?.name,
+                      email: userDetails?.email,
+                      profileurl: userDetails?.imgUrl,
+                      uid: userDetails?.uid,
+                      login: "true",
+                      role: userDetails?.role
+                    };
+                    localStorage.setItem("userdata", JSON.stringify(data));
+                    window.open("http://localhost:3000/", "_self");
+                  } else {
+                    console.log("User not found");
+                  }
+                })
+                .catch((error: any) => {
+                  console.error("Error fetching user details:", error);
+                });
           });
         }
       } else {
@@ -112,7 +135,7 @@ const Home = () => {
             <div className="mt-10 mb-16 text-center lg:col-7">
               <center>
                 {userdata?.login === "true" ?
-                  <Image
+                  <img
                     src={userdata?.profileurl}
                     width={100}
                     height={100}

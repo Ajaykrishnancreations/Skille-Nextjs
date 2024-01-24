@@ -2,7 +2,7 @@ import { db, } from "@/app/firebase";
 import { collection, addDoc, getDocs, doc, getDoc, updateDoc, query, where } from "firebase/firestore";
 
 export function addDataToFirestore(title: string, imgUrl: string, summary: string) {
-  return addDoc(collection(db, "Course"), {
+  return addDoc(collection(db, "course"), {
     title: title,
     imgUrl: imgUrl,
     summary: summary,
@@ -18,7 +18,7 @@ export function addDataToFirestore(title: string, imgUrl: string, summary: strin
 }
 
 export function getUserDatafromFirestore() {
-  return getDocs(collection(db, "Course"))
+  return getDocs(collection(db, "course"))
     .then((querySnapshot) => {
       const data: any[] | PromiseLike<any[]> = [];
       querySnapshot.forEach((doc) => {
@@ -48,9 +48,9 @@ export function getUsersDetails() {
     });
 }
 
-export function addNewUserData(dob: string, imgUrl: string, email: string, name: string, role: string, uid: string) {
+export function addNewUserData(courses: any, imgUrl: string, email: string, name: string, role: string, uid: string) {
   return addDoc(collection(db, "users"), {
-    dob: dob,
+    courses: courses,
     imgUrl: imgUrl,
     email: email,
     name: name,

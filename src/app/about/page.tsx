@@ -4,11 +4,13 @@ import { updateUserData, getUserDetailsByUID } from "@/api/Api";
 
 const About = () => {
   const [userdata, setuserdata] = useState<any>();
-  const [newName, setnewName] = useState<string>();
-  const [newimgUrl, setimgUrl] = useState<string>();
   const [UserDetail, setUserDetail] = useState<any>();
   const [Value, setValue] = useState<boolean>(false);
   const [isPopOpen, setisPopOpen] = useState(false);
+  const [newName, setnewName] = useState<string>();
+  const [newimgUrl, setimgUrl] = useState<string>();
+  const [selectedRole, setSelectedRole] = useState<string>();
+
   const handlePopToggle = () => {
     setisPopOpen(!isPopOpen);
   };
@@ -19,7 +21,6 @@ const About = () => {
     getUserDetailsByUID(parsedUserData?.uid)
       .then((userDetails) => {
         if (userDetails) {
-          console.log("User details:", userDetails);
           setUserDetail(userDetails)
           setValue(false)
         } else {
@@ -34,8 +35,9 @@ const About = () => {
   const updateUser = async () => {
     const uidToUpdate = userdata?.uid;
     const updatedData = {
-      name: newName,
-      // imgUrl:newimgUrl
+      name: newName?newName:userdata?.name,
+      imgUrl:newimgUrl?newimgUrl:userdata?.profileurl,
+      role:selectedRole?selectedRole:userdata?.role,
     };
     try {
       const updated = await updateUserData(uidToUpdate, updatedData);
@@ -43,15 +45,25 @@ const About = () => {
         alert("Data updated successfully");
         setValue(true)
         handlePopToggle()
-        const data = {
-          name: newName,
-          email: UserDetail?.email,
-          uid: UserDetail?.uid,
-          profileurl: UserDetail?.imgUrl,
-          login: "true",
-          role: UserDetail?.role
-        };
-        localStorage.setItem("userdata", JSON.stringify(data));
+        getUserDetailsByUID(UserDetail?.uid)
+      .then((userDetails:any) => {
+        if (userDetails) {
+          const data = {
+            name: userDetails?.name,
+            email: userDetails?.email,
+            uid: userDetails?.uid,
+            profileurl: userDetails?.imgUrl,
+            login: "true",
+            role: userDetails?.role
+          };
+          localStorage.setItem("userdata", JSON.stringify(data));
+          window.open("http://localhost:3000/about", "_self");
+
+        } else {
+          console.log("User not found");
+        }
+      })
+        
       } else {
         alert("Failed to update data");
         handlePopToggle()
@@ -85,8 +97,22 @@ const About = () => {
                           </button>
                         </div>
                         <div className="p-4 md:p-5 space-y-4">
-                          Enter your Name : <input type="text" defaultValue={UserDetail?.name} onChange={(event) => setnewName(event.target.value)} /><br/>
-                          Enter your ImgUrl : <input type="text" defaultValue={UserDetail?.imgUrl} onChange={(event) => setimgUrl(event.target.value)} disabled/>
+                          Enter your Name : <input type="text" defaultValue={UserDetail?.name} onChange={(event) => setnewName(event.target.value)} /><br />
+                          Enter your ImgUrl : <input type="text" defaultValue={UserDetail?.imgUrl} onChange={(event) => setimgUrl(event.target.value)} disabled /><br />
+                          {/* Select your Role : <input type="text" defaultValue={UserDetail?.imgUrl} onChange={(event) => setimgUrl(event.target.value)} disabled/> */}
+                          Select your Role :
+                          <select
+                            id="countries"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            value={selectedRole}
+                            onChange={(event) => setSelectedRole(event.target.value)}
+                          >
+                            <option value="" disabled selected>
+                              Choose your Role
+                            </option>
+                            <option value="user">user</option>
+                            <option value="creator">creator</option>
+                          </select>
                         </div>
                         <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                           <button onClick={updateUser} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>

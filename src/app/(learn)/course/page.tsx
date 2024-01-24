@@ -60,7 +60,7 @@ export default function LearnPage() {
         <div>
             <div className="p-10">
                 <h2>Search by topics</h2>
-                {UserData?.role === "admin" && (
+                {UserData?.role === "creator" && (
                     <div className="p-10">
                         <h5>Add New Course</h5>
                         <form className="m-2" onSubmit={addData}>
@@ -104,7 +104,7 @@ export default function LearnPage() {
                             <div className="p-5">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
                                     <div className="p-5">
-                                        {UserData?.role === "admin" && (
+                                        {UserData?.role === "creator" && (
                                             <div className="" style={{ position: "absolute", marginTop: "10px", paddingLeft: "14%" }}>
                                                 <button className="border-4 border-white rounded bg-gray-300 z-2 w-20" onClick={() => openModal(item)}>Edit</button>
                                             </div>

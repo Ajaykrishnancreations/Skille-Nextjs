@@ -12,7 +12,7 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 
-import { getUsersDetails, addNewUserData } from "@/api/Api";
+import { getUsersDetails, addNewUserData,getUserDetailsByUID } from "@/api/Api";
 import { auth } from "@/app/firebase";
 interface AuthContextValue {
   user: any;
@@ -42,27 +42,38 @@ const AuthContext = createContext<AuthContextValue>({
             window.open("http://localhost:3000/", "_self");
           }
         } else {
-          const dob = "";
-          const imgUrl: any = res?.user?.photoURL;
+          const courses: any = [""];
+          const imgUrl: any = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
           const email: any = res?.user?.email;
           const name: any = res?.user?.displayName;
-          const role = "user";
+          const role: any = null;
           const uid = res?.user?.uid;
-          addNewUserData(dob, imgUrl, email, name, role, uid).then((added) => {
+          addNewUserData(courses, imgUrl, email, name, role, uid).then((added) => {
             if (added) {
               alert("Data added");
             }
             if (res?.operationType === "signIn") {
-              const data = {
-                name: res?.user?.displayName,
-                email: res?.user?.email,
-                profileurl: res?.user?.photoURL,
-                uid: res?.user?.uid,
-                login: "true",
-                role: "user"
-              };
-              localStorage.setItem("userdata", JSON.stringify(data));
-              window.open("http://localhost:3000/", "_self");
+              getUserDetailsByUID(res?.user?.uid)
+                .then((userDetails: any) => {
+                  if (userDetails) {
+                    console.log("User details:", userDetails);
+                    const data = {
+                      name: userDetails?.name,
+                      email: userDetails?.email,
+                      profileurl: userDetails?.imgUrl,
+                      uid: userDetails?.uid,
+                      login: "true",
+                      role: userDetails?.role
+                    };
+                    localStorage.setItem("userdata", JSON.stringify(data));
+                    window.open("http://localhost:3000/", "_self");
+                  } else {
+                    console.log("User not found");
+                  }
+                })
+                .catch((error: any) => {
+                  console.error("Error fetching user details:", error);
+                });
             }
           });
         }
