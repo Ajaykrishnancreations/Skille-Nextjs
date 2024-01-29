@@ -1,15 +1,76 @@
 import { db, } from "@/app/firebase";
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where } from "firebase/firestore";
 
-export function addDataToFirestore(title: string, imgUrl: string, summary: string) {
+export function addDataToFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: string, newprice: string, oldprice: string) {
+  const storedUserData = localStorage.getItem("userdata");
+  const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   return addDoc(collection(db, "course"), {
     title: title,
     imgUrl: imgUrl,
     summary: summary,
+    course_id: course_id,
+    level: level,
+    published: false,
+    author: {
+      user_id: parsedUserData?.uid,
+      user_name: parsedUserData?.name
+    },
+    skills: skills,
+    price: { newprice: newprice, oldprice: oldprice },
+    creation_time: serverTimestamp(),
+    chapters: []
   })
     .then((docRef) => {
       console.log("Document written with ID: ", docRef.id);
       return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
+export function addCourseChapterData(chapterTitle: string, chapterSummary: string, course_id: string | number, course_title: string) {
+  const storedUserData = localStorage.getItem("userdata");
+  const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+  return addDoc(collection(db, "course_chapter"), {
+
+    course_id: course_id,
+    course_title: course_title,
+    author: {
+      user_id: parsedUserData?.uid,
+      user_name: parsedUserData?.name
+    },
+    creation_time: serverTimestamp(),
+    chapters: [
+      {
+        chapterTitle: chapterTitle,
+        chapterSummary: chapterSummary,
+      }
+    ]
+  })
+    .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+      return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
+export function getCourseChapterData(course_id: any) {
+  const usersCollection = collection(db, "course_chapter");
+  const userQuery = query(usersCollection, where("course_id", "==", course_id));
+  return getDocs(userQuery)
+    .then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const course_chapter = querySnapshot.docs[0];
+        return { id: course_chapter.id, ...course_chapter.data() };
+      } else {
+        console.log("course_chapter not found");
+        return null;
+      }
     })
     .catch((error) => {
       console.error(error);

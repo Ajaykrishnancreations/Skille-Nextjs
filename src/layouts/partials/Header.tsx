@@ -84,71 +84,12 @@ const Header = () => {
             ""
           }
           <li className="nav-item">
-            <Link href="/learn">
-              <div className={`nav-link block ${pathname === "/learn" && "active"}`}>
+            <Link href="/course">
+              <div className={`nav-link block ${pathname === "/course" && "active"}`}>
                 {userdata?.role==="creator"?"Add Coures":"Learn"}
               </div>
             </Link>
           </li>
-          {/* <li className="nav-item">
-            <Link href="/elements">
-              <div className={`nav-link block ${pathname === "/elements" && "active"}`}>
-                Elements
-              </div>
-            </Link>
-          </li> */}
-          {/* <li className="nav-item nav-dropdown group relative">
-            <span className={`nav-link inline-flex items-center ${pathname.includes("/pages") && "active"}`}>
-              Pages
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-              </svg>
-            </span>
-            <ul className="nav-dropdown-list hidden lg:invisible lg:absolute lg:block lg:opacity-0">
-              <li className="nav-dropdown-item">
-                <Link href="/contact">
-                  <div className={`nav-dropdown-link block ${pathname === "/contact" && "active"}`}>
-                    Contact
-                  </div>
-                </Link>
-              </li>
-              <li className="nav-dropdown-item">
-                <Link href="/blog">
-                  <div className={`nav-dropdown-link block ${pathname === "/blog" && "active"}`}>
-                    Blog
-                  </div>
-                </Link>
-              </li>
-              <li className="nav-dropdown-item">
-                <Link href="/authors">
-                  <div className={`nav-dropdown-link block ${pathname === "/authors" && "active"}`}>
-                    Authors
-                  </div>
-                </Link>
-              </li>
-              <li className="nav-dropdown-item">
-                <Link href="/categories">
-                  <div className={`nav-dropdown-link block ${pathname === "/categories" && "active"}`}>
-                    Categories
-                  </div>
-                </Link>
-              </li>
-              <li className="nav-dropdown-item">
-                <Link href="/tags">
-                  <div className={`nav-dropdown-link block ${pathname === "/tags" && "active"}`}>
-                    Tags
-                  </div>
-                </Link>
-              </li>
-              <li className="nav-dropdown-item">
-                <Link href="/404">
-                  <div className={`nav-dropdown-link block ${pathname === "/404" && "active"}`}>
-                    404 Page
-                  </div>
-                </Link>
-              </li>
-            </ul>
-          </li> */}
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
