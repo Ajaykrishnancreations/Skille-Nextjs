@@ -1,7 +1,7 @@
 import { db, } from "@/app/firebase";
 import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where } from "firebase/firestore";
 
-export function addDataToFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: string, newprice: string, oldprice: string) {
+export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: string, newprice: string, oldprice: string) {
   const storedUserData = localStorage.getItem("userdata");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   return addDoc(collection(db, "course"), {
@@ -30,24 +30,17 @@ export function addDataToFirestore(title: string, imgUrl: string, summary: strin
     });
 }
 
-export function addCourseChapterData(chapterTitle: string, chapterSummary: string, course_id: string | number, course_title: string) {
-  const storedUserData = localStorage.getItem("userdata");
-  const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+export function addCourseChapterData(chapter_id: any, description: string, image_url: string, title: string, content: string, tags: string, next_chapter: any, previous_chapter: any) {
   return addDoc(collection(db, "course_chapter"), {
-
-    course_id: course_id,
-    course_title: course_title,
-    author: {
-      user_id: parsedUserData?.uid,
-      user_name: parsedUserData?.name
-    },
+    chapter_id: chapter_id,
+    description: description,
+    image_url: image_url,
+    title: title,
+    content: content,
+    tags: tags,
+    next_chapter: next_chapter,
+    previous_chapter: previous_chapter,
     creation_time: serverTimestamp(),
-    chapters: [
-      {
-        chapterTitle: chapterTitle,
-        chapterSummary: chapterSummary,
-      }
-    ]
   })
     .then((docRef) => {
       console.log("Document written with ID: ", docRef.id);
@@ -61,7 +54,7 @@ export function addCourseChapterData(chapterTitle: string, chapterSummary: strin
 
 export function getCourseChapterData(course_id: any) {
   const usersCollection = collection(db, "course_chapter");
-  const userQuery = query(usersCollection, where("course_id", "==", course_id));
+  const userQuery = query(usersCollection, where("chapter_id", "==", course_id));
   return getDocs(userQuery)
     .then((querySnapshot) => {
       if (!querySnapshot.empty) {
@@ -77,8 +70,50 @@ export function getCourseChapterData(course_id: any) {
       return false;
     });
 }
+export function getCourseWithCourseid(course_id: any) {
+  const courseCollection = collection(db, "course");
+  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
+  return getDocs(courseQuery)
+    .then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const course = querySnapshot.docs[0];
+        return { id: course.id, ...course.data() };
+      } else {
+        console.log("Course not found");
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
 
-export function getUserDatafromFirestore() {
+export async function updateCourseChapters(course_id: string | number, newChapterData: any) {
+  const courseCollection = collection(db, "course");
+  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
+  const querySnapshot = await getDocs(courseQuery);
+  if (querySnapshot.empty) {
+    console.log("Course not found");
+    return false;
+  }
+  const courseDoc = querySnapshot.docs[0];
+  const courseRef = doc(db, "course", courseDoc.id);
+  const existingChapters = courseDoc.data().chapters || [];
+  const updatedChapters = [...existingChapters, newChapterData];
+
+  return updateDoc(courseRef, { chapters: updatedChapters, last_updated: serverTimestamp() })
+    .then(() => {
+      console.log("Chapters added successfully");
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error updating chapters: ", error);
+      return false;
+    });
+}
+
+export function getcourseFirestore() {
   return getDocs(collection(db, "course"))
     .then((querySnapshot) => {
       const data: any[] | PromiseLike<any[]> = [];
@@ -96,7 +131,6 @@ export function getUserDatafromFirestore() {
 export function getUsersDetails() {
   return getDocs(collection(db, "users"))
     .then((querySnapshot) => {
-      console.log("Document written with ID: ", querySnapshot);
       const data: any[] | PromiseLike<any[]> = [];
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
@@ -172,8 +206,6 @@ export async function updateCourseData(courseId: string, updatedData: any, uid: 
     return false;
   }
   const userDoc = userQuerySnapshot.docs[0];
-  console.log(userDoc.data()?.role, "userDoc");
-
   if (!userDoc.data()?.role) {
     console.error("User doesn't have admin role");
     return false;

@@ -30,16 +30,26 @@ const AuthContext = createContext<AuthContextValue>({
         const isUidInData = data.find((item: { uid: string; }) => item.uid === uidToCheck);
         if (isUidInData) {
           if (res?.operationType === "signIn") {
-            const data = {
-              name: isUidInData?.name,
-              email: isUidInData?.email,
-              profileurl: res?.user?.photoURL,
-              uid: isUidInData?.uid,
-              role: isUidInData?.role,
-              login: "true"
-            };
-            localStorage.setItem("userdata", JSON.stringify(data));
-            window.open("http://localhost:3000/", "_self");
+            getUserDetailsByUID(isUidInData?.uid)
+                .then((userDetails: any) => {
+                  if (userDetails) {
+                    const data = {
+                      name: userDetails?.name,
+                      email: userDetails?.email,
+                      profileurl: userDetails?.imgUrl,
+                      uid: userDetails?.uid,
+                      login: "true",
+                      role: userDetails?.role
+                    };
+                    localStorage.setItem("userdata", JSON.stringify(data));
+                    window.open("http://localhost:3000/", "_self");
+                  } else {
+                    console.log("User not found");
+                  }
+                })
+                .catch((error: any) => {
+                  console.error("Error fetching user details:", error);
+                });
           }
         } else {
           const courses: any = [""];
@@ -56,7 +66,6 @@ const AuthContext = createContext<AuthContextValue>({
               getUserDetailsByUID(res?.user?.uid)
                 .then((userDetails: any) => {
                   if (userDetails) {
-                    console.log("User details:", userDetails);
                     const data = {
                       name: userDetails?.name,
                       email: userDetails?.email,

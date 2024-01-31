@@ -11,7 +11,6 @@ import { redirect } from 'next/navigation';
 import { getUsersDetails, addNewUserData,getUserDetailsByUID} from "@/api/Api";
 
 const Home = () => {
-  const { data: session, status } = useSession();
   const data = UserAuth();
   const { user, googleSignIn } = data;
   const [userdata, setuserdata] = useState<any>();
@@ -49,8 +48,6 @@ const Home = () => {
   const registerNewUser = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, emailid, passwords);
-    console.log(createUserWithEmailAndPassword,"auth, emailid, passwords");
-    console.log(auth, emailid, passwords,"auth, emailid, passwords");
     alert("")
     setRegister(true);
   };
@@ -69,7 +66,6 @@ const Home = () => {
           getUserDetailsByUID(isUidInData?.uid)
                 .then((userDetails: any) => {
                   if (userDetails) {
-                    console.log("User details:", userDetails);
                     const data = {
                       name: userDetails?.name,
                       email: userDetails?.email,
@@ -99,7 +95,6 @@ const Home = () => {
             getUserDetailsByUID(isUidInData?.uid)
                 .then((userDetails: any) => {
                   if (userDetails) {
-                    console.log("User details:", userDetails);
                     const data = {
                       name: userDetails?.name,
                       email: userDetails?.email,
