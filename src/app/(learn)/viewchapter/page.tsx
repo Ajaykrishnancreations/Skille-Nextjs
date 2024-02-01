@@ -4,9 +4,13 @@ import { getCourseChapterData, updateCourseChapterData } from "@/api/Api";
 import React from "react";
 
 export default function LearnPage() {
+    const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
     const [value, setvalue] = useState<boolean>(true)
     useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        setuserdata(parsedUserData);
         const course_id: any = localStorage.getItem("view_chapter_id");
         getCourseChapterData(course_id)
             .then((CourseChapterData: any) => {
@@ -37,18 +41,17 @@ export default function LearnPage() {
     return (
         <div>
             <div className="p-10">
-
                 <div className="flex">
                     <div className="w-5/6">
                         <h3>{CourseChapterData?.title}</h3>
                     </div>
-                    <div className="w-1/6">
-                        <button onClick={openModal}>Update Chapter</button>
-                    </div>
+                    {userdata?.role === "creator" && (
+                        <div className="w-1/6">
+                            <button onClick={openModal}>Update Chapter</button>
+                        </div>
+                    )}
                 </div>
-
                 <p>{CourseChapterData?.content}</p>
-
                 {
                     isModalOpen1 && (
                         <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">

@@ -1,13 +1,12 @@
 'use client'
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { addCourseFirestore, getcourseFirestore, updateCourseData, addCourseChapterData } from "@/api/Api";
+import { addCourseFirestore, getcourseFirestore1, updateCourseData,getcourseFirestore } from "@/api/Api";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function LearnPage() {
     const courseId = uuidv4();
     const [CourseData, setCourseData] = useState([]);
-    const [addCourse, setaddCourse] = useState(true);
     const [UserData, setUserData] = useState<any>("");
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
     const [TitleUpdate, setTitleUpdate] = useState<string>(selectedCourse?.title);
@@ -57,7 +56,6 @@ export default function LearnPage() {
         addCourseFirestore(title, imgUrl, summary, course_id, level, skills, newprice, oldprice).then((added) => {
             if (added) {
                 alert("Data added");
-                setaddCourse(false);
                 const data = {
                     course_id: course_id,
                     course_title: title,
@@ -72,12 +70,22 @@ export default function LearnPage() {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setUserData(parsedUserData);
-        const fetchData = async () => {
-            const data: any = await getcourseFirestore();
-            setCourseData(data);
-        };
-        fetchData();
-        setValue(false);
+        if(parsedUserData?.role==="creator"){
+            const fetchData = async () => {
+                const data: any = await getcourseFirestore1();
+                setCourseData(data);
+            };
+            fetchData();
+            setValue(false);
+        }
+        else{
+            const fetchData = async () => {
+                const data: any = await getcourseFirestore();
+                setCourseData(data);
+            };
+            fetchData();
+            setValue(false);
+        }
     }, [Value]);
     const saveCourseChanges = () => {
         if (selectedCourse) {
@@ -110,9 +118,11 @@ export default function LearnPage() {
                     <div className="w-5/6">
                         <h2>Search by topics</h2>
                     </div>
-                    <div className="w-1/6">
-                        <button onClick={openModal1}>Add New Course</button>
-                    </div>
+                    {UserData?.role === "creator" && (
+                        <div className="w-1/6">
+                            <button onClick={openModal1}>Add New Course</button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-3 mt-4">
@@ -175,7 +185,6 @@ export default function LearnPage() {
             </div>
             {UserData?.role === "creator" && (
                 <div className="p-10">
-
                     {
                         isModalOpen1 && (
                             <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">

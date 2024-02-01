@@ -55,7 +55,7 @@ export default function LearnPage() {
         title: '',
         image_url: '',
         description: '',
-        content: '',
+        content: 'Update your course chapter content',
         tags: '',
         next_chapter: '',
         previous_chapter: '',
@@ -126,9 +126,11 @@ export default function LearnPage() {
                     <div className="w-5/6">
                         <h3>{CourseTitle}</h3>
                     </div>
-                    <div className="w-1/6">
-                        <button onClick={openModal}>Add Chapter</button>
-                    </div>
+                    {userdata?.role === "creator" && (
+                        <div className="w-1/6">
+                            <button onClick={openModal}>Add Chapter</button>
+                        </div>
+                    )}
                 </div>
                 <div className="grid grid-cols-3 mt-4">
                     {Array.isArray(CourseData) && CourseData.map((item: any) =>
@@ -224,7 +226,7 @@ export default function LearnPage() {
                                             placeholder="Enter Chapter Description"
                                         />
                                     </div>
-                                    <div className="mb-5">
+                                    {/* <div className="mb-5">
                                         <label className="ml-2 mr-2 text-gray-600 block mb-2 text-sm font-medium  dark:text-white">
                                             Enter Chapter Content:
                                         </label>
@@ -236,7 +238,7 @@ export default function LearnPage() {
                                             onChange={handleChange}
                                             placeholder="Enter Chapter Content"
                                         />
-                                    </div>
+                                    </div> */}
                                     <div className="mb-5">
                                         <label className="ml-2 mr-2 text-gray-600 block mb-2 text-sm font-medium  dark:text-white">
                                             Enter Chapter Skills:

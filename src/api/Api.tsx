@@ -30,6 +30,44 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     });
 }
 
+export function getcourseFirestore() {
+  return getDocs(collection(db, "course"))
+    .then((querySnapshot) => {
+      const data: any[] | PromiseLike<any[]> = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
+export function getcourseFirestore1() {
+  const storedUserData = localStorage.getItem("userdata");
+  const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+  if (!parsedUserData || !parsedUserData.uid) {
+    console.error("User data not found.");
+    return Promise.resolve(false);
+  }
+  return getDocs(collection(db, "course"))
+    .then((querySnapshot) => {
+      const data: any[] | PromiseLike<any[]> = [];
+      querySnapshot.forEach((doc) => {
+        const courseData = doc.data();
+        if (courseData.author?.user_id === parsedUserData.uid) {
+          data.push({ id: doc.id, ...courseData });
+        }
+      });
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
 export function addCourseChapterData(chapter_id: any, description: string, image_url: string, title: string, content: string, tags: string, next_chapter: any, previous_chapter: any) {
   return addDoc(collection(db, "course_chapter"), {
     chapter_id: chapter_id,
@@ -116,21 +154,6 @@ export async function updateCourseChapters(course_id: string | number, newChapte
     })
     .catch((error) => {
       console.error("Error updating chapters: ", error);
-      return false;
-    });
-}
-
-export function getcourseFirestore() {
-  return getDocs(collection(db, "course"))
-    .then((querySnapshot) => {
-      const data: any[] | PromiseLike<any[]> = [];
-      querySnapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-      return data;
-    })
-    .catch((error) => {
-      console.error(error);
       return false;
     });
 }
