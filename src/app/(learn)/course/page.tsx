@@ -10,12 +10,15 @@ export default function LearnPage() {
     const [addCourse, setaddCourse] = useState(true);
     const [UserData, setUserData] = useState<any>("");
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
-    const [Value, setValue] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalOpen1, setIsModalOpen1] = useState(false);
     const [TitleUpdate, setTitleUpdate] = useState<string>(selectedCourse?.title);
     const [imgUrlUpdate, setimgUrlUpdate] = useState<string>(selectedCourse?.imgUrl);
     const [summaryUpdate, setsummaryUpdate] = useState<string>(selectedCourse?.summary);
+    const [levelUpdate, setLevelUpdate] = useState<string>(selectedCourse?.level);
+    const [newpriceUpdate, setNewpriceUpdate] = useState<string>(selectedCourse?.newprice);
+    const [oldpriceUpdate, setOldpriceUpdate] = useState<string>(selectedCourse?.oldprice);
+    const [Value, setValue] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen1, setIsModalOpen1] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         imgUrl: '',
@@ -26,6 +29,21 @@ export default function LearnPage() {
         oldprice: '',
         course_id: courseId,
     });
+    const openModal = (course: any) => {
+        setSelectedCourse(course);
+        setIsModalOpen(true);
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedCourse(null);
+    };
+
+    const openModal1 = () => {
+        setIsModalOpen1(true);
+    };
+    const closeModal1 = () => {
+        setIsModalOpen1(false);
+    };
     const { title, imgUrl, summary, level, skills, newprice, oldprice, course_id } = formData;
     const handleChange = (e: { target: { name: any; value: any; type: any; checked: any; }; }) => {
         const { name, value, type, checked } = e.target;
@@ -61,48 +79,42 @@ export default function LearnPage() {
         fetchData();
         setValue(false);
     }, [Value]);
-    const openModal = (course: any) => {
-        setSelectedCourse(course);
-        setIsModalOpen(true);
-    };
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setSelectedCourse(null);
-    };
-
-    const openModal1 = () => {
-        setIsModalOpen1(true);
-    };
-    const closeModal1 = () => {
-        setIsModalOpen1(false);
-    };
-
     const saveCourseChanges = () => {
         if (selectedCourse) {
-            updateCourseData(selectedCourse.id, { title: TitleUpdate, imgUrl: imgUrlUpdate, summary: summaryUpdate }, UserData?.uid).then((updated) => {
-                if (updated) {
-                    alert("Course updated");
-                    closeModal();
-                    setValue(true)
+            updateCourseData(selectedCourse.id,
+                {
+                    title: TitleUpdate ? TitleUpdate : selectedCourse?.title,
+                    imgUrl: imgUrlUpdate ? imgUrlUpdate : selectedCourse?.imgUrl,
+                    summary: summaryUpdate ? summaryUpdate : selectedCourse?.summary,
+                    level: levelUpdate ? levelUpdate : selectedCourse?.level,
+                    price: {
+                        newprice: newpriceUpdate ? newpriceUpdate : selectedCourse?.price?.newprice,
+                        oldprice: oldpriceUpdate ? oldpriceUpdate : selectedCourse?.price?.oldprice
+                    },
+                }, UserData?.uid).then((updated) => {
+                    if (updated) {
+                        alert("Course updated");
+                        closeModal();
+                        setValue(true)
 
-                } else {
-                    alert("Failed to update course");
-                }
-            });
+                    } else {
+                        alert("Failed to update course");
+                    }
+                });
         }
     };
     return (
         <div>
             <div className="p-10">
-            <div className="flex">
+                <div className="flex">
                     <div className="w-5/6">
-                    <h2>Search by topics</h2>
+                        <h2>Search by topics</h2>
                     </div>
                     <div className="w-1/6">
-                    <button onClick={openModal1}>Add New Course</button>
+                        <button onClick={openModal1}>Add New Course</button>
                     </div>
                 </div>
-                
+
                 <div className="grid grid-cols-3 mt-4">
                     {CourseData.map((item: any) => (
                         <div key={item.id}>
@@ -163,7 +175,7 @@ export default function LearnPage() {
             </div>
             {UserData?.role === "creator" && (
                 <div className="p-10">
-                    
+
                     {
                         isModalOpen1 && (
                             <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -335,9 +347,34 @@ export default function LearnPage() {
                                             rows={4}
                                             cols={50}
                                         />
-
                                     </div>
-                                </div>
+                                    <div className="ml-2 mr-2 text-gray-600">
+                                        Enter Course level :
+                                        <input
+                                            className="rounded w-full"
+                                            defaultValue={selectedCourse?.level}
+                                            onChange={(e) => setLevelUpdate(e.target.value)}
+                                            placeholder="level"
+                                        />
+                                    </div>
+                                    <div className="ml-2 mr-2 text-gray-600">
+                                        Enter Course newprice :
+                                        <input
+                                            className="rounded w-full"
+                                            defaultValue={selectedCourse?.price?.newprice}
+                                            onChange={(e) => setNewpriceUpdate(e.target.value)}
+                                            placeholder="newprice"
+                                        />
+                                    </div>
+                                    <div className="ml-2 mr-2 text-gray-600">
+                                        Enter Course Oldprice :
+                                        <input
+                                            className="rounded w-full"
+                                            defaultValue={selectedCourse?.price?.oldprice}
+                                            onChange={(e) => setOldpriceUpdate(e.target.value)}
+                                            placeholder="Oldprice"
+                                        />
+                                    </div>                                </div>
                                 <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                                     <button onClick={saveCourseChanges} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
                                     <button onClick={closeModal} type="button" className="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Close</button>

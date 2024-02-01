@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { getCourseChapterData, addCourseChapterData, getCourseWithCourseid, updateCourseChapters } from "@/api/Api";
+import { addCourseChapterData, getCourseWithCourseid, updateCourseChapters, updateChapterData } from "@/api/Api";
 import { v4 as uuidv4 } from 'uuid';
 import React from "react";
 import Link from "next/link";
@@ -12,6 +12,28 @@ export default function LearnPage() {
     const [Course_id, setCourse_id] = useState<any>();
     const [CourseTitle, setCourseTitle] = useState<string>();
     const [Value, setValue] = useState<boolean>(false);
+    const [isModalOpen1, setIsModalOpen] = useState(false);
+    const [selectedCourseChapter, setSelectedCourseChapter] = useState<any>(null);
+    const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+    const [TitleUpdate, setTitleUpdate] = useState<string>(selectedCourseChapter?.chapter_title);
+    const [imgUrlUpdate, setimgUrlUpdate] = useState<any>(selectedCourseChapter?.image_url);
+    const [chapter_descriptionUpdate, setchapter_descriptionUpdate] = useState<string>(selectedCourseChapter?.chapter_description);
+    const [tagsUpdate, settagsUpdate] = useState<string>(selectedCourseChapter?.tags);
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+    const openUpdateModal = (course: any) => {
+        setSelectedCourseChapter(course);
+        setIsModalUpdateOpen(true);
+    };
+    const closeUpdateModal = () => {
+        setIsModalUpdateOpen(false);
+        // setSelectedCourse(null);
+    };
+
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -21,14 +43,14 @@ export default function LearnPage() {
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
                 if (CourseData) {
-                    setCourseData(CourseData?.chapters)
-                    setCourseTitle(CourseData?.title)
+                    setCourseData(CourseData?.chapters);
+                    setCourseTitle(CourseData?.title);
+                    setValue(false);
                 } else {
                     console.log("CourseData not found");
                 }
             })
-            setValue(false);
-        }, [Value]);
+    }, [Value]);
     const [formData, setFormData] = useState({
         title: '',
         image_url: '',
@@ -73,13 +95,30 @@ export default function LearnPage() {
             }
         });
     };
-    const [isModalOpen1, setIsModalOpen] = useState(false);
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+    const updatedChapterDatas = () => {
+        const course_id = Course_id;
+        const chapterId = selectedCourseChapter?.chapter_id;
+        const updatedChapterData: any = {
+            chapter_description: chapter_descriptionUpdate ? chapter_descriptionUpdate : selectedCourseChapter?.chapter_description,
+            chapter_id: selectedCourseChapter?.chapter_id,
+            chapter_title: TitleUpdate ? TitleUpdate : selectedCourseChapter?.chapter_title,
+            image_url: imgUrlUpdate ? imgUrlUpdate : selectedCourseChapter?.image_url,
+            published: selectedCourseChapter?.published,
+            tags: tagsUpdate ? tagsUpdate : selectedCourseChapter?.tags,
+        };
+        updateChapterData(course_id, chapterId, updatedChapterData).then((res) => {
+            if (res == true) {
+                setValue(true)
+                setIsModalUpdateOpen(false);
+            }
+            else {
+                alert("Error updating course chapter");
+                setIsModalUpdateOpen(false);
+            }
+
+        })
+
+    }
     return (
         <div>
             <div className="p-10">
@@ -97,7 +136,12 @@ export default function LearnPage() {
                             <div className="p-5">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
                                     <div className="p-5">
-                                        <img className="rounded-t-lg" style={{ height: "200px",width:"100%" }} src={item?.image_url} alt="" />
+                                        {userdata?.role === "creator" && (
+                                            <div className="" style={{ position: "absolute", marginTop: "10px", paddingLeft: "14%" }}>
+                                                <button className="border-4 border-white rounded bg-gray-300 z-2 w-20" onClick={() => openUpdateModal(item)}>Edit</button>
+                                            </div>
+                                        )}
+                                        <img className="rounded-t-lg" style={{ height: "200px", width: "100%" }} src={item?.image_url} alt="" />
                                     </div>
                                     <div className="p-5 h-50">
                                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.chapter_title}</h5>
@@ -128,10 +172,20 @@ export default function LearnPage() {
                     isModalOpen1 && (
                         <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
                             <div className="bg-white w-full max-w-xl p-4 rounded-lg shadow-lg">
-                                <button onClick={closeModal}>close</button>
+                                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                        Add a new Chapter
+                                    </h3>
+                                    <button type="button" onClick={closeModal} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                        </svg>
+                                        <span className="sr-only">Close modal</span>
+                                    </button>
+                                </div>
                                 <form className="max-w-sm mx-auto" onSubmit={addCourseChapters}>
                                     <div className="mb-5">
-                                        <label className="ml-2 mr-2 text-gray-600 block mb-2 text-sm font-medium dark:text-white">
+                                        <label className="ml-2 mr-2 mt-5 text-gray-600 block mb-2 text-sm font-medium dark:text-white">
                                             Enter Chapter Title:
                                         </label>
                                         <input
@@ -196,16 +250,88 @@ export default function LearnPage() {
                                             placeholder="Enter Chapter Skills"
                                         />
                                     </div>
-                                    <input
-                                        type="submit"
-                                        className="rounded ml-2 pl-5 pr-5 bg-slate-600 p-2 text-white"
-                                        value="Submit"
-                                    />
+                                    <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                                        <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+                                        <button onClick={closeModal} type="button" className="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Decline</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
                     )}
+                <>
+                    {
+                        isModalUpdateOpen && (
+                            <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+                                <div className="bg-white w-full max-w-xl p-4 rounded-lg shadow-lg">
+                                    <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                                        <>
+                                            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                    Edit Course Chapter
+                                                </h3>
+                                                <button type="button" onClick={closeUpdateModal} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                                    </svg>
+                                                    <span className="sr-only">Close modal</span>
+                                                </button>
+                                            </div>
+
+                                            <div className="p-4 md:p-5 space-y-4">
+                                                <div className="ml-2 mr-2 text-gray-600">
+                                                    Enter Chapter Title :
+                                                    <input
+                                                        className="rounded  w-full"
+                                                        type="text"
+                                                        defaultValue={selectedCourseChapter?.chapter_title}
+                                                        onChange={(e) => setTitleUpdate(e.target.value)}
+                                                        placeholder="Title"
+                                                    />
+                                                </div>
+                                                <div className="ml-2 mr-2 text-gray-600">
+                                                    Enter Chapter ImgUrl :
+                                                    <input
+                                                        className="rounded w-full"
+                                                        type="text"
+                                                        defaultValue={selectedCourseChapter?.image_url}
+                                                        onChange={(e) => setimgUrlUpdate(e.target.value)}
+                                                        placeholder="ImgUrl"
+                                                    />
+                                                </div>
+                                                <div className="ml-2 mr-2 text-gray-600">
+                                                    Enter Chapter Summary :
+                                                    <textarea
+                                                        className="rounded w-full"
+                                                        defaultValue={selectedCourseChapter?.chapter_description}
+                                                        onChange={(e) => setchapter_descriptionUpdate(e.target.value)}
+                                                        placeholder="Summary"
+                                                        rows={4}
+                                                        cols={50}
+                                                    />
+                                                </div>
+                                                <div className="ml-2 mr-2 text-gray-600">
+                                                    Enter Chapter tags :
+                                                    <input
+                                                        className="rounded w-full"
+                                                        defaultValue={selectedCourseChapter?.tags}
+                                                        onChange={(e) => settagsUpdate(e.target.value)}
+                                                        placeholder="level"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="rounded ml-2 pl-5 pr-5 bg-slate-600 p-2 text-white"
+                                                onClick={updatedChapterDatas}
+                                            >
+                                                Submit
+                                            </button>
+                                        </>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                </>
             </div>
-        </div>
+        </div >
     );
 }

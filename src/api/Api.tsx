@@ -1,5 +1,5 @@
 import { db, } from "@/app/firebase";
-import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where, setDoc } from "firebase/firestore";
 
 export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: string, newprice: string, oldprice: string) {
   const storedUserData = localStorage.getItem("userdata");
@@ -70,21 +70,28 @@ export function getCourseChapterData(course_id: any) {
       return false;
     });
 }
-export function getCourseWithCourseid(course_id: any) {
-  const courseCollection = collection(db, "course");
-  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
-  return getDocs(courseQuery)
-    .then((querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const course = querySnapshot.docs[0];
-        return { id: course.id, ...course.data() };
-      } else {
-        console.log("Course not found");
-        return null;
-      }
+export async function updateCourseChapterData(chapter_id: any, updatedData: any) {
+  const q = query(collection(db, "course_chapter"), where("chapter_id", "==", chapter_id));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    console.log("Chapter not found");
+    return false;
+  }
+
+  const chapterDoc = querySnapshot.docs[0];
+  const chapterRef = doc(db, "course_chapter", chapterDoc.id);
+
+  return updateDoc(chapterRef, {
+    ...updatedData,
+    last_updated_time: serverTimestamp() // Add a field to track last updated time
+  })
+    .then(() => {
+      console.log("Chapter updated successfully");
+      return true;
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error updating chapter: ", error);
       return false;
     });
 }
@@ -198,10 +205,67 @@ export function getUserDetailsByUID(uid: string) {
     });
 }
 
-export async function updateCourseData(courseId: string, updatedData: any, uid: string) {
-  const userQuery = query(collection(db, "users"), where("uid", "==", uid));
-  const userQuerySnapshot = await getDocs(userQuery);
-  if (userQuerySnapshot.empty) {
+
+
+export function getCourseWithCourseid(course_id: any) {
+  const courseCollection = collection(db, "course");
+  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
+  return getDocs(courseQuery)
+    .then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const course = querySnapshot.docs[0];
+        return { id: course.id, ...course.data() };
+      } else {
+        console.log("Course not found");
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+export async function updateChapterData(courseId: any, chapterId: any, updatedChapterData: any) {
+  try {
+    const courseCollection = collection(db, "course");
+    const courseQuery = query(courseCollection, where("course_id", "==", courseId));
+    const querySnapshot = await getDocs(courseQuery);
+
+    if (querySnapshot.empty) {
+      console.error("Course not found");
+      return false;
+    }
+
+    const courseDoc = querySnapshot.docs[0];
+    const courseData = courseDoc.data();
+
+    if (!courseData.chapters || !Array.isArray(courseData.chapters)) {
+      console.error("Chapters data not found or not in correct format");
+      return false;
+    }
+
+    const updatedChapters = courseData.chapters.map((chapter: any) => {
+      if (chapter.chapter_id === chapterId) {
+        return { ...chapter, ...updatedChapterData };
+      }
+      return chapter;
+    });
+
+    const courseRef = doc(db, "course", courseDoc.id);
+    await updateDoc(courseRef, { ...courseData, chapters: updatedChapters });
+
+    console.log("Course document updated successfully");
+    return true;
+  } catch (error) {
+    console.error("Error updating course chapter:", error);
+    return false;
+  }
+}
+
+ export async function updateCourseData(courseId: any, updatedData: any, uid: any) {
+   const userQuery = query(collection(db, "users"), where("uid", "==", uid));
+   const userQuerySnapshot = await getDocs(userQuery);
+   if (userQuerySnapshot.empty) {
     console.error("User not found or doesn't have admin role");
     return false;
   }
@@ -210,7 +274,7 @@ export async function updateCourseData(courseId: string, updatedData: any, uid: 
     console.error("User doesn't have admin role");
     return false;
   }
-  const courseRef = doc(db, "Course", courseId);
+  const courseRef = doc(db, "course", courseId);
   return updateDoc(courseRef, updatedData)
     .then(() => {
       console.log("Course document updated successfully");
