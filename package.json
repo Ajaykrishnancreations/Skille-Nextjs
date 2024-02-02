@@ -51,6 +51,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^3.0.1",
     "sharp": "^0.33.1",
+    "stackedit-js": "^1.0.7",
     "swiper": "^11.0.5",
     "uuid": "^9.0.1"
   },

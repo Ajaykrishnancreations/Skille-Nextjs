@@ -13,6 +13,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,

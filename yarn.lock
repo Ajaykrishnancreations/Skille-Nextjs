@@ -6955,6 +6955,7 @@ __metadata:
     remark-gfm: ^3.0.1
     sass: ^1.69.7
     sharp: ^0.33.1
+    stackedit-js: ^1.0.7
     swiper: ^11.0.5
     tailwind-bootstrap-grid: ^5.1.0
     tailwindcss: ^3.4.1
@@ -8498,6 +8499,13 @@ __metadata:
   dependencies:
     minipass: ^7.0.3
   checksum: 0a31b65f21872dea1ed3f7c200d7bc1c1b91c15e419deca14f282508ba917cbb342c08a6814c7f68ca4ca4116dd1a85da2bbf39227480e50125a1ceffeecb750
+  languageName: node
+  linkType: hard
+
+"stackedit-js@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "stackedit-js@npm:1.0.7"
+  checksum: e0c9b7ce1f9515c787ec0ec217b2b0e0abbfd9637a6ffc2e0c4e047697d4b5d9113462c1d4313fde0483e752828f889dff6a6bd5577da2789c9f02b0d3ea04cb
   languageName: node
   linkType: hard
 
