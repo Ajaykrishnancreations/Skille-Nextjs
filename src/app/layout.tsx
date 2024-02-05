@@ -65,7 +65,7 @@ export default function RootLayout({
             <Header />
             <SearchModal />
             <main>{children}</main>
-            {pathname === "/courseReadMe" ?
+            {pathname === "/viewchapter" ?
               "" : <Footer />}
           </Providers>
         </SessionProvider>

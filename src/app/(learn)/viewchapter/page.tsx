@@ -1,9 +1,37 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getCourseChapterData, updateCourseChapterData } from "@/api/Api";
 import React from "react";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+interface TitleProps {
+    title: string;
+    selected: boolean;
+    onClick: () => void;
+    isBold: boolean;
+}
+interface CodeProps {
+    node?: any;
+    inline?: boolean;
+    className?: string;
+    children?: React.ReactNode;
+  }
+const Title: React.FC<TitleProps> = ({ title, selected, onClick, isBold }) => (
+    <div
+        className={`basis-2/12 mt-5 cursor-pointer ${selected ? 'font-bold' : ''}`}
+        onClick={onClick}
+    >
+        {isBold ? <strong>{title}</strong> : title}
+    </div>
+);
+const isEqual = (array1: any[], array2: any[]): boolean => {
+    return (
+        array1.length === array2.length &&
+        array1.every((value, index) => value === array2[index])
+    );
+};
 
 export default function LearnPage() {
     const stackedit = new Stackedit();
@@ -42,6 +70,110 @@ export default function LearnPage() {
         updateCourseChapterData(chapter_id, updatedData);
         setvalue(true)
     })
+    const components: any = {
+        
+        code: ({ node, inline, className, children, ...props }: CodeProps) => {
+            const customStyle = {
+                backgroundColor: '#e7e7e7',
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+              };
+              const syntaxHighlighterStyle = solarizedlight;
+          const match = /language-(\w+)/.exec(className || '');
+          if (!inline && match) {
+            return (
+              <SyntaxHighlighter
+                style={syntaxHighlighterStyle}
+                language={match[1]}
+                PreTag="div"
+                children={String(children).replace(/\n$/, '')}
+                {...props}
+                customStyle={customStyle}
+              />
+            );
+          }
+      
+          return (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        },
+      
+
+        h1: ({ children }: { children: React.ReactNode }) => {
+            const headingText = String(children);
+            return (
+                <h1 id={`heading-${titles.indexOf(headingText)}`} className={`mt-2 mb-2`}>
+                    {children}
+                    <hr></hr>
+                </h1>
+            );
+        },
+        h2: ({ children }: { children: React.ReactNode }) => {
+            const headingText = String(children);
+            return (
+                <h2 id={`heading-${titles.indexOf(headingText)}`} className={`mt-5 `}>
+                    {children}
+                </h2>
+            );
+        },
+        h3: ({ children }: { children: React.ReactNode }) => {
+            const headingText = String(children);
+            return (
+                <h3 id={`heading-${titles.indexOf(headingText)}`} className={`mt-5`}>
+                    {children}
+                </h3>
+            );
+        },
+        strong: ({ children }: { children: React.ReactNode }) => (
+            <div className={`mt-5`}>
+                <strong>{children}</strong>
+            </div>
+        ),
+        p: ({ children }: { children: React.ReactNode }) => (
+            <div className={`mt-5`}>
+                <p>{children}</p>
+            </div>
+        ),
+
+    };
+    const [titles, setTitles] = useState<string[]>([]);
+    const [selectedTitle, setSelectedTitle] = useState<any>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const extractTitles = (source: string) => {
+        const regex = /^#{1,3}\s+(.*)|^(\*{2})\s+(.*)/gm;
+        const matches = Array.from(source.matchAll(regex), (match) => match[1]);
+        return matches;
+    };
+    useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        setuserdata(parsedUserData);
+
+        if (CourseChapterData?.content) {
+            const newTitles = extractTitles(CourseChapterData.content);
+            if (!isEqual(newTitles, titles)) {
+                setTitles(newTitles);
+            }
+            if (!selectedTitle && newTitles.length > 0) {
+                handleTitleClick(newTitles[0]);
+            }
+        }
+    }, [CourseChapterData?.content, titles, selectedTitle]);
+
+    const handleTitleClick = (title: string) => {
+        setSelectedTitle(title);
+        const index = titles.indexOf(title);
+        if (index !== -1) {
+          const element = document.getElementById(`heading-${index}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      };
+
     return (
         <div>
             <div className="p-10">
@@ -55,8 +187,24 @@ export default function LearnPage() {
                         </div>
                     )}
                 </div>
-                <div>
-                <ReactMarkdown children={CourseChapterData?.content} />
+                
+                <div className='flex flex-row'>
+                    <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
+                        <div className={`p-10  rounded border-1 border-gray-200`}>
+                        <ReactMarkdown components={components} children={CourseChapterData?.content} />
+                        </div>
+                    </div>
+                    <div className='basis-2/12 p-10'>
+                        {titles.map((title, index) => (
+                            <Title
+                                key={index}
+                                title={title}
+                                selected={selectedTitle === title}
+                                onClick={() => handleTitleClick(title)}
+                                isBold={false}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
