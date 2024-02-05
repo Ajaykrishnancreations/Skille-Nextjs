@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { addCourseChapterData, getCourseWithCourseid, updateCourseChapters, updateChapterData } from "@/api/Api";
+import { addCourseChapterData, getCourseWithCourseid, updateCourseChapters, updateChapterData ,updateCourseChapterData} from "@/api/Api";
 import { v4 as uuidv4 } from 'uuid';
 import React from "react";
 import Link from "next/link";
@@ -108,14 +108,30 @@ export default function LearnPage() {
         };
         updateChapterData(course_id, chapterId, updatedChapterData).then((res) => {
             if (res == true) {
-                setValue(true)
-                setIsModalUpdateOpen(false);
+                const updatedData={
+                    description:chapter_descriptionUpdate ? chapter_descriptionUpdate : selectedCourseChapter?.chapter_description,
+                    image_url:imgUrlUpdate ? imgUrlUpdate : selectedCourseChapter?.image_url,
+                    tags:tagsUpdate ? tagsUpdate : selectedCourseChapter?.tags,
+                    title:TitleUpdate ? TitleUpdate : selectedCourseChapter?.chapter_title,
+                }
+                updateCourseChapterData(chapterId, updatedData)
+                .then((res) => {
+                    if (res == true) {
+                        setValue(true)
+                        setIsModalUpdateOpen(false);
+                    }
+                    else{
+                        alert("Error updating course chapter")
+                        setIsModalUpdateOpen(false);
+                    }
+                })
+
+                
             }
             else {
                 alert("Error updating course chapter");
                 setIsModalUpdateOpen(false);
             }
-
         })
 
     }
