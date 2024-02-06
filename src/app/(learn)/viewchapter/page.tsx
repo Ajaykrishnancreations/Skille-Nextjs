@@ -17,7 +17,7 @@ interface CodeProps {
     inline?: boolean;
     className?: string;
     children?: React.ReactNode;
-  }
+}
 const Title: React.FC<TitleProps> = ({ title, selected, onClick, isBold }) => (
     <div
         className={`basis-2/12 mt-5 cursor-pointer ${selected ? 'font-bold' : ''}`}
@@ -71,36 +71,36 @@ export default function LearnPage() {
         setvalue(true)
     })
     const components: any = {
-        
+
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
             const customStyle = {
                 backgroundColor: '#e7e7e7',
                 padding: '8px',
                 borderRadius: '4px',
                 border: '1px solid #ccc',
-              };
-              const syntaxHighlighterStyle = solarizedlight;
-          const match = /language-(\w+)/.exec(className || '');
-          if (!inline && match) {
+            };
+            const syntaxHighlighterStyle = solarizedlight;
+            const match = /language-(\w+)/.exec(className || '');
+            if (!inline && match) {
+                return (
+                    <SyntaxHighlighter
+                        style={syntaxHighlighterStyle}
+                        language={match[1]}
+                        PreTag="div"
+                        children={String(children).replace(/\n$/, '')}
+                        {...props}
+                        customStyle={customStyle}
+                    />
+                );
+            }
+
             return (
-              <SyntaxHighlighter
-                style={syntaxHighlighterStyle}
-                language={match[1]}
-                PreTag="div"
-                children={String(children).replace(/\n$/, '')}
-                {...props}
-                customStyle={customStyle}
-              />
+                <code className={className} {...props}>
+                    {children}
+                </code>
             );
-          }
-      
-          return (
-            <code className={className} {...props}>
-              {children}
-            </code>
-          );
         },
-      
+
 
         h1: ({ children }: { children: React.ReactNode }) => {
             const headingText = String(children);
@@ -167,12 +167,12 @@ export default function LearnPage() {
         setSelectedTitle(title);
         const index = titles.indexOf(title);
         if (index !== -1) {
-          const element = document.getElementById(`heading-${index}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
+            const element = document.getElementById(`heading-${index}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
         }
-      };
+    };
 
     return (
         <div>
@@ -187,11 +187,11 @@ export default function LearnPage() {
                         </div>
                     )}
                 </div>
-                
+
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
                         <div className={`p-10  rounded border-1 border-gray-200`}>
-                        <ReactMarkdown components={components} children={CourseChapterData?.content} />
+                            <ReactMarkdown components={components} children={CourseChapterData?.content} />
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>

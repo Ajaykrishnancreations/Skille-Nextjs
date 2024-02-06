@@ -10,7 +10,7 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     summary: summary,
     course_id: course_id,
     level: level,
-    published: false,
+    published: "Un-Published",
     author: {
       user_id: parsedUserData?.uid,
       user_name: parsedUserData?.name
@@ -30,19 +30,25 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     });
 }
 
-export function getcourseFirestore() {
-  return getDocs(collection(db, "course"))
-    .then((querySnapshot) => {
-      const data: any[] | PromiseLike<any[]> = [];
-      querySnapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-      return data;
-    })
-    .catch((error) => {
-      console.error(error);
-      return false;
+export async function getcourseFirestore() {
+  // return getDocs(collection(db, "course"))
+  try {
+    const querySnapshot = await getDocs(collection(db, "course"));
+    const data: any[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const courseData = doc.data();
+      // Check if the course is published
+      if (courseData.published === "Published") {
+        data.push({ id: doc.id, ...courseData });
+      }
     });
+
+    return data;
+  } catch (error) {
+    console.error("Error getting published courses:", error);
+    return [];
+  }
 }
 
 export function getcourseFirestore1() {
@@ -227,8 +233,6 @@ export function getUserDetailsByUID(uid: string) {
       return false;
     });
 }
-
-
 
 export function getCourseWithCourseid(course_id: any) {
   const courseCollection = collection(db, "course");
