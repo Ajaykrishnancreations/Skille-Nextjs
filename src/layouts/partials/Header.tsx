@@ -81,15 +81,30 @@ const Header = () => {
               </Link>
             </li>
             :
-            ""
+            null
           }
           <li className="nav-item">
             <Link href="/course">
               <div className={`nav-link block ${pathname === "/course" && "active"}`}>
-                {userdata?.role==="creator"?"Add Coures":"Learn"}
+                {userdata?.role === "creator" ? "Add Coures" : "Learn"}
               </div>
             </Link>
           </li>
+          {userdata?.login === "true" ?
+            <>
+              {userdata?.role === "user" ?
+                <li className="nav-item">
+                  <Link href="/mycourse">
+                    <div className={`nav-link block ${pathname === "/mycourse" && "active"}`}>
+                      mycourse
+                    </div>
+                  </Link>
+                </li>
+                : null}
+            </>
+            :
+            null
+          }
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (

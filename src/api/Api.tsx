@@ -140,29 +140,6 @@ export async function updateCourseChapterData(chapter_id: any, updatedData: any)
     });
 }
 
-export async function updateCourseChapters(course_id: string | number, newChapterData: any) {
-  const courseCollection = collection(db, "course");
-  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
-  const querySnapshot = await getDocs(courseQuery);
-  if (querySnapshot.empty) {
-    console.log("Course not found");
-    return false;
-  }
-  const courseDoc = querySnapshot.docs[0];
-  const courseRef = doc(db, "course", courseDoc.id);
-  const existingChapters = courseDoc.data().chapters || [];
-  const updatedChapters = [...existingChapters, newChapterData];
-
-  return updateDoc(courseRef, { chapters: updatedChapters, last_updated: serverTimestamp() })
-    .then(() => {
-      console.log("Chapters added successfully");
-      return true;
-    })
-    .catch((error) => {
-      console.error("Error updating chapters: ", error);
-      return false;
-    });
-}
 
 export function getUsersDetails() {
   return getDocs(collection(db, "users"))
@@ -215,6 +192,55 @@ export async function updateUserData(uid: string, updatedData: any) {
     });
 }
 
+export async function updateCourseChapters(course_id: string | number, newChapterData: any) {
+  const courseCollection = collection(db, "course");
+  const courseQuery = query(courseCollection, where("course_id", "==", course_id));
+  const querySnapshot = await getDocs(courseQuery);
+  if (querySnapshot.empty) {
+    console.log("Course not found");
+    return false;
+  }
+  const courseDoc = querySnapshot.docs[0];
+  const courseRef = doc(db, "course", courseDoc.id);
+  const existingChapters = courseDoc.data().chapters || [];
+  const updatedChapters = [...existingChapters, newChapterData];
+  return updateDoc(courseRef, { chapters: updatedChapters, last_updated: serverTimestamp() })
+    .then(() => {
+      console.log("Chapters added successfully");
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error updating chapters: ", error);
+      return false;
+    });
+}
+
+export async function addCourseToUser(uid: any, courseData: any) {
+  try {
+      const usersCollection = collection(db, "users");
+      const courseQuery = query(usersCollection, where("uid", "==", uid));
+      const querySnapshot = await getDocs(courseQuery);
+      if (querySnapshot.empty) {
+          console.log("User not found");
+          return false;
+      }
+      const userDoc = querySnapshot.docs[0];
+      const existingCourses = userDoc.data().courses || [];
+      const hasPurchasedCourse = existingCourses.some((course: any) => course.course_id === courseData.course_id);
+      if (hasPurchasedCourse) {
+          console.log("User has already purchased this course");
+          return false;
+      }
+      const courseRef = doc(db, "users", userDoc.id);
+      const updatedCourses = [...existingCourses, courseData];
+      await updateDoc(courseRef, { courses: updatedCourses });
+      console.log("Course added to user successfully");
+      return true;
+  } catch (error) {
+      console.error("Error adding course to user:", error);
+      return false;
+  }
+}
 export function getUserDetailsByUID(uid: string) {
   const usersCollection = collection(db, "users");
   const userQuery = query(usersCollection, where("uid", "==", uid));
@@ -257,30 +283,24 @@ export async function updateChapterData(courseId: any, chapterId: any, updatedCh
     const courseCollection = collection(db, "course");
     const courseQuery = query(courseCollection, where("course_id", "==", courseId));
     const querySnapshot = await getDocs(courseQuery);
-
     if (querySnapshot.empty) {
       console.error("Course not found");
       return false;
     }
-
     const courseDoc = querySnapshot.docs[0];
     const courseData = courseDoc.data();
-
     if (!courseData.chapters || !Array.isArray(courseData.chapters)) {
       console.error("Chapters data not found or not in correct format");
       return false;
     }
-
     const updatedChapters = courseData.chapters.map((chapter: any) => {
       if (chapter.chapter_id === chapterId) {
         return { ...chapter, ...updatedChapterData };
       }
       return chapter;
     });
-
     const courseRef = doc(db, "course", courseDoc.id);
     await updateDoc(courseRef, { ...courseData, chapters: updatedChapters });
-
     console.log("Course document updated successfully");
     return true;
   } catch (error) {

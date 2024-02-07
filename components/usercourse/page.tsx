@@ -1,21 +1,45 @@
 'use client'
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getcourseFirestore } from "@/api/Api";
+import { getcourseFirestore, addCourseToUser } from "@/api/Api";
+import { serverTimestamp } from "firebase/firestore";
 
 export default function UserCourse() {
     const [CourseData, setCourseData] = useState([]);
-    
+    const [userdata, setuserdata] = useState<any>();
+
     useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        setuserdata(parsedUserData);
         const fetchData = async () => {
             const data: any = await getcourseFirestore();
             setCourseData(data);
-    console.log(CourseData,data,"CourseDataCourseData");
-
+            console.log(CourseData, data, "CourseDataCourseData");
         };
         fetchData();
     }, []);
+    const buyCourse = async (item: any) => {
+        const uid = userdata?.uid;
+        const updatedData = {
+            course_id: item?.course_id,
+            progress: 10,
+            completion_status: false,
+            completed_chapters: [
+                "test"
+            ],
+            enrolled_date: null,
+            completion_date: null
+        };
+        const updated = await addCourseToUser(uid, updatedData);
+        if (updated) {
+            alert("course buy successfully");
+        }
+        else {
+            alert("User has already purchased this course");
+        }
 
+    }
     return (
         <div>
             <div className="p-10">
@@ -38,13 +62,13 @@ export default function UserCourse() {
                                         <div className="flex m-3">
                                             <div className="w-5/6">
                                                 <p className="inline-flex items-center">
-                                                    <svg style={{width:"15px"}} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                                                    <svg style={{ width: "15px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                                                         <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
                                                     </svg>
                                                     <span className="ml-2">{item?.author?.user_name}</span>
                                                 </p><br />
                                                 <p className="inline-flex items-center">
-                                                    <svg style={{width:"15px"}} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                    <svg style={{ width: "15px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z" />
                                                     </svg>
                                                     <span className="ml-2">{item?.level}</span>
@@ -55,7 +79,8 @@ export default function UserCourse() {
                                                 <p className="text-sm"><s> ₹ {item?.price?.oldprice}</s></p>
                                             </div>
                                         </div>
-                                        <Link href="/viewcourse" onClick={() => localStorage.setItem("view_course_id", item?.course_id)} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        {/* onClick={() => localStorage.setItem("view_course_id", item?.course_id)}  */}
+                                        <Link href="" onClick={() => { buyCourse(item) }} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             Buy at ₹ {item?.price?.newprice}
                                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
