@@ -1,7 +1,7 @@
 import { db, } from "@/app/firebase";
 import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where, setDoc } from "firebase/firestore";
 
-export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: string, newprice: string, oldprice: string) {
+export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: any, newprice: string, oldprice: string) {
   const storedUserData = localStorage.getItem("userdata");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   return addDoc(collection(db, "course"), {

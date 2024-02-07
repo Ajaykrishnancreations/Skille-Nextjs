@@ -239,7 +239,7 @@ export default function ViewCourseCreator() {
                                     </div>
                                     <div className="mb-5">
                                         <label className="ml-2 mr-2 text-gray-600 block mb-2 text-sm font-medium  dark:text-white">
-                                            Enter Chapter Skills:
+                                            Enter Chapter tags:
                                         </label>
                                         <input
                                             type="text"
@@ -247,7 +247,7 @@ export default function ViewCourseCreator() {
                                             name="tags"
                                             value={tags}
                                             onChange={handleChange}
-                                            placeholder="Enter Chapter Skills"
+                                            placeholder="Enter Chapter Tags"
                                         />
                                     </div>
                                     <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
