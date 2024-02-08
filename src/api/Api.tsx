@@ -1,5 +1,5 @@
 import { db, } from "@/app/firebase";
-import { collection, addDoc, getDocs, doc, serverTimestamp, getDoc, updateDoc, query, where, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, serverTimestamp, updateDoc, query, where } from "firebase/firestore";
 
 export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: any, newprice: string, oldprice: string) {
   const storedUserData = localStorage.getItem("userdata");
@@ -128,7 +128,7 @@ export async function updateCourseChapterData(chapter_id: any, updatedData: any)
 
   return updateDoc(chapterRef, {
     ...updatedData,
-    last_updated_time: serverTimestamp() // Add a field to track last updated time
+    last_updated_time: serverTimestamp() 
   })
     .then(() => {
       console.log("Chapter updated successfully");
@@ -272,6 +272,25 @@ export function getCourseWithCourseid(course_id: any) {
         console.log("Course not found");
         return null;
       }
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+export function getCoursesWithCourseIds(courseIds: any[]) {
+  console.log(courseIds,"courseIdscourseIdscourseIds");
+  
+  const courseCollection = collection(db, "course");
+  const courseQuery = query(courseCollection, where("course_id", "in", courseIds));
+  
+  return getDocs(courseQuery)
+    .then((querySnapshot) => {
+      const courses: any[] | PromiseLike<any[]> = [];
+      querySnapshot.forEach((doc) => {
+        courses.push({ id: doc.id, ...doc.data() });
+      });
+      return courses;
     })
     .catch((error) => {
       console.error(error);

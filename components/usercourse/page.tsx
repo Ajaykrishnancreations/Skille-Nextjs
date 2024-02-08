@@ -34,6 +34,7 @@ export default function UserCourse() {
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
             alert("course buy successfully");
+            window.open("http://localhost:3000/mycourse", "_self");
         }
         else {
             alert("User has already purchased this course");

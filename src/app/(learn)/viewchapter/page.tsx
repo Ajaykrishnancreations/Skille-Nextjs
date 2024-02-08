@@ -57,7 +57,7 @@ export default function LearnPage() {
     const openStackEdit = () => {
         stackedit.openFile({
             content: {
-                text: CourseChapterData?.content, // Initialize text to empty string
+                text: CourseChapterData?.content,
             },
             name: 'MyFile.md',
             isTemporary: true,
@@ -187,11 +187,23 @@ export default function LearnPage() {
                         </div>
                     )}
                 </div>
-
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
                         <div className={`p-10  rounded border-1 border-gray-200`}>
                             <ReactMarkdown components={components} children={CourseChapterData?.content} />
+                        </div>
+                        <div className="m-10">
+                            {userdata?.role === "user" && (
+                                <div>
+                                    <div className="flex items-center me-4">
+                                        <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the terms and conditions.</label>
+                                    </div>
+                                    <p className="mt-2 ms-2 text-sm font-medium text-gray-900">
+                                        I have successfully completed the course chapter. I have thoroughly reviewed the material, completed all the exercises, and gained a comprehensive understanding of the concepts covered. I am confident in my ability to apply this knowledge effectively in practical scenarios. I look forward to advancing to the next chapter and further expanding my skills and expertise in this subject area.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>
@@ -205,7 +217,9 @@ export default function LearnPage() {
                             />
                         ))}
                     </div>
+
                 </div>
+
             </div>
         </div>
     );
