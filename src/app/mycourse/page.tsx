@@ -4,21 +4,14 @@ import { getUserDetailsByUID, getCoursesWithCourseIds } from "@/api/Api";
 import Link from "next/link";
 
 const About = () => {
-    const [userdata, setuserdata] = useState<any>();
-    const [UserDetail, setUserDetail] = useState<any>();
-    const [UserCourses, setUserCourses] = useState<any>();
     const [CourseData, setCourseData] = useState<any[]>([]);
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setuserdata(parsedUserData);
-
         getUserDetailsByUID(parsedUserData?.uid)
             .then((userDetails: any) => {
                 if (userDetails) {
-                    setUserDetail(userDetails);
                     const courseIds: string[] = userDetails?.courses.map((course: any) => course.course_id);
-                    setUserCourses(courseIds);
                     fetchData(courseIds);
                 } else {
                     console.log("User not found");
@@ -29,8 +22,10 @@ const About = () => {
             });
     }, []);
     const fetchData = async (courseIds: string[]) => {
-        const data: any = await getCoursesWithCourseIds(courseIds);
-        setCourseData(data);
+        if (courseIds && courseIds.length > 0) {
+            const data: any = await getCoursesWithCourseIds(courseIds);
+            setCourseData(data);
+        }
     };
     return (
         <div>

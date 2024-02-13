@@ -13,6 +13,7 @@ export default function ViewCourseUser() {
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
                 if (CourseData) {
+                    console.log(CourseData?.chapters?.length,"CourseDataCourseDataCourseData");
                     setCourseData(CourseData?.chapters);
                     setCourseTitle(CourseData?.title);
                 } else {

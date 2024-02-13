@@ -1,5 +1,5 @@
 import { db, } from "@/app/firebase";
-import { collection, addDoc, getDocs, doc, serverTimestamp, updateDoc, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, serverTimestamp, updateDoc, query, where, arrayUnion, getDoc } from "firebase/firestore";
 
 export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: any, newprice: string, oldprice: string) {
   const storedUserData = localStorage.getItem("userdata");
@@ -31,7 +31,7 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
 }
 
 export async function getcourseFirestore() {
-  // return getDocs(collection(db, "course"))
+  // return (collection(db, "course"))
   try {
     const querySnapshot = await getDocs(collection(db, "course"));
     const data: any[] = [];
@@ -128,7 +128,7 @@ export async function updateCourseChapterData(chapter_id: any, updatedData: any)
 
   return updateDoc(chapterRef, {
     ...updatedData,
-    last_updated_time: serverTimestamp() 
+    last_updated_time: serverTimestamp()
   })
     .then(() => {
       console.log("Chapter updated successfully");
@@ -217,31 +217,90 @@ export async function updateCourseChapters(course_id: string | number, newChapte
 
 export async function addCourseToUser(uid: any, courseData: any) {
   try {
-      const usersCollection = collection(db, "users");
-      const courseQuery = query(usersCollection, where("uid", "==", uid));
-      const querySnapshot = await getDocs(courseQuery);
+    const usersCollection = collection(db, "users");
+    const courseQuery = query(usersCollection, where("uid", "==", uid));
+    const querySnapshot = await getDocs(courseQuery);
+    if (querySnapshot.empty) {
+      console.log("User not found");
+      return false;
+    }
+    const userDoc = querySnapshot.docs[0];
+    const existingCourses = userDoc.data().courses || [];
+    const hasPurchasedCourse = existingCourses.some((course: any) => course.course_id === courseData.course_id);
+    if (hasPurchasedCourse) {
+      console.log("User has already purchased this course");
+      return false;
+    }
+    const courseRef = doc(db, "users", userDoc.id);
+    const updatedCourses = [...existingCourses, courseData];
+    await updateDoc(courseRef, { courses: updatedCourses });
+    console.log("Course added to user successfully");
+    return true;
+  } catch (error) {
+    console.error("Error adding course to user:", error);
+    return false;
+  }
+}
+export async function updateUserCompletedChapters(userUid: any, courseId: any, completedChapterIds: any[]) {
+  try {
+    const userCollection = collection(db, "users");
+    const userQuery = query(userCollection, where("uid", "==", userUid));
+    const querySnapshot = await getDocs(userQuery);
+    if (querySnapshot.empty) {
+      console.error("User not found");
+      return false;
+    }
+    const userDoc = querySnapshot.docs[0];
+    const userRef = doc(db, "users", userDoc.id);
+    const userData = userDoc.data();
+    const updatedCourses = userData.courses.map((course: any) => {
+      if (course.course_id === courseId) {
+        const existingCompletedChapters = course.completed_chapters || [];
+        const newCompletedChapterIds = completedChapterIds.filter((chapterId: string) => !existingCompletedChapters.includes(chapterId));
+        if (newCompletedChapterIds.length === 0) {
+          console.log("User has already completed these chapters");
+          return course;
+        }
+        const updatedCompletedChapters = [...existingCompletedChapters, ...newCompletedChapterIds];
+        return { ...course, completed_chapters: updatedCompletedChapters };
+      }
+      return course;
+    });
+    await updateDoc(userRef, { ...userData, courses: updatedCourses });
+    console.log("User document updated successfully");
+    return true;
+  } catch (error) {
+    console.error("Error updating user completed chapters:", error);
+    return false;
+  }
+}
+export async function checkUserCompletedChapters(userUid: any, courseId: any, chapterIds: any[]) {
+  try {
+      const userCollection = collection(db, "users");
+      const userQuery = query(userCollection, where("uid", "==", userUid));
+      const querySnapshot = await getDocs(userQuery);
+
       if (querySnapshot.empty) {
-          console.log("User not found");
+          console.error("User not found");
           return false;
       }
       const userDoc = querySnapshot.docs[0];
-      const existingCourses = userDoc.data().courses || [];
-      const hasPurchasedCourse = existingCourses.some((course: any) => course.course_id === courseData.course_id);
-      if (hasPurchasedCourse) {
-          console.log("User has already purchased this course");
+      const userData = userDoc.data();
+      const course = userData.courses.find((course: any) => course.course_id === courseId);
+      if (!course) {
+          console.error("Course not found");
           return false;
       }
-      const courseRef = doc(db, "users", userDoc.id);
-      const updatedCourses = [...existingCourses, courseData];
-      await updateDoc(courseRef, { courses: updatedCourses });
-      console.log("Course added to user successfully");
-      return true;
+      const completedChapters = course.completed_chapters || [];
+      const chaptersCompleted = chapterIds.every(chapterId => completedChapters.includes(chapterId));
+      return chaptersCompleted;
   } catch (error) {
-      console.error("Error adding course to user:", error);
+      console.error("Error checking user completed chapters:", error);
       return false;
   }
 }
-export function getUserDetailsByUID(uid: string) {
+
+export function getUserDetailsByUID(uid: any) {
   const usersCollection = collection(db, "users");
   const userQuery = query(usersCollection, where("uid", "==", uid));
   return getDocs(userQuery)
@@ -279,11 +338,11 @@ export function getCourseWithCourseid(course_id: any) {
     });
 }
 export function getCoursesWithCourseIds(courseIds: any[]) {
-  console.log(courseIds,"courseIdscourseIdscourseIds");
-  
+  console.log(courseIds, "courseIdscourseIdscourseIds");
+
   const courseCollection = collection(db, "course");
   const courseQuery = query(courseCollection, where("course_id", "in", courseIds));
-  
+
   return getDocs(courseQuery)
     .then((querySnapshot) => {
       const courses: any[] | PromiseLike<any[]> = [];
@@ -327,11 +386,10 @@ export async function updateChapterData(courseId: any, chapterId: any, updatedCh
     return false;
   }
 }
-
- export async function updateCourseData(courseId: any, updatedData: any, uid: any) {
-   const userQuery = query(collection(db, "users"), where("uid", "==", uid));
-   const userQuerySnapshot = await getDocs(userQuery);
-   if (userQuerySnapshot.empty) {
+export async function updateCourseData(courseId: any, updatedData: any, uid: any) {
+  const userQuery = query(collection(db, "users"), where("uid", "==", uid));
+  const userQuerySnapshot = await getDocs(userQuery);
+  if (userQuerySnapshot.empty) {
     console.error("User not found or doesn't have admin role");
     return false;
   }
@@ -350,4 +408,40 @@ export async function updateChapterData(courseId: any, chapterId: any, updatedCh
       console.error("Error updating Course document: ", error);
       return false;
     });
+}
+export async function updateProgressAndCompletionStatus(uid:any, courseId:any, targetLength:any) {
+  try {
+    const userCollection = collection(db, "users");
+    const userQuery = query(userCollection, where("uid", "==", uid));
+    const userQuerySnapshot = await getDocs(userQuery);
+    if (userQuerySnapshot.empty) {
+      console.error("User not found");
+      return false;
+    }
+    const userDoc = userQuerySnapshot.docs[0];
+    const userRef = doc(db, "users", userDoc.id);
+    const userData = userDoc.data();
+    const updatedCourses = userData.courses.map((course:any) => {
+      if (course.course_id === courseId) {
+        const completedChapters = course.completed_chapters || [];
+        
+        const progress = (completedChapters.length / targetLength) * 100;
+        console.log(completedChapters.length,targetLength,"completedChapterscompletedChapters");
+
+        const completionStatus = completedChapters.length === targetLength;
+        return {
+          ...course,
+          progress: completionStatus ? 100 : progress,
+          completion_status: completionStatus,
+        };
+      }
+      return course;
+    });
+    await updateDoc(userRef, { ...userData, courses: updatedCourses });
+    console.log("User progress and completion status updated successfully");
+    return true;
+  } catch (error) {
+    console.error("Error updating user progress and completion status:", error);
+    return false;
+  }
 }

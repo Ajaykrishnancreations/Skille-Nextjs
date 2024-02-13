@@ -25,9 +25,7 @@ export default function UserCourse() {
             course_id: item?.course_id,
             progress: 10,
             completion_status: false,
-            completed_chapters: [
-                "test"
-            ],
+            completed_chapters: [],
             enrolled_date: null,
             completion_date: null
         };

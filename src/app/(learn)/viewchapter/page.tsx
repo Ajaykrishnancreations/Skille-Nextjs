@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from "react";
-import { getCourseChapterData, updateCourseChapterData } from "@/api/Api";
+import { getCourseChapterData, getCourseWithCourseid, updateProgressAndCompletionStatus, updateCourseChapterData, updateUserCompletedChapters, checkUserCompletedChapters } from "@/api/Api";
 import React from "react";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
@@ -37,7 +37,8 @@ export default function LearnPage() {
     const stackedit = new Stackedit();
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
-    const [value, setvalue] = useState<boolean>(true)
+    const [value, setvalue] = useState<boolean>(true);
+    const [CompletedChapter, setCompletedChapter] = useState<boolean>();
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -52,6 +53,15 @@ export default function LearnPage() {
                     console.log("getCourseChapterData not found");
                 }
             })
+
+        const userUid = parsedUserData?.uid;
+        const courseId = localStorage.getItem("view_course_id");
+        const chapterIds = [localStorage.getItem("view_chapter_id")];
+
+        checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
+            setCompletedChapter(res)
+        })
+
 
     }, [value]);
     const openStackEdit = () => {
@@ -173,6 +183,22 @@ export default function LearnPage() {
             }
         }
     };
+    const updateCompletedChapter = () => {
+        const userUid = userdata?.uid;
+        const courseId = localStorage.getItem("view_course_id");
+        const completedChapterIds = [localStorage.getItem("view_chapter_id")];
+        updateUserCompletedChapters(userUid, courseId, completedChapterIds).then((res: boolean) => {
+            if (res==true) {
+                getCourseWithCourseid(courseId).then((res: any) => {
+                    const targetLength = res?.chapters?.length;
+                    console.log(targetLength, "targetLength");
+                    updateProgressAndCompletionStatus(userUid, courseId, targetLength).then((res) => {
+                        console.log(res, "1234567890");
+                    })
+                })
+            }
+        })
+    }
 
     return (
         <div>
@@ -192,17 +218,30 @@ export default function LearnPage() {
                         <div className={`p-10  rounded border-1 border-gray-200`}>
                             <ReactMarkdown components={components} children={CourseChapterData?.content} />
                         </div>
-                        <div className="m-10">
+                        <div className="m-5">
+                            <hr className="m-5"></hr>
                             {userdata?.role === "user" && (
-                                <div>
-                                    <div className="flex items-center me-4">
-                                        <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                                        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the terms and conditions.</label>
-                                    </div>
-                                    <p className="mt-2 ms-2 text-sm font-medium text-gray-900">
-                                        I have successfully completed the course chapter. I have thoroughly reviewed the material, completed all the exercises, and gained a comprehensive understanding of the concepts covered. I am confident in my ability to apply this knowledge effectively in practical scenarios. I look forward to advancing to the next chapter and further expanding my skills and expertise in this subject area.
-                                    </p>
-                                </div>
+                                <>
+                                    {CompletedChapter == false ?
+
+                                        <div className="m-5">
+                                            <div className="flex items-center me-4">
+                                                <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                                <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the terms and conditions.</label>
+                                                <button onClick={updateCompletedChapter}>update</button>
+                                            </div>
+                                            <p className="mt-2 ms-2 text-sm font-medium text-gray-900">
+                                                I have successfully completed the course chapter. I have thoroughly reviewed the material, completed all the exercises, and gained a comprehensive understanding of the concepts covered. I am confident in my ability to apply this knowledge effectively in practical scenarios. I look forward to advancing to the next chapter and further expanding my skills and expertise in this subject area.
+                                            </p>
+                                        </div>
+                                        :
+                                        <div className="m-5">
+                                        You have already completed this course's chapter.
+                                        </div>
+
+                                    }
+
+                                </>
                             )}
                         </div>
                     </div>

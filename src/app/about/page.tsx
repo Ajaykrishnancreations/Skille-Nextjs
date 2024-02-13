@@ -1,10 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { updateUserData, getUserDetailsByUID } from "@/api/Api";
+import { updateUserData, getUserDetailsByUID, getCoursesWithCourseIds } from "@/api/Api";
 
 const About = () => {
   const [userdata, setuserdata] = useState<any>();
   const [UserDetail, setUserDetail] = useState<any>();
+  const [CourseData, setCourseData] = useState<any[]>([]);
+  console.log(CourseData, "CourseDataCourseDataCourseData");
+
   const [Value, setValue] = useState<boolean>(false);
   const [isPopOpen, setisPopOpen] = useState(false);
   const [newName, setnewName] = useState<string>();
@@ -18,11 +21,20 @@ const About = () => {
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     setuserdata(parsedUserData);
+  
     getUserDetailsByUID(parsedUserData?.uid)
-      .then((userDetails) => {
+      .then((userDetails: any) => {
+        const completedCourseIds = userDetails?.courses
+          .filter((course: any) => course.completion_status)
+          .map((course: any) => course.course_id);
+  
+        if (completedCourseIds.length > 0) {
+          fetchData(completedCourseIds);
+        }
+  
         if (userDetails) {
-          setUserDetail(userDetails)
-          setValue(false)
+          setUserDetail(userDetails);
+          setValue(false);
         } else {
           console.log("User not found");
         }
@@ -30,7 +42,20 @@ const About = () => {
       .catch((error) => {
         console.error("Error fetching user details:", error);
       });
+  
+    const fetchData = async (courseIds: string[]) => {
+      if (courseIds && courseIds.length > 0) {
+        try {
+          const data: any = await getCoursesWithCourseIds(courseIds);
+          console.log(data, "CourseDataCourseDataCourseData");
+          setCourseData(data);
+        } catch (error) {
+          console.error("Error fetching course data:", error);
+        }
+      }
+    };
   }, [Value]);
+
 
   const updateUser = async () => {
     const uidToUpdate = userdata?.uid;
