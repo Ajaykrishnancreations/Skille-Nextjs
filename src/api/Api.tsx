@@ -18,10 +18,10 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     skills: skills,
     price: { newprice: newprice, oldprice: oldprice },
     creation_time: serverTimestamp(),
-    chapters: []
+    chapters: [],
+    organisation:"1122334455"
   })
     .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
       return true;
     })
     .catch((error) => {
@@ -87,7 +87,6 @@ export function addCourseChapterData(chapter_id: any, description: string, image
     creation_time: serverTimestamp(),
   })
     .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
       return true;
     })
     .catch((error) => {
@@ -163,10 +162,10 @@ export function addNewUserData(courses: any, imgUrl: string, email: string, name
     email: email,
     name: name,
     role: role,
-    uid: uid
+    uid: uid,
+    organisation:"1234567890"
   })
     .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
       return true;
     })
     .catch((error) => {
@@ -338,11 +337,8 @@ export function getCourseWithCourseid(course_id: any) {
     });
 }
 export function getCoursesWithCourseIds(courseIds: any[]) {
-  console.log(courseIds, "courseIdscourseIdscourseIds");
-
   const courseCollection = collection(db, "course");
   const courseQuery = query(courseCollection, where("course_id", "in", courseIds));
-
   return getDocs(courseQuery)
     .then((querySnapshot) => {
       const courses: any[] | PromiseLike<any[]> = [];
@@ -424,10 +420,7 @@ export async function updateProgressAndCompletionStatus(uid:any, courseId:any, t
     const updatedCourses = userData.courses.map((course:any) => {
       if (course.course_id === courseId) {
         const completedChapters = course.completed_chapters || [];
-        
         const progress = (completedChapters.length / targetLength) * 100;
-        console.log(completedChapters.length,targetLength,"completedChapterscompletedChapters");
-
         const completionStatus = completedChapters.length === targetLength;
         return {
           ...course,

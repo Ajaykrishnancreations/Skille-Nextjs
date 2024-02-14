@@ -15,7 +15,6 @@ export default function UserCourse() {
         const fetchData = async () => {
             const data: any = await getcourseFirestore();
             setCourseData(data);
-            console.log(CourseData, data, "CourseDataCourseData");
         };
         fetchData();
     }, []);

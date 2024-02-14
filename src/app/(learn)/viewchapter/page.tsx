@@ -191,9 +191,7 @@ export default function LearnPage() {
             if (res==true) {
                 getCourseWithCourseid(courseId).then((res: any) => {
                     const targetLength = res?.chapters?.length;
-                    console.log(targetLength, "targetLength");
                     updateProgressAndCompletionStatus(userUid, courseId, targetLength).then((res) => {
-                        console.log(res, "1234567890");
                     })
                 })
             }
