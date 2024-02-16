@@ -2,22 +2,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getcourseFirestore, addCourseToUser } from "@/api/Api";
-import { serverTimestamp } from "firebase/firestore";
 
 export default function UserCourse() {
     const [CourseData, setCourseData] = useState([]);
     const [userdata, setuserdata] = useState<any>();
-
+    const [searchText, setSearchText] = useState("");
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
         const fetchData = async () => {
-            const data: any = await getcourseFirestore();
-            setCourseData(data);
+            const organisation_id =parsedUserData?.organisation_id;
+            await getcourseFirestore(organisation_id).then((res: any) => {
+                setCourseData(res);
+                console.log(res, "resresresres");
+            })
         };
         fetchData();
     }, []);
+
     const buyCourse = async (item: any) => {
         const uid = userdata?.uid;
         const updatedData = {
@@ -38,6 +41,16 @@ export default function UserCourse() {
         }
 
     }
+
+    const filteredCourses = CourseData.filter((item: any) => {
+        const searchString = searchText.toLowerCase();
+        const title = item.title.toLowerCase();
+        const level = item.level.toLowerCase();
+        const authorName = item.author ? item.author.user_name.toLowerCase() : "";
+        const skills = item.skills ? item.skills.map((skill: string) => skill.toLowerCase()).join(",") : "";
+        return title.includes(searchString) || level.includes(searchString) || authorName.includes(searchString) || skills.includes(searchString);
+    });
+
     return (
         <div>
             <div className="p-10">
@@ -45,9 +58,23 @@ export default function UserCourse() {
                     <div className="w-5/6">
                         <h2>Search by topics</h2>
                     </div>
+                    <div className="w-1/6">
+                        <form>
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 ml-2 pointer-events-none">
+                                <svg className="w-5 mt-2 h-5 ml-1 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input type="search" id="default-search"
+                                onChange={(e) => setSearchText(e.target.value)}
+                                style={{ paddingTop: "10px", paddingLeft: "40px" }}
+                                className="block w-full ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Search Title, Skills..." required />
+                        </form>
+                    </div>
                 </div>
                 <div className="grid grid-cols-3 mt-4">
-                    {CourseData.map((item: any) => (
+                    {filteredCourses.map((item: any) => (
                         <div key={item.id}>
                             <div className="p-5">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
@@ -70,6 +97,7 @@ export default function UserCourse() {
                                                         <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z" />
                                                     </svg>
                                                     <span className="ml-2">{item?.level}</span>
+
                                                 </p>
                                             </div>
                                             <div className="w-1/6">
@@ -77,7 +105,11 @@ export default function UserCourse() {
                                                 <p className="text-sm"><s> ₹ {item?.price?.oldprice}</s></p>
                                             </div>
                                         </div>
-                                        {/* onClick={() => localStorage.setItem("view_course_id", item?.course_id)}  */}
+                                        <div> <b>Skills : {Array.isArray(item?.skills) && item.skills.map((skill: any, index: any) => (
+                                            <span key={index}>
+                                                {skill}{index < item.skills.length - 1 && ', '}
+                                            </span>
+                                        ))}</b></div>
                                         <Link href="" onClick={() => { buyCourse(item) }} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             Buy at ₹ {item?.price?.newprice}
                                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">

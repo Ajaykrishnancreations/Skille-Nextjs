@@ -1,15 +1,23 @@
 'use client'
 import { useEffect, useState } from "react";
-import { getCourseWithCourseid } from "@/api/Api";
+import { getCourseWithCourseid, getUserDetailsByUID } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
 
 export default function ViewCourseUser() {
     const [CourseData, setCourseData] = useState<any>({});
     const [CourseTitle, setCourseTitle] = useState<string>();
+    const [userCompletionData, setUserCompletionData] = useState<any>(null);
 
     useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         const course_id: any = localStorage.getItem("view_course_id");
+        getUserDetailsByUID(parsedUserData?.uid)
+            .then((userDetails: any) => {
+                setUserCompletionData(userDetails);
+                console.log(userDetails, "userDetailsuserDetailsuserDetails");
+            });
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
                 if (CourseData) {
@@ -32,11 +40,24 @@ export default function ViewCourseUser() {
                 <div className="grid grid-cols-3 mt-4">
                     {Array.isArray(CourseData) && CourseData.map((item: any) => {
                         if (item.published === "Published") {
+                            const isChapterCompleted = userCompletionData?.courses.some((course: any) => {
+                                return course.completed_chapters.includes(item.chapter_id);
+                            });
                             return (
                                 <div key={item.id}>
                                     <div className="p-5">
                                         <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
                                             <div className="p-5">
+                                                {isChapterCompleted ?
+                                                    <div className="" style={{ position: "absolute", marginTop: "10px", paddingLeft: "13%" }}>
+                                                        <button
+                                                            className={`border-4 rounded z-2 ${isChapterCompleted ? "bg-green-500 text-white" : "bg-white text-black"
+                                                                }`}
+                                                            style={{ width: "100px" }}
+                                                        >
+                                                            Completed
+                                                        </button>
+                                                    </div> : null}
                                                 <img className="rounded-t-lg" style={{ height: "200px", width: "100%" }} src={item?.image_url} alt="" />
                                             </div>
                                             <div className="p-5 h-50">

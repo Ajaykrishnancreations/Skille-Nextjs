@@ -72,7 +72,8 @@ const Home = () => {
                       profileurl: userDetails?.imgUrl,
                       uid: userDetails?.uid,
                       login: "true",
-                      role: userDetails?.role
+                      role: userDetails?.role,
+                      organisation_id:userDetails?.organisation_id
                     };
                     localStorage.setItem("userdata", JSON.stringify(data));
                     window.open("http://localhost:3000/", "_self");
@@ -101,7 +102,8 @@ const Home = () => {
                       profileurl: userDetails?.imgUrl,
                       uid: userDetails?.uid,
                       login: "true",
-                      role: userDetails?.role
+                      role: userDetails?.role,
+                      organisation_id:userDetails?.organisation_id
                     };
                     localStorage.setItem("userdata", JSON.stringify(data));
                     window.open("http://localhost:3000/", "_self");

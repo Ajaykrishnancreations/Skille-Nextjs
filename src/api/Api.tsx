@@ -30,16 +30,22 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     });
 }
 
-export async function getcourseFirestore() {
-  // return (collection(db, "course"))
+export async function getcourseFirestore(organizationId: any) {
   try {
     const querySnapshot = await getDocs(collection(db, "course"));
-    const data: any[] = [];
+    const data: { id: any; }[] = [];
 
     querySnapshot.forEach((doc) => {
       const courseData = doc.data();
+
       // Check if the course is published
       if (courseData.published === "Published") {
+        // Check if the organization ID matches
+        if (courseData.organisation_id === organizationId) {
+          // Set the new price to a specific value for organization members
+          courseData.price.newprice = 0;
+        }
+
         data.push({ id: doc.id, ...courseData });
       }
     });
