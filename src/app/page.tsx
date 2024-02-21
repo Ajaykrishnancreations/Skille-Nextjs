@@ -127,10 +127,25 @@ const Home = () => {
   return (
     <>
       <SeoMeta />
-      <section className="section pt-12">
+      {/* {userdata?.login === "true" ?
+        null
+        : */}
+        <>
+          <div className="mb-10 text-center">
+            {/* <h3 className="mt-3 mb-2">All the skills you need in one place</h3> */}
+            {/* <p className="p-2 mb-4">From critical workplace skills to technical topics, our catalog supports well-rounded professional development.</p> */}
+            <Slider />
+          </div>
+          <center>
+            <hr className="mt-6 w-5/6"></hr>
+          </center>
+        </>
+      {/* } */}
+
+      <section className="mb-5">
         <div className="container">
           <div className="row justify-center">
-            <div className="mt-10 text-center lg:col-7">
+            <div className="mt-5 text-center lg:col-7">
               <center>
                 {userdata?.login === "true" ?
                   <img
@@ -148,7 +163,7 @@ const Home = () => {
                 :
                 <h1
                   className="mb-4 mt-2"
-                >{"learn . build . get-hired"}</h1>
+                >{"All the skills you need in one place"}</h1>
               }
               <p
                 className="mb-8"
@@ -260,16 +275,9 @@ const Home = () => {
             </div>
           </div>
         </div>
+
       </section>
-      {userdata?.login === "true" ?
-        null
-        :
-        <div className="mb-10 text-center">
-          <h3>All the skills you need in one place</h3>
-          <p className="p-2 mb-2">From critical workplace skills to technical topics, our catalog supports well-rounded professional development.</p>
-          <Slider />
-        </div>
-      }
+
     </>
   );
 };

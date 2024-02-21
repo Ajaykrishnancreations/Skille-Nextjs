@@ -37,7 +37,7 @@ const Description = ({ activeImage, clickNext, clickPrev }: Props) => {
             }}
             className="w-full"
           >
-            <div className="pt-3 pl-3 pr-3 text-2xl font-extrabold">{elem.title}</div>
+            <div className="pt-4 pl-3 pr-3 text-2xl font-extrabold">{elem.title}</div>
             <div className="leading-relaxed font-medium text-base tracking-wide pl-3 p-3 h-60 md:h-40 italic text-gray-600">
               {elem.desc}
             </div>
@@ -52,7 +52,7 @@ const Description = ({ activeImage, clickNext, clickPrev }: Props) => {
               onClick={clickPrev}
             >
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 1 1.3 6.326a.91.91 0 0 0 0 1.348L7 13" />
+                <path stroke="currentColor" d="M7 1 1.3 6.326a.91.91 0 0 0 0 1.348L7 13" />
               </svg>
             </div>
             <div
@@ -60,7 +60,7 @@ const Description = ({ activeImage, clickNext, clickPrev }: Props) => {
               onClick={clickNext}
             >
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1" />
+                <path stroke="currentColor" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1" />
               </svg>
             </div>
           </div>

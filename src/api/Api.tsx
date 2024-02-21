@@ -149,7 +149,7 @@ export async function updateCourseChapterData(chapter_id: any, updatedData: any)
 export function getUsersDetails() {
   return getDocs(collection(db, "users"))
     .then((querySnapshot) => {
-      const data: any[] | PromiseLike<any[]> = [];
+      const data: any|PromiseLike<any> = [];
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
       });

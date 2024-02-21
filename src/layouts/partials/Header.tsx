@@ -67,7 +67,7 @@ const Header = () => {
         >
           <li className="nav-item">
             <Link href="/">
-              <div className={`nav-link block ${pathname === "/" && "active"}`}>
+              <div className={`nav-link block ${pathname === "/" ? " text-black" : " text-light font-normal"}`}>
                 Home
               </div>
             </Link>
@@ -75,7 +75,7 @@ const Header = () => {
           {userdata?.login === "true" ?
             <li className="nav-item">
               <Link href="/about">
-                <div className={`nav-link block ${pathname === "/about" && "active"}`}>
+                <div className={`nav-link block ${pathname === "/about" ? " text-black" : " text-light font-normal"}`}>
                   Profile
                 </div>
               </Link>
@@ -85,8 +85,8 @@ const Header = () => {
           }
           <li className="nav-item">
             <Link href="/course">
-              <div className={`nav-link block ${pathname === "/course" && "active"}`}>
-                {userdata?.role === "creator" ? "Add Coures" : "Learn"}
+              <div className={`nav-link block ${pathname === "/course" ? " text-black" : " text-light font-normal"}`}>
+                {userdata?.role === "user" ? "Learn" : "My Coures"}
               </div>
             </Link>
           </li>
@@ -95,7 +95,7 @@ const Header = () => {
               {userdata?.role === "user" ?
                 <li className="nav-item">
                   <Link href="/mycourse">
-                    <div className={`nav-link block ${pathname === "/mycourse" && "active"}`}>
+                    <div className={`nav-link block ${pathname === "/mycourse" ? " text-black" : " text-light font-normal"}`}>
                       mycourse
                     </div>
                   </Link>
@@ -105,6 +105,24 @@ const Header = () => {
             :
             null
           }
+          {userdata?.login === "true" && userdata?.role === "admin" && (
+            <li className="nav-item">
+              <Link href="/adminconsole">
+                <div className={`nav-link block ${pathname === "/adminconsole" ? " text-black" : " text-light font-normal"}`}>
+                  Admin Console
+                </div>
+              </Link>
+            </li>
+          )}
+          {userdata?.login === "true" && userdata?.role === "admin" && (
+            <li className="nav-item">
+              <Link href="/courseconsole">
+                <div className={`nav-link block ${pathname === "/courseconsole" ? " text-black" : " text-light font-normal"}`}>
+                  Course Console
+                </div>
+              </Link>
+            </li>
+          )}
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
