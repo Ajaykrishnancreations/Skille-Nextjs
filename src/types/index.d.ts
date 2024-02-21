@@ -54,6 +54,9 @@ export type Feature = {
 };
 
 export type Testimonial = {
+  id: Key | null | undefined;
+  image: string | undefined;
+  comment: ReactNode;
   name: string;
   designation: string;
   avatar: string;

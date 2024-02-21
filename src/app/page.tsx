@@ -8,7 +8,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { auth } from "./firebase";
 import { signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { getUsersDetails, addNewUserData,getUserDetailsByUID} from "@/api/Api";
+import { getUsersDetails, addNewUserData, getUserDetailsByUID } from "@/api/Api";
+import Slider from "./slider/Slider";
 
 const Home = () => {
   const data = UserAuth();
@@ -64,29 +65,29 @@ const Home = () => {
         if (isUidInData) {
           signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
           getUserDetailsByUID(isUidInData?.uid)
-                .then((userDetails: any) => {
-                  if (userDetails) {
-                    const data = {
-                      name: userDetails?.name,
-                      email: userDetails?.email,
-                      profileurl: userDetails?.imgUrl,
-                      uid: userDetails?.uid,
-                      login: "true",
-                      role: userDetails?.role,
-                      organisation_id:userDetails?.organisation_id
-                    };
-                    localStorage.setItem("userdata", JSON.stringify(data));
-                    window.open("http://localhost:3000/", "_self");
-                  } else {
-                    console.log("User not found");
-                  }
-                })
+            .then((userDetails: any) => {
+              if (userDetails) {
+                const data = {
+                  name: userDetails?.name,
+                  email: userDetails?.email,
+                  profileurl: userDetails?.imgUrl,
+                  uid: userDetails?.uid,
+                  login: "true",
+                  role: userDetails?.role,
+                  organisation_id: userDetails?.organisation_id
+                };
+                localStorage.setItem("userdata", JSON.stringify(data));
+                window.open("http://localhost:3000/", "_self");
+              } else {
+                console.log("User not found");
+              }
+            })
         } else {
-          const courses:any = [];
+          const courses: any = [];
           const imgUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
           const email: any = result?.user?.email;
           const name: any = result?.user?.email;
-          const role:any = null;
+          const role: any = null;
           const uid = uidToCheck;
           addNewUserData(courses, imgUrl, email, name, role, uid).then((added) => {
             if (added) {
@@ -94,26 +95,26 @@ const Home = () => {
             }
             signIn('credentials', { email, password, redirect: true, callbackUrl: '/' });
             getUserDetailsByUID(isUidInData?.uid)
-                .then((userDetails: any) => {
-                  if (userDetails) {
-                    const data = {
-                      name: userDetails?.name,
-                      email: userDetails?.email,
-                      profileurl: userDetails?.imgUrl,
-                      uid: userDetails?.uid,
-                      login: "true",
-                      role: userDetails?.role,
-                      organisation_id:userDetails?.organisation_id
-                    };
-                    localStorage.setItem("userdata", JSON.stringify(data));
-                    window.open("http://localhost:3000/", "_self");
-                  } else {
-                    console.log("User not found");
-                  }
-                })
-                .catch((error: any) => {
-                  console.error("Error fetching user details:", error);
-                });
+              .then((userDetails: any) => {
+                if (userDetails) {
+                  const data = {
+                    name: userDetails?.name,
+                    email: userDetails?.email,
+                    profileurl: userDetails?.imgUrl,
+                    uid: userDetails?.uid,
+                    login: "true",
+                    role: userDetails?.role,
+                    organisation_id: userDetails?.organisation_id
+                  };
+                  localStorage.setItem("userdata", JSON.stringify(data));
+                  window.open("http://localhost:3000/", "_self");
+                } else {
+                  console.log("User not found");
+                }
+              })
+              .catch((error: any) => {
+                console.error("Error fetching user details:", error);
+              });
           });
         }
       } else {
@@ -126,10 +127,10 @@ const Home = () => {
   return (
     <>
       <SeoMeta />
-      <section className="section pt-14 mb-10">
+      <section className="section pt-12">
         <div className="container">
           <div className="row justify-center">
-            <div className="mt-10 mb-16 text-center lg:col-7">
+            <div className="mt-10 text-center lg:col-7">
               <center>
                 {userdata?.login === "true" ?
                   <img
@@ -260,6 +261,15 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {userdata?.login === "true" ?
+        null
+        :
+        <div className="mb-10 text-center">
+          <h3>All the skills you need in one place</h3>
+          <p className="p-2 mb-2">From critical workplace skills to technical topics, our catalog supports well-rounded professional development.</p>
+          <Slider />
+        </div>
+      }
     </>
   );
 };

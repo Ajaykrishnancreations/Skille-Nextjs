@@ -1,31 +1,41 @@
 'use client'
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { getcourseFirestore, addCourseToUser } from "@/api/Api";
+import { getcourseFirestore, addCourseToUser, getUserDetailsByUID } from "@/api/Api";
+import { useRouter } from 'next/navigation';
+import sha256 from "crypto-js/sha256";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export default function UserCourse() {
+    const router = useRouter();
     const [CourseData, setCourseData] = useState([]);
     const [userdata, setuserdata] = useState<any>();
     const [searchText, setSearchText] = useState("");
+    const [purchasedCourses, setPurchasedCourses] = useState<any[]>([]);
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
+        getUserDetailsByUID(parsedUserData?.uid).then((res: any) => {
+            setPurchasedCourses(res?.courses.map((course: any) => course.course_id));
+        })
         const fetchData = async () => {
-            const organisation_id =parsedUserData?.organisation_id;
+            const organisation_id = parsedUserData?.organisation_id;
             await getcourseFirestore(organisation_id).then((res: any) => {
                 setCourseData(res);
-                console.log(res, "resresresres");
             })
         };
         fetchData();
     }, []);
-
+    const isCoursePurchased = (courseId: string) => {
+        return purchasedCourses.includes(courseId);
+    };
     const buyCourse = async (item: any) => {
         const uid = userdata?.uid;
         const updatedData = {
             course_id: item?.course_id,
-            progress: 10,
+            progress: 0,
             completion_status: false,
             completed_chapters: [],
             enrolled_date: null,
@@ -41,7 +51,6 @@ export default function UserCourse() {
         }
 
     }
-
     const filteredCourses = CourseData.filter((item: any) => {
         const searchString = searchText.toLowerCase();
         const title = item.title.toLowerCase();
@@ -50,6 +59,49 @@ export default function UserCourse() {
         const skills = item.skills ? item.skills.map((skill: string) => skill.toLowerCase()).join(",") : "";
         return title.includes(searchString) || level.includes(searchString) || authorName.includes(searchString) || skills.includes(searchString);
     });
+    const makePayment = async (e: FormEvent<HTMLButtonElement>, item: any) => {
+        e.preventDefault();
+        const transactionid = "Tr-" + uuidv4().toString().slice(-6);
+        const payload = {
+            merchantId: process.env.NEXT_PUBLIC_MERCHANT_ID,
+            merchantTransactionId: transactionid,
+            merchantUserId: "MUID-" + uuidv4().toString().slice(-6),
+            amount: `${item?.price?.newprice}00`,
+            redirectUrl: `http://localhost:3000/payment/${transactionid}`,
+            redirectMode: "POST",
+            callbackUrl: `http://localhost:3000/payment/${transactionid}`,
+            mobileNumber: "9999999999",
+            paymentInstrument: {
+                type: "PAY_PAGE",
+            },
+        };
+        localStorage.setItem("buyCourseId", item?.course_id);
+        const dataPayload = JSON.stringify(payload);
+        const dataBase64 = Buffer.from(dataPayload).toString("base64");
+        const fullURL = dataBase64 + "/pg/v1/pay" + process.env.NEXT_PUBLIC_SALT_KEY;
+        const dataSha256 = sha256(fullURL);
+        const checksum = dataSha256 + "###" + process.env.NEXT_PUBLIC_SALT_INDEX;
+        const UAT_PAY_API_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay";
+        try {
+            const response = await axios.post(
+                UAT_PAY_API_URL,
+                {
+                    request: dataBase64,
+                },
+                {
+                    headers: {
+                        accept: "application/json",
+                        "Content-Type": "application/json",
+                        "X-VERIFY": checksum,
+                    },
+                }
+            );
+            const redirect = response.data.data.instrumentResponse.redirectInfo.url;
+            router.push(redirect);
+        } catch (error) {
+            console.error("Error making payment:", error);
+        }
+    };
 
     return (
         <div>
@@ -110,12 +162,29 @@ export default function UserCourse() {
                                                 {skill}{index < item.skills.length - 1 && ', '}
                                             </span>
                                         ))}</b></div>
-                                        <Link href="" onClick={() => { buyCourse(item) }} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            Buy at ₹ {item?.price?.newprice}
-                                            <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                            </svg>
-                                        </Link>
+                                        {isCoursePurchased(item.course_id) ?
+                                            <Link href="/mycourse" className="inline-flex mt-2 items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                Open Course
+                                            </Link>
+                                            :
+                                            <>
+                                                {item?.price?.newprice === 0 ?
+                                                    <Link href="" onClick={() => { buyCourse(item) }} className="inline-flex mt-2 items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                        Buy for free
+                                                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                                        </svg>
+                                                    </Link>
+                                                    :
+                                                    <Link href="" onClick={(e: any) => makePayment(e, item)} className="inline-flex mt-2 items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                        Buy at ₹ {item?.price?.newprice}
+                                                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                                        </svg>
+                                                    </Link>
+                                                }
+                                            </>
+                                        }
                                     </div>
                                 </div>
                             </div>
