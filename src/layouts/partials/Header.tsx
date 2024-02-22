@@ -116,8 +116,8 @@ const Header = () => {
           )}
           {userdata?.login === "true" && userdata?.role === "admin" && (
             <li className="nav-item">
-              <Link href="/courseconsole">
-                <div className={`nav-link block ${pathname === "/courseconsole" ? " text-black" : " text-light font-normal"}`}>
+              <Link href="/admincourseconsole">
+                <div className={`nav-link block ${pathname === "/admincourseconsole" ? " text-black" : " text-light font-normal"}`}>
                   Course Console
                 </div>
               </Link>
