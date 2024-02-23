@@ -6,6 +6,7 @@ import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Link from "next/link";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -35,6 +36,7 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function LearnPage() {
     const stackedit = new Stackedit();
+    const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
     const [value, setvalue] = useState<boolean>(true);
@@ -203,7 +205,7 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h3>{CourseChapterData?.title}</h3>
+                        <h3><span><Link href="/admincourseconsole">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h3>
                     </div>
                     {userdata?.role === "creator" && (
                         <div className="w-1/6">

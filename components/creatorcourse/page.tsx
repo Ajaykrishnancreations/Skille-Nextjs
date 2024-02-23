@@ -94,19 +94,6 @@ export default function CreatorCourse() {
             }
         });
     };
-    useEffect(() => {
-        const storedUserData = localStorage.getItem("userdata");
-        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setUserData(parsedUserData);
-
-        const fetchData = async () => {
-            const data: any = await getcourseFirestore1();
-            setCourseData(data);
-        };
-        fetchData();
-        setValue(false);
-    }, [Value]);
-
     const handleSkillChange1 = (index: number, value: string) => {
         const newSkills = [...skillsUpdate];
         newSkills[index] = value;
@@ -120,6 +107,20 @@ export default function CreatorCourse() {
     const removeSkill1 = (index: number) => {
         setSkillsUpdate(prevSkills => prevSkills.filter((_, i) => i !== index));
     };
+
+    useEffect(() => {
+        const storedUserData = localStorage.getItem("userdata");
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        setUserData(parsedUserData);
+
+        const fetchData = async () => {
+            const data: any = await getcourseFirestore1();
+            setCourseData(data);
+        };
+        fetchData();
+        setValue(false);
+    }, [Value]);
+
 
     const saveCourseChanges = () => {
         if (selectedCourse) {
@@ -138,9 +139,8 @@ export default function CreatorCourse() {
                 }, UserData?.uid).then((updated) => {
                     if (updated) {
                         alert("Course updated");
-                        closeModal();
                         setValue(true)
-
+                        closeModal(); 
                     } else {
                         alert("Failed to update course");
                     }
@@ -203,7 +203,13 @@ export default function CreatorCourse() {
                                                 </span>
                                             ))}</b>
                                         </div>
-                                        <Link href="/viewcourse" onClick={() => localStorage.setItem("view_course_id", item?.course_id)} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        <Link href="/viewcourse" 
+                                        // onClick={() => localStorage.setItem("view_course_id", item?.course_id)}
+                                        onClick={() => {
+                                            localStorage.setItem("view_course_id", item?.course_id)
+                                            localStorage.setItem("selectedCourseTitle",item?.title)
+                                        }}
+                                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             View course
                                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
