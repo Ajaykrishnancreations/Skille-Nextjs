@@ -16,7 +16,6 @@ export default function ViewCourseUser() {
         getUserDetailsByUID(parsedUserData?.uid)
             .then((userDetails: any) => {
                 setUserCompletionData(userDetails);
-                console.log(userDetails, "userDetailsuserDetailsuserDetails");
             });
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
@@ -34,7 +33,7 @@ export default function ViewCourseUser() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h3><span><Link href="/mycourse">{"Back to Course < "}</Link></span>{CourseTitle}</h3>
+                        <h3><span><Link href="/mycourse">{"Back to Course > "}</Link></span>{CourseTitle}</h3>
                     </div>
                 </div>
                 <div className="grid grid-cols-3 mt-4">

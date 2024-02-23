@@ -190,7 +190,7 @@ export default function LearnPage() {
         const courseId = localStorage.getItem("view_course_id");
         const completedChapterIds = [localStorage.getItem("view_chapter_id")];
         updateUserCompletedChapters(userUid, courseId, completedChapterIds).then((res: boolean) => {
-            if (res==true) {
+            if (res == true) {
                 getCourseWithCourseid(courseId).then((res: any) => {
                     const targetLength = res?.chapters?.length;
                     updateProgressAndCompletionStatus(userUid, courseId, targetLength).then((res) => {
@@ -205,13 +205,19 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h3><span><Link href="/admincourseconsole">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h3>
+                        {userdata?.role === "admin" ? 
+                        <h5><span><Link href="/admincourseconsole">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                            : userdata?.role === "creator" ? 
+                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                            :
+                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                            }
                     </div>
-                    {userdata?.role === "creator" && (
+                    {userdata?.role === "user" ? "" :
                         <div className="w-1/6">
                             <button onClick={openStackEdit}>Update Chapter</button>
                         </div>
-                    )}
+                    }
                 </div>
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
@@ -236,7 +242,7 @@ export default function LearnPage() {
                                         </div>
                                         :
                                         <div className="m-5">
-                                        You have already completed this course's chapter.
+                                            You have already completed this course's chapter.
                                         </div>
 
                                     }

@@ -10,9 +10,11 @@ export default function LearnPage() {
     
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
+         }
     }, []);
 
     return (

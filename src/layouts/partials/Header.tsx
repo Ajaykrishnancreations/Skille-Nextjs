@@ -10,6 +10,7 @@ export interface IChildNavigationLink {
   name: string;
   url: string;
 }
+
 export interface INavigationLink {
   name: string;
   url: string;
