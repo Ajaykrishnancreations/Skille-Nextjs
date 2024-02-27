@@ -17,6 +17,7 @@ export default function CourseConsole() {
     const [oldpriceUpdate, setOldpriceUpdate] = useState<string>(selectedCourse?.oldprice);
     const [Value, setValue] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchText, setSearchText] = useState("");
 
     const openModal = (course: any) => {
         setSelectedCourse(course);
@@ -80,33 +81,53 @@ export default function CourseConsole() {
                 });
         }
     };
+
+    const filteredCourses = CourseData.filter((item: any) => {
+        const searchString = searchText.toLowerCase();
+        const title = item.title.toLowerCase();
+        const level = item.level.toLowerCase();
+        const authorName = item.author ? item.author.user_name.toLowerCase() : "";
+        const skills = item.skills ? item.skills.map((skill: string) => skill.toLowerCase()).join(",") : "";
+        return title.includes(searchString) || level.includes(searchString) || authorName.includes(searchString) || skills.includes(searchString);
+    });
     return (
         <div>
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h5>Search by topics</h5>
+                        <h5>Creator's course</h5>
                     </div>
                     <div className="w-1/6">
-                        {/* <button onClick={openModal1}>Add New Course</button> */}
+                        <form>
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 ml-2 pointer-events-none">
+                                <svg className="w-5 mt-2 h-5 ml-1 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input type="search" id="default-search"
+                                onChange={(e) => setSearchText(e.target.value)}
+                                style={{ paddingTop: "10px", paddingLeft: "40px" }}
+                                className="block w-full ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Search Title, Skills..." required />
+                        </form>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-5 mt-4">
-                    {CourseData.map((item: any) => (
+                {filteredCourses.map((item: any) => (
                         <div key={item.id}>
                             <div className="p-5">
-                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
+                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                     <div>
                                         <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                             <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                         </div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "10%" }}>
+                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
                                             <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
                                         </div>
                                         <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
                                     </div>
-                                    <div className="mt-2 h-50">
+                                    <div className="p-4 h-50">
                                         <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
                                         <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
                                         <div className="flex mt-3 mb-1">
@@ -136,7 +157,7 @@ export default function CourseConsole() {
                                                 </span>
                                             ))}</b>
                                         </div>
-                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center" ,marginTop:"10px"}}>
+                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",fontSize:12 }}>
                                             <Link href="/viewcourse"
                                                 onClick={() => {
                                                     localStorage.setItem("view_course_id", item?.course_id)

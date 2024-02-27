@@ -73,7 +73,7 @@ export default function ViewCourseUser() {
                                                     </div>
                                                 </div>
                                                 <div style={{ fontSize:12,borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
-                                                    <Link href="/viewchapter"
+                                                    <Link href="/viewchaptercreator"
                                                         onClick={() => localStorage.setItem("view_chapter_id", item?.chapter_id)}>
                                                         View this Chapter
                                                     </Link>

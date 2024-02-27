@@ -66,15 +66,6 @@ export default function LearnPage() {
 
 
     }, [value]);
-    const openStackEdit = () => {
-        stackedit.openFile({
-            content: {
-                text: CourseChapterData?.content,
-            },
-            name: 'MyFile.md',
-            isTemporary: true,
-        });
-    };
     stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
         const newText = file.content.text;
         const chapter_id = localStorage.getItem("view_chapter_id");
@@ -205,24 +196,8 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        {/* {userdata?.role === "admin" ? 
-                        <h5><span><Link href="/admincourseconsole">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            : userdata?.role === "creator" ? 
-                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            :
-                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            } */}
-                        {userdata?.role === "user" ?
-                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            :
-                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                        }
+                            <h5><span><Link href="/creatormycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcoursecreator">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
                     </div>
-                    {userdata?.role === "user" ? "" :
-                        <div className="w-1/6">
-                            <button onClick={openStackEdit}>Update Chapter</button>
-                        </div>
-                    }
                 </div>
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
@@ -231,10 +206,8 @@ export default function LearnPage() {
                         </div>
                         <div className="m-5">
                             <hr className="m-5"></hr>
-                            {userdata?.role === "user" && (
                                 <>
                                     {CompletedChapter == false ?
-
                                         <div className="m-5">
                                             <div className="flex items-center me-4">
                                                 <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
@@ -253,7 +226,6 @@ export default function LearnPage() {
                                     }
 
                                 </>
-                            )}
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { addCourseFirestore, updateCourseData, getcourseFirestore1 } from "@/api/Api";
 import { v4 as uuidv4 } from 'uuid';
-
+import CourseConsole from "components/courseconsole/page";
 export default function CreatorCourse() {
     const courseId = uuidv4();
     const [CourseData, setCourseData] = useState([]);
@@ -140,7 +140,7 @@ export default function CreatorCourse() {
                     if (updated) {
                         alert("Course updated");
                         setValue(true)
-                        closeModal(); 
+                        closeModal();
                     } else {
                         alert("Failed to update course");
                     }
@@ -152,7 +152,7 @@ export default function CreatorCourse() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h5>Search by topics</h5>
+                        <h5>My Course</h5>
                     </div>
                     <div className="w-1/6">
                         <button onClick={openModal1}>Add New Course</button>
@@ -163,17 +163,17 @@ export default function CreatorCourse() {
                     {CourseData.map((item: any) => (
                         <div key={item.id}>
                             <div className="p-5">
-                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
+                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                     <div>
                                         <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                             <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                         </div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "10%" }}>
+                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
                                             <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
                                         </div>
                                         <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
                                     </div>
-                                    <div className="mt-2 h-50">
+                                    <div className="p-4 h-50">
                                         <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
                                         <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
                                         <div className="flex mt-3 mb-1">
@@ -203,7 +203,7 @@ export default function CreatorCourse() {
                                                 </span>
                                             ))}</b>
                                         </div>
-                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center" ,marginTop:"10px"}}>
+                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",fontSize:12 }}>
                                             <Link href="/viewcourse"
                                                 onClick={() => {
                                                     localStorage.setItem("view_course_id", item?.course_id)
@@ -219,7 +219,7 @@ export default function CreatorCourse() {
                     ))}
                 </div>
             </div>
-            <div className="p-10">
+            <div className="p">
                 {
                     isModalOpen1 && (
                         <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -467,7 +467,12 @@ export default function CreatorCourse() {
                     </div>
                 )
             }
+            <div>
+                {
+                    UserData?.role === "admin" ? <CourseConsole /> : null
+                }
 
+            </div>
         </div >
     );
 }

@@ -138,11 +138,12 @@ export default function ViewCourseCreator() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        {parsedUserData?.role==="admin"?
+                        <h5><span><Link href="/course">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
+                        {/* {parsedUserData?.role==="admin"?
                         <h5><span><Link href="/admincourseconsole">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
                         :
                         <h5><span><Link href="/course">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
-                        }
+                        } */}
                     </div>
                     <div className="w-1/6">
                         <button onClick={openModal}>Add Chapter</button>
@@ -152,18 +153,18 @@ export default function ViewCourseCreator() {
                     {Array.isArray(CourseData) && CourseData.map((item: any) =>
                         <div key={item.id}>
                             <div className="p-5">
-                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-3">
+                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                     <div>
                                         <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                             <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                         </div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "10%" }}>
+                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
                                             <button style={{ width: "60px" }} className="border-4 border-white rounded bg-gray-300 z-2 w-20" onClick={() => openUpdateModal(item)}>Edit</button>
                                         </div>
                                         <img className="rounded-t-lg" style={{ height: "150px", width: "100%" }} src={item?.image_url} alt="" />
                                     </div>
-                                    <div className="mt-2 h-50">
-                                    <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.chapter_title}</p>
+                                    <div className="p-4 h-50">
+                                        <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.chapter_title}</p>
                                         <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.chapter_description}</p>
                                         <div className="flex m-3 mb-1">
                                             <div className="w-5/6">
@@ -175,13 +176,13 @@ export default function ViewCourseCreator() {
                                                 </p><br />
                                             </div>
                                         </div>
-                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center" ,marginTop:"10px"}}>
-                                        <Link href="/viewchapter"
-                                        onClick={() => {
-                                            localStorage.setItem("view_chapter_id", item?.chapter_id);
-                                          }}>
-                                            View Chapter
-                                        </Link>
+                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center",fontSize:12, marginTop: "10px" }}>
+                                            <Link href="/viewchapter"
+                                                onClick={() => {
+                                                    localStorage.setItem("view_chapter_id", item?.chapter_id);
+                                                }}>
+                                                View Chapter
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

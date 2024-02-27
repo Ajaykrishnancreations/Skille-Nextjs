@@ -13,11 +13,7 @@ export default function LearnPage() {
 
     return (
         <div>
-            {UserData?.login === "true" ?
-                <>
-                    {UserData?.role === "user" ? <UserCourse /> : <CreatorCourse />}
-                </>
-                :
+            {UserData?.login === "false" ?
                 <section className="section pt-14 mb-10">
                     <div className="container">
                         <div className="row justify-center">
@@ -35,6 +31,10 @@ export default function LearnPage() {
                         </div>
                     </div>
                 </section>
+                :
+                <>
+                {UserData?.role === "user" ? <UserCourse /> : <CreatorCourse />}
+            </>
             }
 
         </div >

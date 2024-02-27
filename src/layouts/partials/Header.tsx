@@ -5,7 +5,7 @@ import config from "@/config/config.json";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { IoSearch } from "react-icons/io5/index.js";
+import { IoSearch } from "react-icons/io5";
 export interface IChildNavigationLink {
   name: string;
   url: string;
@@ -87,10 +87,40 @@ const Header = () => {
           <li className="nav-item">
             <Link href="/course">
               <div className={`nav-link block ${pathname === "/course" ? " text-black" : " text-light font-normal"}`}>
-                {userdata?.role === "user" ? "Learn" : "My Coures"}
+                {userdata?.role === "user" ? "Learn" : "Create Course"}
               </div>
             </Link>
           </li>
+          {userdata?.login === "true" ?
+            <>
+              {userdata?.role === "creator" ?
+                <li className="nav-item">
+                  <Link href="/creatorlearn">
+                    <div className={`nav-link block ${pathname === "/creatorlearn" ? " text-black" : " text-light font-normal"}`}>
+                      Learn
+                    </div>
+                  </Link>
+                </li>
+                : null}
+            </>
+            :
+            null
+          }
+          {userdata?.login === "true" ?
+            <>
+              {userdata?.role === "creator" ?
+                <li className="nav-item">
+                  <Link href="/creatormycourse">
+                    <div className={`nav-link block ${pathname === "/creatormycourse" ? " text-black" : " text-light font-normal"}`}>
+                    My Course
+                    </div>
+                  </Link>
+                </li>
+                : null}
+            </>
+            :
+            null
+          }
           {userdata?.login === "true" ?
             <>
               {userdata?.role === "user" ?
@@ -115,7 +145,7 @@ const Header = () => {
               </Link>
             </li>
           )}
-          {userdata?.login === "true" && userdata?.role === "admin" && (
+          {/* {userdata?.login === "true" && userdata?.role === "admin" && (
             <li className="nav-item">
               <Link href="/admincourseconsole">
                 <div className={`nav-link block ${pathname === "/admincourseconsole" ? " text-black" : " text-light font-normal"}`}>
@@ -123,7 +153,7 @@ const Header = () => {
                 </div>
               </Link>
             </li>
-          )}
+          )} */}
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
