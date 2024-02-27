@@ -1,4 +1,4 @@
-import BlogCard from "@/components/BlogCard";
+// import BlogCard from "@/components/BlogCard";
 import config from "@/config/config.json";
 import { getSinglePage } from "@/lib/contentParser";
 import { getTaxonomy } from "@/lib/taxonomyParser";
@@ -38,7 +38,7 @@ const TagSingle = ({ params }: { params: { single: string } }) => {
           <div className="row">
             {filterByTags.map((post: Post, index: number) => (
               <div className="mb-14 md:col-6 lg:col-4" key={index}>
-                <BlogCard data={post} />
+                {/* <BlogCard data={post} /> */}
               </div>
             ))}
           </div>
