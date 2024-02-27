@@ -39,7 +39,7 @@ const RegularPages = ({ params }: { params: { regular: string } }) => {
       <section className="section">
         <div className="container">
           <div className="content">
-            <MDXContent content={content} />
+            {/* <MDXContent content={content} /> */}
           </div>
         </div>
       </section>
