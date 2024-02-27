@@ -44,7 +44,7 @@ export default function CreatorLearn() {
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
             alert("course buy successfully");
-            window.open("http://localhost:3000/mycourse", "_self");
+            window.open("http://localhost:3000/creatormycourse", "_self");
         }
         else {
             alert("User has already purchased this course");
@@ -164,7 +164,7 @@ export default function CreatorLearn() {
                                         ))}</b></div>
                                         <div style={{ fontSize:12,borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
                                             {isCoursePurchased(item.course_id) ?
-                                                <Link href="/mycourse">
+                                                <Link href="/creatormycourse">
                                                     Open Course
                                                 </Link>
                                                 :

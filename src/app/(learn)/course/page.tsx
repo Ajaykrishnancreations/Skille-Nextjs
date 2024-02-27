@@ -33,8 +33,8 @@ export default function LearnPage() {
                 </section>
                 :
                 <>
-                {UserData?.role === "user" ? <UserCourse /> : <CreatorCourse />}
-            </>
+                    {UserData?.role === "user" ? <UserCourse /> : <CreatorCourse />}
+                </>
             }
 
         </div >

@@ -149,76 +149,96 @@ export default function CreatorCourse() {
     };
     return (
         <div>
-            <div className="p-10">
-                <div className="flex">
-                    <div className="w-5/6">
-                        <h5>My Course</h5>
+            {UserData?.login === "true" ?
+                <div className="p-10">
+                    <div className="flex">
+                        <div className="w-5/6">
+                            <h5>My Course</h5>
+                        </div>
+                        <div className="w-1/6">
+                            <button onClick={openModal1}>Add New Course</button>
+                        </div>
                     </div>
-                    <div className="w-1/6">
-                        <button onClick={openModal1}>Add New Course</button>
-                    </div>
-                </div>
 
-                <div className="grid grid-cols-5 mt-4">
-                    {CourseData.map((item: any) => (
-                        <div key={item.id}>
-                            <div className="p-5">
-                                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                    <div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
-                                            <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
-                                        </div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
-                                            <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
-                                        </div>
-                                        <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
-                                    </div>
-                                    <div className="p-4 h-50">
-                                        <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
-                                        <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
-                                        <div className="flex mt-3 mb-1">
-                                            <div className="w-5/6">
-                                                <p className="inline-flex items-center">
-                                                    <svg style={{ width: "12px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                                                        <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
-                                                    </svg>
-                                                    <span className="ml-2" style={{ fontSize: "12px" }}>{item?.author?.user_name}</span>
-                                                </p><br />
-                                                <p className="inline-flex items-center">
-                                                    <svg className="w-4 h-4 text-gray-800 dark:text-white" style={{ width: "12px" }} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z" />
-                                                    </svg>
-                                                    <span className="ml-2" style={{ fontSize: "12px" }}>{item?.level}</span>
-                                                </p>
-                                            </div>
-                                            <div className="w-1/6">
-                                                <p style={{ fontWeight: "bold", fontSize: "12px" }}>₹ {item?.price?.newprice}</p>
-                                                <p style={{ fontSize: "12px" }}><s> ₹ {item?.price?.oldprice}</s></p>
-                                            </div>
-                                        </div>
+                    <div className="grid grid-cols-5 mt-4">
+                        {CourseData.map((item: any) => (
+                            <div key={item.id}>
+                                <div className="p-5">
+                                    <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                         <div>
-                                            Skills:<b className="text-sm">{Array.isArray(item?.skills) && item.skills.map((skill: any, index: any) => (
-                                                <span key={index}>
-                                                    {skill}{index < item.skills.length - 1 && ', '}
-                                                </span>
-                                            ))}</b>
+                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
+                                                <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
+                                            </div>
+                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
+                                                <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
+                                            </div>
+                                            <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
                                         </div>
-                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",fontSize:12 }}>
-                                            <Link href="/viewcourse"
-                                                onClick={() => {
-                                                    localStorage.setItem("view_course_id", item?.course_id)
-                                                    localStorage.setItem("selectedCourseTitle", item?.title)
-                                                }}>
-                                                View course
-                                            </Link>
+                                        <div className="p-4 h-50">
+                                            <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
+                                            <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
+                                            <div className="flex mt-3 mb-1">
+                                                <div className="w-5/6">
+                                                    <p className="inline-flex items-center">
+                                                        <svg style={{ width: "12px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                                                            <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
+                                                        </svg>
+                                                        <span className="ml-2" style={{ fontSize: "12px" }}>{item?.author?.user_name}</span>
+                                                    </p><br />
+                                                    <p className="inline-flex items-center">
+                                                        <svg className="w-4 h-4 text-gray-800 dark:text-white" style={{ width: "12px" }} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z" />
+                                                        </svg>
+                                                        <span className="ml-2" style={{ fontSize: "12px" }}>{item?.level}</span>
+                                                    </p>
+                                                </div>
+                                                <div className="w-1/6">
+                                                    <p style={{ fontWeight: "bold", fontSize: "12px" }}>₹ {item?.price?.newprice}</p>
+                                                    <p style={{ fontSize: "12px" }}><s> ₹ {item?.price?.oldprice}</s></p>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Skills:<b className="text-sm">{Array.isArray(item?.skills) && item.skills.map((skill: any, index: any) => (
+                                                    <span key={index}>
+                                                        {skill}{index < item.skills.length - 1 && ', '}
+                                                    </span>
+                                                ))}</b>
+                                            </div>
+                                            <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
+                                                <Link href="/viewcourse"
+                                                    onClick={() => {
+                                                        localStorage.setItem("view_course_id", item?.course_id)
+                                                        localStorage.setItem("selectedCourseTitle", item?.title)
+                                                    }}>
+                                                    View course
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+                :
+                <section className="section pt-14 mb-10">
+                    <div className="container">
+                        <div className="row justify-center">
+                            <div className="mt-10 mb-16 text-center lg:col-7">
+                                <center>
+                                </center>
+                                <h1
+                                    className="mb-4 mt-2"
+                                >{"Hey :) User, you won't be able to access the courses without logging in"}</h1>
+                                <Link href="/" className="btn btn-primary">
+                                    Click to log in
+                                </Link>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
             <div className="p">
                 {
                     isModalOpen1 && (

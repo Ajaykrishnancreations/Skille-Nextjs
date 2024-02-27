@@ -135,15 +135,12 @@ export default function ViewCourseCreator() {
     }
     return (
         <div>
+            {parsedUserData?.role==="login"?"yes":"no"}
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
                         <h5><span><Link href="/course">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
-                        {/* {parsedUserData?.role==="admin"?
-                        <h5><span><Link href="/admincourseconsole">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
-                        :
-                        <h5><span><Link href="/course">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
-                        } */}
+                        
                     </div>
                     <div className="w-1/6">
                         <button onClick={openModal}>Add Chapter</button>

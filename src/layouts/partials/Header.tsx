@@ -87,7 +87,7 @@ const Header = () => {
           <li className="nav-item">
             <Link href="/course">
               <div className={`nav-link block ${pathname === "/course" ? " text-black" : " text-light font-normal"}`}>
-                {userdata?.role === "user" ? "Learn" : "Create Course"}
+                {userdata?.role === "creator" ? "Create Course" : "Learn"}
               </div>
             </Link>
           </li>
