@@ -7,8 +7,6 @@ import ViewCourseUser from "components/viewcourseuser/page";
 export default function LearnPage() {
     const [userdata, setuserdata] = useState<any>();
     console.log(userdata,"userdata");
-    
-
     useEffect(() => {
         if (typeof window !== 'undefined') {
         const storedUserData = localStorage.getItem("userdata");

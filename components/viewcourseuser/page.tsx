@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { getCourseWithCourseid, getUserDetailsByUID } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function ViewCourseUser() {
+    const searchParams = useSearchParams();
+    const course_id = searchParams?.get('course_id')
     const [CourseData, setCourseData] = useState<any>({});
     const [CourseTitle, setCourseTitle] = useState<string>();
     const [userCompletionData, setUserCompletionData] = useState<any>(null);
@@ -12,7 +15,7 @@ export default function ViewCourseUser() {
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        const course_id: any = localStorage.getItem("view_course_id");
+        // const course_id: any = localStorage.getItem("view_course_id");
         getUserDetailsByUID(parsedUserData?.uid)
             .then((userDetails: any) => {
                 setUserCompletionData(userDetails);
@@ -27,7 +30,7 @@ export default function ViewCourseUser() {
                 }
             })
     }, []);
-
+    
     return (
         <div>
             <div className="p-10">
@@ -73,8 +76,13 @@ export default function ViewCourseUser() {
                                                     </div>
                                                 </div>
                                                 <div style={{ fontSize:12,borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
-                                                    <Link href="/viewchapter"
-                                                        onClick={() => localStorage.setItem("view_chapter_id", item?.chapter_id)}>
+                                                    <Link
+                                                     href={{
+                                                        pathname:'/viewchapter',
+                                                        query:  {chapter_id:item?.chapter_id}
+                                                    }}
+                                                    >
+                                                        {/* onClick={() => localStorage.setItem("view_chapter_id", item?.chapter_id)} */}
                                                         View this Chapter
                                                     </Link>
                                                 </div>

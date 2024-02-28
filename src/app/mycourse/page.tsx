@@ -92,7 +92,12 @@ const About = () => {
                                                 </span>
                                             ))}</b></div>
                                             <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
-                                                <Link href="/viewcourse"
+                                                <Link 
+                                                href={{
+                                                    pathname:'/viewcourse',
+                                                    query:  {course_id:item?.course_id}
+                                                }}
+                                                // href="/viewcourse"
                                                     onClick={() => {
                                                         localStorage.setItem("view_course_id", item?.course_id)
                                                         localStorage.setItem("selectedCourseTitle", item?.title)

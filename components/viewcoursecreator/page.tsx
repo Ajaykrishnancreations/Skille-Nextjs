@@ -135,7 +135,6 @@ export default function ViewCourseCreator() {
     }
     return (
         <div>
-            {parsedUserData?.role==="login"?"yes":"no"}
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">

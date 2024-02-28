@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -35,6 +36,9 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 };
 
 export default function LearnPage() {
+    const searchParams = useSearchParams();
+    const chapter_id: any = searchParams?.get('chapter_id')
+    const courseId = localStorage.getItem("view_course_id");
     const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
@@ -45,8 +49,8 @@ export default function LearnPage() {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
-        const course_id: any = localStorage.getItem("view_chapter_id");
-        getCourseChapterData(course_id)
+        // const chapter_id: any = localStorage.getItem("view_chapter_id");
+        getCourseChapterData(chapter_id)
             .then((CourseChapterData: any) => {
                 if (CourseChapterData) {
                     setCourseChapterData(CourseChapterData)
@@ -58,7 +62,7 @@ export default function LearnPage() {
 
         const userUid = parsedUserData?.uid;
         const courseId = localStorage.getItem("view_course_id");
-        const chapterIds = [localStorage.getItem("view_chapter_id")];
+        const chapterIds = [chapter_id];
 
         checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
             setCompletedChapter(res)
@@ -205,17 +209,24 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        {/* {userdata?.role === "admin" ? 
-                        <h5><span><Link href="/admincourseconsole">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            : userdata?.role === "creator" ? 
-                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            :
-                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            } */}
                         {userdata?.role === "user" ?
-                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span>
+                                <span><Link 
+                                href={{
+                                    pathname:'/viewcourse',
+                                    query:  {course_id:courseId}
+                                }}                                
+                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
                             :
-                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span><span><Link href="/viewcourse">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span>
+                            <span>
+                                <Link 
+                                href={{
+                                    pathname:'/viewcourse',
+                                    query:  {course_id:courseId}
+                                }}
+                                
+                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
                         }
                     </div>
                     {userdata?.role === "user" ? "" :
