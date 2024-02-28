@@ -84,39 +84,29 @@ const Header = () => {
             :
             null
           }
-          <li className="nav-item">
-            <Link href="/course">
-              <div className={`nav-link block ${pathname === "/course" ? " text-black" : " text-light font-normal"}`}>
-                {userdata?.role === "creator" ? "Create Course" : "Learn"}
-              </div>
-            </Link>
-          </li>
-          {userdata?.login === "true" ?
-            <>
-              {userdata?.role === "creator" ?
-                <li className="nav-item">
-                  <Link href="/creatorlearn">
-                    <div className={`nav-link block ${pathname === "/creatorlearn" ? " text-black" : " text-light font-normal"}`}>
-                      Learn
-                    </div>
-                  </Link>
-                </li>
-                : null}
-            </>
-            :
-            null
+
+          {userdata?.role === "admin" ? null :
+            <li className="nav-item">
+              <Link href="/course">
+                <div className={`nav-link block ${pathname === "/course" ? " text-black" : " text-light font-normal"}`}>
+                  Learn
+                </div>
+              </Link>
+
+            </li>
           }
           {userdata?.login === "true" ?
             <>
-              {userdata?.role === "creator" ?
+              {userdata?.role === "admin" ?
+                null :
                 <li className="nav-item">
-                  <Link href="/creatormycourse">
-                    <div className={`nav-link block ${pathname === "/creatormycourse" ? " text-black" : " text-light font-normal"}`}>
-                    My Course
+                  <Link href="/mycourse">
+                    <div className={`nav-link block ${pathname === "/mycourse" ? " text-black" : " text-light font-normal"}`}>
+                      My Course
                     </div>
                   </Link>
                 </li>
-                : null}
+              }
             </>
             :
             null
@@ -124,14 +114,15 @@ const Header = () => {
           {userdata?.login === "true" ?
             <>
               {userdata?.role === "user" ?
+                null :
                 <li className="nav-item">
-                  <Link href="/mycourse">
-                    <div className={`nav-link block ${pathname === "/mycourse" ? " text-black" : " text-light font-normal"}`}>
-                      mycourse
+                  <Link href="/creatorcourse">
+                    <div className={`nav-link block ${pathname === "/creatormycourse" ? " text-black" : " text-light font-normal"}`}>
+                      Create Course
                     </div>
                   </Link>
                 </li>
-                : null}
+              }
             </>
             :
             null
@@ -145,15 +136,6 @@ const Header = () => {
               </Link>
             </li>
           )}
-          {/* {userdata?.login === "true" && userdata?.role === "admin" && (
-            <li className="nav-item">
-              <Link href="/admincourseconsole">
-                <div className={`nav-link block ${pathname === "/admincourseconsole" ? " text-black" : " text-light font-normal"}`}>
-                  Course Console
-                </div>
-              </Link>
-            </li>
-          )} */}
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (

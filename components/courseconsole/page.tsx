@@ -158,7 +158,7 @@ export default function CourseConsole() {
                                             ))}</b>
                                         </div>
                                         <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",fontSize:12 }}>
-                                            <Link href="/viewcourse"
+                                            <Link href="/viewcoursecreator"
                                                 onClick={() => {
                                                     localStorage.setItem("view_course_id", item?.course_id)
                                                     localStorage.setItem("selectedCourseTitle", item?.title)

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import React from "react";
 import Link from "next/link";
 
-export default function ViewCourseCreator() {
+export default function Viewcoursecreators() {
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     const chapter_id = uuidv4();
@@ -138,7 +138,7 @@ export default function ViewCourseCreator() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h5><span><Link href="/course">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
+                        <h5><span><Link href="/creatorcourse">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
                         
                     </div>
                     <div className="w-1/6">
@@ -173,7 +173,7 @@ export default function ViewCourseCreator() {
                                             </div>
                                         </div>
                                         <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center",fontSize:12, marginTop: "10px" }}>
-                                            <Link href="/viewchapter"
+                                            <Link href="/viewchaptercreator"
                                                 onClick={() => {
                                                     localStorage.setItem("view_chapter_id", item?.chapter_id);
                                                 }}>
@@ -353,4 +353,4 @@ export default function ViewCourseCreator() {
             </div>
         </div >
     );
-}
+} 

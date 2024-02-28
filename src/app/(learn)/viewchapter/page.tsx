@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from "react";
-import { getCourseChapterData, getCourseWithCourseid, updateProgressAndCompletionStatus, updateCourseChapterData, updateUserCompletedChapters, checkUserCompletedChapters } from "@/api/Api";
+import { getCourseChapterData, getCourseWithCourseid, updateProgressAndCompletionStatus, updateUserCompletedChapters, checkUserCompletedChapters } from "@/api/Api";
 import React from "react";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
@@ -39,11 +39,9 @@ export default function LearnPage() {
     const searchParams = useSearchParams();
     const chapter_id: any = searchParams?.get('chapter_id')
     const courseId = localStorage.getItem("view_course_id");
-    const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
-    const [value, setvalue] = useState<boolean>(true);
     const [CompletedChapter, setCompletedChapter] = useState<boolean>();
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
@@ -54,7 +52,6 @@ export default function LearnPage() {
             .then((CourseChapterData: any) => {
                 if (CourseChapterData) {
                     setCourseChapterData(CourseChapterData)
-                    setvalue(false)
                 } else {
                     console.log("getCourseChapterData not found");
                 }
@@ -67,25 +64,7 @@ export default function LearnPage() {
         checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
             setCompletedChapter(res)
         })
-
-
-    }, [value]);
-    const openStackEdit = () => {
-        stackedit.openFile({
-            content: {
-                text: CourseChapterData?.content,
-            },
-            name: 'MyFile.md',
-            isTemporary: true,
-        });
-    };
-    stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
-        const newText = file.content.text;
-        const chapter_id = localStorage.getItem("view_chapter_id");
-        const updatedData = { content: newText ? newText : CourseChapterData?.content };
-        updateCourseChapterData(chapter_id, updatedData);
-        setvalue(true)
-    })
+    }, []);
     const components: any = {
 
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
@@ -192,7 +171,7 @@ export default function LearnPage() {
     const updateCompletedChapter = () => {
         const userUid = userdata?.uid;
         const courseId = localStorage.getItem("view_course_id");
-        const completedChapterIds = [localStorage.getItem("view_chapter_id")];
+        const completedChapterIds = [chapter_id];
         updateUserCompletedChapters(userUid, courseId, completedChapterIds).then((res: boolean) => {
             if (res == true) {
                 getCourseWithCourseid(courseId).then((res: any) => {
@@ -209,31 +188,14 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        {userdata?.role === "user" ?
-                            <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span>
-                                <span><Link 
+                        <h5><span><Link href="/mycourse">{"Back to Course < "}</Link></span>
+                            <span><Link
                                 href={{
-                                    pathname:'/viewcourse',
-                                    query:  {course_id:courseId}
-                                }}                                
-                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                            :
-                            <h5><span><Link href="/course">{"Back to Course < "}</Link></span>
-                            <span>
-                                <Link 
-                                href={{
-                                    pathname:'/viewcourse',
-                                    query:  {course_id:courseId}
+                                    pathname: '/viewcourse',
+                                    query: { course_id: courseId }
                                 }}
-                                
-                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
-                        }
+                            >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
                     </div>
-                    {userdata?.role === "user" ? "" :
-                        <div className="w-1/6">
-                            <button onClick={openStackEdit}>Update Chapter</button>
-                        </div>
-                    }
                 </div>
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
@@ -260,9 +222,7 @@ export default function LearnPage() {
                                         <div className="m-5">
                                             You have already completed this course's chapter.
                                         </div>
-
                                     }
-
                                 </>
                             )}
                         </div>

@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -34,7 +35,10 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
     );
 };
 
-export default function LearnPage() {
+export default function Viewchaptercreators() {
+    const searchParams = useSearchParams();
+    // const chapter_id: any = searchParams?.get('chapter_id')
+    const courseId = localStorage.getItem("view_course_id");
     const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
@@ -45,8 +49,8 @@ export default function LearnPage() {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
-        const course_id: any = localStorage.getItem("view_chapter_id");
-        getCourseChapterData(course_id)
+        const chapter_id: any = localStorage.getItem("view_chapter_id");
+        getCourseChapterData(chapter_id)
             .then((CourseChapterData: any) => {
                 if (CourseChapterData) {
                     setCourseChapterData(CourseChapterData)
@@ -58,7 +62,7 @@ export default function LearnPage() {
 
         const userUid = parsedUserData?.uid;
         const courseId = localStorage.getItem("view_course_id");
-        const chapterIds = [localStorage.getItem("view_chapter_id")];
+        const chapterIds = [chapter_id];
 
         checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
             setCompletedChapter(res)
@@ -66,6 +70,15 @@ export default function LearnPage() {
 
 
     }, [value]);
+    const openStackEdit = () => {
+        stackedit.openFile({
+            content: {
+                text: CourseChapterData?.content,
+            },
+            name: 'MyFile.md',
+            isTemporary: true,
+        });
+    };
     stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
         const newText = file.content.text;
         const chapter_id = localStorage.getItem("view_chapter_id");
@@ -196,7 +209,18 @@ export default function LearnPage() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                            <h5><span><Link href="/creatormycourse">{"Back to Course < "}</Link></span><span><Link href="/viewcoursecreator">{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                        <h5><span><Link href="/creatorcourse">{"Back to Course < "}</Link></span>
+                            <span>
+                                <Link
+                                    href={{
+                                        pathname: '/viewcoursecreator',
+                                        query: { course_id: courseId }
+                                    }}
+
+                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                    </div>
+                    <div className="w-1/6">
+                        <button onClick={openStackEdit}>Update Chapter</button>
                     </div>
                 </div>
                 <div className='flex flex-row'>
@@ -206,8 +230,10 @@ export default function LearnPage() {
                         </div>
                         <div className="m-5">
                             <hr className="m-5"></hr>
+                            {userdata?.role === "user" && (
                                 <>
                                     {CompletedChapter == false ?
+
                                         <div className="m-5">
                                             <div className="flex items-center me-4">
                                                 <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
@@ -226,6 +252,7 @@ export default function LearnPage() {
                                     }
 
                                 </>
+                            )}
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>
@@ -246,3 +273,4 @@ export default function LearnPage() {
         </div>
     );
 }
+

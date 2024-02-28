@@ -1,5 +1,5 @@
 "use client"
-import MyCourse from "components/mycourse/page";
+import Viewcoursecreators from "components/(creator)/viewcoursecreator/page";
 import React,{useState,useEffect} from "react";
 import Link from "next/link";
 
@@ -30,7 +30,6 @@ import Link from "next/link";
     </>
   );
 };
-
 export default function CreatorCourse() {
     const [data,setData]=useState<any>()
     useEffect(()=>{
@@ -38,17 +37,16 @@ export default function CreatorCourse() {
        const parsedUserData = JSON.parse(storedUserData);
        setData(parsedUserData)
     },[])
-
-
     return (
         <div>
-            {data?.login === "true" ? 
+            {data?.login === "true" ? (
                 <>
-                    {data?.role === "admin" ? <PageNotFound /> : <MyCourse />}
+                    {data?.role === "user" ? <PageNotFound /> : <Viewcoursecreators />}
                 </>
-             : 
+            ) : (
                 <PageNotFound />
-            }
+            )}
         </div>
     );
 }
+

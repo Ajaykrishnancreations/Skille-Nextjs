@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getUserDetailsByUID, getCoursesWithCourseIds } from "@/api/Api";
 import Link from "next/link";
 
-const About = () => {
+const MyCourse = () => {
     const [CourseData, setCourseData] = useState<any[]>([]);
     const [userCompletionData, setUserCompletionData] = useState<any>(null);
     useEffect(() => {
@@ -30,8 +30,6 @@ const About = () => {
         if (courseIds && courseIds.length > 0) {
             const data: any = await getCoursesWithCourseIds(courseIds);
             setCourseData(data);
-            console.log(data, "datadatadata");
-
         }
     };
     return (
@@ -92,7 +90,11 @@ const About = () => {
                                                 </span>
                                             ))}</b></div>
                                             <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
-                                                <Link href="/viewcoursecreator"
+                                                <Link 
+                                                href={{
+                                                    pathname:'/viewcourse',
+                                                    query:  {course_id:item?.course_id}
+                                                }}
                                                     onClick={() => {
                                                         localStorage.setItem("view_course_id", item?.course_id)
                                                         localStorage.setItem("selectedCourseTitle", item?.title)
@@ -112,4 +114,4 @@ const About = () => {
     );
 };
 
-export default About;
+export default MyCourse;

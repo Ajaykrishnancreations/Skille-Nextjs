@@ -1,9 +1,9 @@
 "use client"
-import MyCourse from "components/mycourse/page";
+import CreatorCourses from "components/(creator)/creatorcourse/page";
 import React,{useState,useEffect} from "react";
 import Link from "next/link";
 
- function PageNotFound() {
+function PageNotFound() {
   return (
     <>
       <section className="section-sm text-center">
@@ -30,7 +30,6 @@ import Link from "next/link";
     </>
   );
 };
-
 export default function CreatorCourse() {
     const [data,setData]=useState<any>()
     useEffect(()=>{
@@ -38,17 +37,16 @@ export default function CreatorCourse() {
        const parsedUserData = JSON.parse(storedUserData);
        setData(parsedUserData)
     },[])
-
-
     return (
         <div>
-            {data?.login === "true" ? 
+            {data?.login === "true" ? (
                 <>
-                    {data?.role === "admin" ? <PageNotFound /> : <MyCourse />}
+                    {data?.role === "user" ? <PageNotFound /> : <CreatorCourses />}
                 </>
-             : 
+            ) : (
                 <PageNotFound />
-            }
+            )}
         </div>
     );
 }
+
