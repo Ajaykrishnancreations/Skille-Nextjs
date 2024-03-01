@@ -112,16 +112,11 @@ export default function UserCourse() {
                     </div>
                     <div className="w-1/6">
                         <form>
-                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 ml-2 pointer-events-none">
-                                {/* <svg className="w-5 mt-2 h-5 ml-1 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                </svg> */}
-                            </div>
                             <input type="search" id="default-search"
                                 onChange={(e) => setSearchText(e.target.value)}
-                                style={{ paddingTop: "10px", paddingLeft: "40px" }}
+                                style={{ paddingTop: "10px", paddingLeft: "20px" }}
                                 className="block w-full ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Search Title, Skills..." required />
+                                placeholder="Search by Title, Skills..." required />
                         </form>
                     </div>
                 </div>
@@ -162,24 +157,39 @@ export default function UserCourse() {
                                                 {skill}{index < item.skills.length - 1 && ', '}
                                             </span>
                                         ))}</b></div>
-                                        <div style={{ fontSize:12,borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px" }}>
-                                            {isCoursePurchased(item.course_id) ?
-                                                <Link href="/mycourse">
-                                                    Open Course
-                                                </Link>
-                                                :
-                                                <>
-                                                    {item?.price?.newprice === 0 ?
-                                                        <Link href="" onClick={() => { buyCourse(item) }}>
-                                                            Buy for free
+                                        <div className="flex">
+                                            <div className="w-3/6">
+                                                <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",margin:"5px"  }}>
+                                                    {isCoursePurchased(item.course_id) ?
+                                                        <Link href="/mycourse">
+                                                            Open Course
                                                         </Link>
                                                         :
-                                                        <Link href="" onClick={(e: any) => makePayment(e, item)}>
-                                                            Buy at ₹ {item?.price?.newprice}
-                                                        </Link>
+                                                        <>
+                                                            {item?.price?.newprice === 0 ?
+                                                                <Link href="" onClick={() => { buyCourse(item) }}>
+                                                                    Buy for free
+                                                                </Link>
+                                                                :
+                                                                <Link href="" onClick={(e: any) => makePayment(e, item)}>
+                                                                    Buy at ₹ {item?.price?.newprice}
+                                                                </Link>
+                                                            }
+                                                        </>
                                                     }
-                                                </>
-                                            }
+                                                </div>
+                                            </div>
+                                            <div className="w-3/6">
+                                                <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px",margin:"5px" }}>
+                                                <Link
+                                                 href={{
+                                                    pathname:'/buycourse',
+                                                    query:  {course_id:item?.course_id}
+                                                }}>
+                                                    view
+                                                </Link>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

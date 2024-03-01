@@ -68,7 +68,8 @@ export default function CreatorCourses() {
                         oldprice: oldpriceUpdate ? oldpriceUpdate : selectedCourse?.price?.oldprice
                     },
                     published: Published ? Published : selectedCourse?.published,
-                    skills: skillsUpdate
+                    skills: skillsUpdate?skillsUpdate:selectedCourse?.skills,
+                    register_content:"ajay"
                 }, UserData?.uid).then((updated) => {
                     if (updated) {
                         alert("Course updated");
@@ -102,7 +103,7 @@ export default function CreatorCourses() {
                                             <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                                 <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                             </div>
-                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
+                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "11%" }}>
                                                 <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
                                             </div>
                                             <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
@@ -137,14 +138,30 @@ export default function CreatorCourses() {
                                                     </span>
                                                 ))}</b>
                                             </div>
-                                            <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
-                                                <Link href="/viewcoursecreator"
-                                                    onClick={() => {
-                                                        localStorage.setItem("view_course_id", item?.course_id)
-                                                        localStorage.setItem("selectedCourseTitle", item?.title)
-                                                    }}>
-                                                    View course
-                                                </Link>
+                                            <div className="flex">
+                                                <div className="w-3/6">
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
+                                                        <Link href="/viewcoursecreator"
+                                                            onClick={() => {
+                                                                localStorage.setItem("view_course_id", item?.course_id)
+                                                                localStorage.setItem("selectedCourseTitle", item?.title)
+                                                            }}>
+                                                            View course
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                                <div className="w-3/6">
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
+                                                        <Link
+                                                            href={{
+                                                                pathname:'/editcourse',
+                                                                query:  {course_id:item?.course_id}
+                                                            }}
+                                                        >
+                                                            View course
+                                                        </Link>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

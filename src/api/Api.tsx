@@ -1,7 +1,7 @@
 import { db, } from "@/app/firebase";
 import { collection, addDoc, getDocs, doc, serverTimestamp, updateDoc, query, where, arrayUnion, getDoc } from "firebase/firestore";
 
-export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: any, newprice: string, oldprice: string) {
+export function addCourseFirestore(title: string, imgUrl: string, summary: string, course_id: string | number, level: string, skills: any, newprice: string, oldprice: string, newText: any) {
   const storedUserData = localStorage.getItem("userdata");
   const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
   return addDoc(collection(db, "course"), {
@@ -19,7 +19,8 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     price: { newprice: newprice, oldprice: oldprice },
     creation_time: serverTimestamp(),
     chapters: [],
-    organisation:"1122334455"
+    organisation: "1122334455",
+    register_content: newText
   })
     .then((docRef) => {
       return true;
@@ -122,15 +123,12 @@ export function getCourseChapterData(course_id: any) {
 export async function updateCourseChapterData(chapter_id: any, updatedData: any) {
   const q = query(collection(db, "course_chapter"), where("chapter_id", "==", chapter_id));
   const querySnapshot = await getDocs(q);
-
   if (querySnapshot.empty) {
     console.log("Chapter not found");
     return false;
   }
-
   const chapterDoc = querySnapshot.docs[0];
   const chapterRef = doc(db, "course_chapter", chapterDoc.id);
-
   return updateDoc(chapterRef, {
     ...updatedData,
     last_updated_time: serverTimestamp()
@@ -149,7 +147,7 @@ export async function updateCourseChapterData(chapter_id: any, updatedData: any)
 export function getUsersDetails() {
   return getDocs(collection(db, "users"))
     .then((querySnapshot) => {
-      const data: any|PromiseLike<any> = [];
+      const data: any | PromiseLike<any> = [];
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
       });
@@ -169,7 +167,7 @@ export function addNewUserData(courses: any, imgUrl: string, email: string, name
     name: name,
     role: role,
     uid: uid,
-    organisation:"1234567890"
+    organisation: "1234567890"
   })
     .then((docRef) => {
       return true;
@@ -281,27 +279,27 @@ export async function updateUserCompletedChapters(userUid: any, courseId: any, c
 }
 export async function checkUserCompletedChapters(userUid: any, courseId: any, chapterIds: any[]) {
   try {
-      const userCollection = collection(db, "users");
-      const userQuery = query(userCollection, where("uid", "==", userUid));
-      const querySnapshot = await getDocs(userQuery);
+    const userCollection = collection(db, "users");
+    const userQuery = query(userCollection, where("uid", "==", userUid));
+    const querySnapshot = await getDocs(userQuery);
 
-      if (querySnapshot.empty) {
-          console.error("User not found");
-          return false;
-      }
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
-      const course = userData.courses.find((course: any) => course.course_id === courseId);
-      if (!course) {
-          console.error("Course not found");
-          return false;
-      }
-      const completedChapters = course.completed_chapters || [];
-      const chaptersCompleted = chapterIds.every(chapterId => completedChapters.includes(chapterId));
-      return chaptersCompleted;
-  } catch (error) {
-      console.error("Error checking user completed chapters:", error);
+    if (querySnapshot.empty) {
+      console.error("User not found");
       return false;
+    }
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+    const course = userData.courses.find((course: any) => course.course_id === courseId);
+    if (!course) {
+      console.error("Course not found");
+      return false;
+    }
+    const completedChapters = course.completed_chapters || [];
+    const chaptersCompleted = chapterIds.every(chapterId => completedChapters.includes(chapterId));
+    return chaptersCompleted;
+  } catch (error) {
+    console.error("Error checking user completed chapters:", error);
+    return false;
   }
 }
 
@@ -411,7 +409,8 @@ export async function updateCourseData(courseId: any, updatedData: any, uid: any
       return false;
     });
 }
-export async function updateProgressAndCompletionStatus(uid:any, courseId:any, targetLength:any) {
+
+export async function updateProgressAndCompletionStatus(uid: any, courseId: any, targetLength: any) {
   try {
     const userCollection = collection(db, "users");
     const userQuery = query(userCollection, where("uid", "==", uid));
@@ -423,7 +422,7 @@ export async function updateProgressAndCompletionStatus(uid:any, courseId:any, t
     const userDoc = userQuerySnapshot.docs[0];
     const userRef = doc(db, "users", userDoc.id);
     const userData = userDoc.data();
-    const updatedCourses = userData.courses.map((course:any) => {
+    const updatedCourses = userData.courses.map((course: any) => {
       if (course.course_id === courseId) {
         const completedChapters = course.completed_chapters || [];
         const progress = (completedChapters.length / targetLength) * 100;
