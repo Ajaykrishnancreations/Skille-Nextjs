@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { updateCourseData, getcourseFirestore1 } from "@/api/Api";
 import CourseConsole from "components/courseconsole/page";
+import Stackedit from 'stackedit-js';
 
 export default function CreatorCourses() {
     const [CourseData, setCourseData] = useState([]);
@@ -53,7 +54,21 @@ export default function CreatorCourses() {
         fetchData();
         setValue(false);
     }, [Value]);
-
+    const stackedit = new Stackedit();
+    const openStackEdit = () => {
+        stackedit.openFile({
+            content: {
+                text: selectedCourse?.register_content,
+            },
+            name: 'MyFile.md',
+            isTemporary: true,
+        });
+    };
+    const [newText,setnewText] =useState()
+    stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
+        const newText = file.content.text;
+        setnewText(newText)
+    })
 
     const saveCourseChanges = () => {
         if (selectedCourse) {
@@ -69,7 +84,7 @@ export default function CreatorCourses() {
                     },
                     published: Published ? Published : selectedCourse?.published,
                     skills: skillsUpdate?skillsUpdate:selectedCourse?.skills,
-                    register_content:"ajay"
+                    register_content:newText?newText:selectedCourse?.register_content
                 }, UserData?.uid).then((updated) => {
                     if (updated) {
                         alert("Course updated");
@@ -140,7 +155,7 @@ export default function CreatorCourses() {
                                             </div>
                                             <div className="flex">
                                                 <div className="w-3/6">
-                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12,margin:5 }}>
                                                         <Link href="/viewcoursecreator"
                                                             onClick={() => {
                                                                 localStorage.setItem("view_course_id", item?.course_id)
@@ -151,14 +166,14 @@ export default function CreatorCourses() {
                                                     </div>
                                                 </div>
                                                 <div className="w-3/6">
-                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 }}>
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 ,margin:5}}>
                                                         <Link
                                                             href={{
                                                                 pathname:'/editcourse',
                                                                 query:  {course_id:item?.course_id}
                                                             }}
                                                         >
-                                                            View course
+                                                            Register_content 
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -294,6 +309,7 @@ export default function CreatorCourses() {
                                         ))}
                                         <button type="button" onClick={addSkill1}>Add Skill</button>
                                     </div>
+                                    <button onClick={openStackEdit}>Update Chapter</button>
                                 </div>
                                 <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                                     <button onClick={saveCourseChanges} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>

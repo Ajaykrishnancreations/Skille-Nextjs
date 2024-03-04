@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { getUsersDetails, updateUserData } from '@/api/Api';
+import Link from 'next/link';
 const AdminConsole = () => {
     const [value, setValue] = useState('1');
     const [UserData, setUserData] = useState<any>()
@@ -22,7 +23,7 @@ const AdminConsole = () => {
             setUserData(res)
         })
     }, [Values])
-    
+
     const updateUser = async () => {
         const uidToUpdate = selectedUser?.uid;
         const updatedData = {
@@ -57,53 +58,63 @@ const AdminConsole = () => {
                     </button>
                 </div>
             </div>
-            <div className="p-4">
+            <div>
                 {value === '1' &&
-                    <div>
-                        <div className="grid grid-cols-3 gap-2 mt-4">
-                            {UserData?.filter((item: any) => item?.role === 'user').map((item: any) => (
-                                <div key={item.id}>
-                                    <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
-                                        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
-                                            <p>
-                                                <img src={item?.imgUrl} style={{ height: 60, width: 60, borderRadius: "50%" }} alt="User Profile"></img>
-                                            </p>
-                                            <div className="relative">
-                                                <button
-                                                    onClick={() => openModal(item)}
+                    <div className="grid grid-cols-5">
+                        {UserData?.filter((item: any) => item?.role === 'user').map((item: any) => (
+                            <div key={item.id} className='p-2'>
+                                <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
+                                    <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+                                        <p>
+                                            <img src={item?.imgUrl} style={{ height: 60, width: 60, borderRadius: "50%" }} alt="User Profile"></img>
+                                        </p>
+                                        <div className="relative">
+                                            <Link
+                                                href={{
+                                                    pathname: '/edituser',
+                                                    query: { user_uid: item?.uid }
+                                                }}>
+                                                {/* <button
                                                     className="text-black bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
                                                     type="button"
-                                                >
-                                                    Edit User
-                                                </button>
-                                            </div>
+                                                    onClick={() => openModal(item)}
+                                                > */}
+                                                Edit User
+                                                {/* </button> */}
+                                            </Link>
                                         </div>
-                                        <p className='mt-3'><b>Name :</b> {item?.name}</p>
-                                        <p><b>Email :</b>  {item?.email}</p>
                                     </div>
+                                    <p className='mt-3'><b>Name :</b> {item?.name}</p>
+                                    <p><b>Email :</b>  {item?.email}</p>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 }
                 {value === '2' &&
                     <div>
-                        <div className="grid grid-cols-3 gap-2 mt-4">
+                        <div className="grid grid-cols-5">
                             {UserData?.filter((item: any) => item?.role === 'creator').map((item: any) => (
-                                <div key={item.id}>
+                                <div key={item.id} className='p-2'>
                                     <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
                                         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
                                             <p>
                                                 <img src={item?.imgUrl} style={{ height: 60, width: 60, borderRadius: "50%" }} alt="User Profile"></img>
                                             </p>
                                             <div className="relative">
-                                                <button
+                                                <Link
+                                                    href={{
+                                                        pathname: '/edituser',
+                                                        query: { user_uid: item?.uid }
+                                                    }}>
+                                                    {/* <button
                                                     className="text-black bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
                                                     type="button"
                                                     onClick={() => openModal(item)}
-                                                >
+                                                > */}
                                                     Edit User
-                                                </button>
+                                                    {/* </button> */}
+                                                </Link>
                                             </div>
                                         </div>
                                         <p className='mt-3'><b>Name :</b> {item?.name}</p>

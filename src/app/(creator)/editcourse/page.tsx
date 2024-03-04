@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from "react";
-import { getCourseChapterData, updateCourseChapterData } from "@/api/Api";
+import { getCourseWithCourseid } from "@/api/Api";
 import React from "react";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
@@ -37,47 +37,43 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function Viewchaptercreators() {
     const searchParams = useSearchParams();
-    // const chapter_id: any = searchParams?.get('chapter_id')
+    const course_id = searchParams?.get('course_id')
     const courseId = localStorage.getItem("view_course_id");
     const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
+    const [CourseRegisterContent,setCourseRegisterContent]=useState<any>()
+    console.log(CourseChapterData);
+
     const [value, setvalue] = useState<boolean>(true);
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
-        const chapter_id: any = localStorage.getItem("view_chapter_id");
-        getCourseChapterData(chapter_id)
-            .then((CourseChapterData: any) => {
-                if (CourseChapterData) {
-                    setCourseChapterData(CourseChapterData)
-                    setvalue(false)
-                } else {
-                    console.log("getCourseChapterData not found");
-                }
+        getCourseWithCourseid(course_id)
+            .then((CourseData: any) => {
+                setCourseChapterData(CourseData)
+                setCourseRegisterContent(CourseData?.register_content)
+                setvalue(false)
             })
-
     }, [value]);
     const openStackEdit = () => {
         stackedit.openFile({
             content: {
-                text: CourseChapterData?.content,
+                text: CourseRegisterContent,
             },
             name: 'MyFile.md',
             isTemporary: true,
         });
     };
+    const [newText,setnewText] =useState()
     stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
         const newText = file.content.text;
-        const chapter_id = localStorage.getItem("view_chapter_id");
-        const updatedData = { content: newText ? newText : CourseChapterData?.content };
-        updateCourseChapterData(chapter_id, updatedData);
-        setvalue(true)
+        setnewText(newText)
+        setCourseRegisterContent(newText)
     })
     const components: any = {
-
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
             const customStyle = {
                 backgroundColor: '#e7e7e7',
@@ -106,8 +102,6 @@ export default function Viewchaptercreators() {
                 </code>
             );
         },
-
-
         h1: ({ children }: { children: React.ReactNode }) => {
             const headingText = String(children);
             return (
@@ -158,8 +152,8 @@ export default function Viewchaptercreators() {
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
 
-        if (CourseChapterData?.content) {
-            const newTitles = extractTitles(CourseChapterData.content);
+        if (CourseRegisterContent) {
+            const newTitles = extractTitles(CourseRegisterContent);
             if (!isEqual(newTitles, titles)) {
                 setTitles(newTitles);
             }
@@ -167,7 +161,7 @@ export default function Viewchaptercreators() {
                 handleTitleClick(newTitles[0]);
             }
         }
-    }, [CourseChapterData?.content, titles, selectedTitle]);
+    }, [CourseRegisterContent, titles, selectedTitle]);
 
     const handleTitleClick = (title: string) => {
         setSelectedTitle(title);
@@ -193,16 +187,16 @@ export default function Viewchaptercreators() {
                                         query: { course_id: courseId }
                                     }}
 
-                                >{`${selectedCourseTitle} < `}</Link></span>{CourseChapterData?.title}</h5>
+                                >{CourseChapterData?.title?CourseChapterData?.title:null}</Link></span></h5>
                     </div>
                     <div className="w-1/6">
-                        <button onClick={openStackEdit}>Update Chapter</button>
+                        {/* <button onClick={openStackEdit}>Update Chapter</button> */}
                     </div>
                 </div>
                 <div className='flex flex-row'>
                     <div className='basis-10/12' style={{ height: '70vh', overflow: 'scroll' }} ref={contentRef}>
                         <div className={`p-10  rounded border-1 border-gray-200`}>
-                            <ReactMarkdown components={components} children={CourseChapterData?.content} />
+                            <ReactMarkdown components={components} children={CourseRegisterContent} />
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>
@@ -216,9 +210,8 @@ export default function Viewchaptercreators() {
                             />
                         ))}
                     </div>
-
+                    {/* <button onClick={saveCourseChanges}>asdfghjk</button> */}
                 </div>
-
             </div>
         </div>
     );
