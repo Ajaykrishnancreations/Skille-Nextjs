@@ -62,7 +62,7 @@ const AdminConsole = () => {
                 {value === '1' &&
                     <div className="grid grid-cols-5">
                         {UserData?.filter((item: any) => item?.role === 'user').map((item: any) => (
-                            <div key={item.id} className='p-2'>
+                            <div key={item.id} className='p-2 transform transition-transform duration-300 hover:scale-105'>
                                 <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
                                     <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
                                         <p>
@@ -95,7 +95,7 @@ const AdminConsole = () => {
                     <div>
                         <div className="grid grid-cols-5">
                             {UserData?.filter((item: any) => item?.role === 'creator').map((item: any) => (
-                                <div key={item.id} className='p-2'>
+                                <div key={item.id} className='p-2 transform transition-transform duration-300 hover:scale-105'>
                                     <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
                                         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
                                             <p>
@@ -107,13 +107,7 @@ const AdminConsole = () => {
                                                         pathname: '/edituser',
                                                         query: { user_uid: item?.uid }
                                                     }}>
-                                                    {/* <button
-                                                    className="text-black bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
-                                                    type="button"
-                                                    onClick={() => openModal(item)}
-                                                > */}
                                                     Edit User
-                                                    {/* </button> */}
                                                 </Link>
                                             </div>
                                         </div>

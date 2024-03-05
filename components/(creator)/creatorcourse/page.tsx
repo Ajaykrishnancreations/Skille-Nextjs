@@ -64,7 +64,7 @@ export default function CreatorCourses() {
             isTemporary: true,
         });
     };
-    const [newText,setnewText] =useState()
+    const [newText, setnewText] = useState()
     stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
         const newText = file.content.text;
         setnewText(newText)
@@ -83,8 +83,8 @@ export default function CreatorCourses() {
                         oldprice: oldpriceUpdate ? oldpriceUpdate : selectedCourse?.price?.oldprice
                     },
                     published: Published ? Published : selectedCourse?.published,
-                    skills: skillsUpdate?skillsUpdate:selectedCourse?.skills,
-                    register_content:newText?newText:selectedCourse?.register_content
+                    skills: skillsUpdate ? skillsUpdate : selectedCourse?.skills,
+                    register_content: newText ? newText : selectedCourse?.register_content
                 }, UserData?.uid).then((updated) => {
                     if (updated) {
                         alert("Course updated");
@@ -112,13 +112,13 @@ export default function CreatorCourses() {
                     <div className="grid grid-cols-5 mt-4">
                         {CourseData.map((item: any) => (
                             <div key={item.id}>
-                                <div className="p-5">
+                                <div className="p-5 transform transition-transform duration-300 hover:scale-105">
                                     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                         <div>
                                             <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                                 <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                             </div>
-                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "11%" }}>
+                                            <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "60%" }}>
                                                 <button className="border-4 border-white rounded bg-gray-300 z-2" style={{ width: "60px" }} onClick={() => openModal(item)}>Edit</button>
                                             </div>
                                             <img className="rounded-t-lg" style={{ height: "150px" }} src={item?.imgUrl} alt="" />
@@ -155,25 +155,27 @@ export default function CreatorCourses() {
                                             </div>
                                             <div className="flex">
                                                 <div className="w-3/6">
-                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12,margin:5 }}>
-                                                        <Link href="/viewcoursecreator"
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12, margin: 5 }}>
+                                                        {/* <Link href="/viewcoursecreator"
+
                                                             onClick={() => {
                                                                 localStorage.setItem("view_course_id", item?.course_id)
                                                                 localStorage.setItem("selectedCourseTitle", item?.title)
-                                                            }}>
+                                                            }}> */}
+                                                        <Link href={{ pathname: '/viewcoursecreator', query: { course_id: item?.course_id } }}>
                                                             View course
                                                         </Link>
                                                     </div>
                                                 </div>
                                                 <div className="w-3/6">
-                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12 ,margin:5}}>
+                                                    <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", fontSize: 12, margin: 5 }}>
                                                         <Link
                                                             href={{
-                                                                pathname:'/editcourse',
-                                                                query:  {course_id:item?.course_id}
+                                                                pathname: '/editcourse',
+                                                                query: { course_id: item?.course_id }
                                                             }}
                                                         >
-                                                            Register_content 
+                                                            Register_content
                                                         </Link>
                                                     </div>
                                                 </div>

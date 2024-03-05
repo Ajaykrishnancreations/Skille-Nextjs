@@ -122,7 +122,7 @@ export default function UserCourse() {
                 </div>
                 <div className="grid grid-cols-5 mt-4">
                     {filteredCourses.map((item: any) => (
-                        <div key={item.id}>
+                        <div key={item.id} className="transform transition-transform duration-300 hover:scale-105">
                             <div className="p-5">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                     <div>

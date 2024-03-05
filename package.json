@@ -19,6 +19,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.9",
     "@next-auth/firebase-adapter": "^2.0.1",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",

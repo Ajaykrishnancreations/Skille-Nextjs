@@ -8,6 +8,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -37,7 +38,7 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function Viewchaptercreators() {
     const searchParams = useSearchParams();
-    // const chapter_id: any = searchParams?.get('chapter_id')
+    const chapter_id: any = searchParams?.get('chapter_id')
     const courseId = localStorage.getItem("view_course_id");
     const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
@@ -48,7 +49,7 @@ export default function Viewchaptercreators() {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
-        const chapter_id: any = localStorage.getItem("view_chapter_id");
+        // const chapter_id: any = localStorage.getItem("view_chapter_id");
         getCourseChapterData(chapter_id)
             .then((CourseChapterData: any) => {
                 if (CourseChapterData) {
@@ -71,7 +72,7 @@ export default function Viewchaptercreators() {
     };
     stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
         const newText = file.content.text;
-        const chapter_id = localStorage.getItem("view_chapter_id");
+        // const chapter_id = localStorage.getItem("view_chapter_id");
         const updatedData = { content: newText ? newText : CourseChapterData?.content };
         updateCourseChapterData(chapter_id, updatedData);
         setvalue(true)

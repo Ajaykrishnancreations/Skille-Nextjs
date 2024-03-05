@@ -4,13 +4,16 @@ import { addCourseChapterData, getCourseWithCourseid, updateCourseChapters, upda
 import { v4 as uuidv4 } from 'uuid';
 import React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function Viewcoursecreators() {
+    const searchParams = useSearchParams();
+    const Course_id:any = searchParams?.get('course_id')
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     const chapter_id = uuidv4();
     const [CourseData, setCourseData] = useState<any>({});
-    const [Course_id, setCourse_id] = useState<any>();
+    // const [Course_id, setCourse_id] = useState<any>();
     const [CourseTitle, setCourseTitle] = useState<any>();
     const [Value, setValue] = useState<boolean>(false);
     const [isModalOpen1, setIsModalOpen] = useState(false);
@@ -37,7 +40,7 @@ export default function Viewcoursecreators() {
 
     useEffect(() => {
         const course_id: any = localStorage.getItem("view_course_id");
-        setCourse_id(localStorage.getItem("view_course_id"))
+        // setCourse_id(localStorage.getItem("view_course_id"))
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
                 if (CourseData) {
@@ -148,13 +151,13 @@ export default function Viewcoursecreators() {
                 <div className="grid grid-cols-5 mt-4">
                     {Array.isArray(CourseData) && CourseData.map((item: any) =>
                         <div key={item.id}>
-                            <div className="p-5">
+                            <div className="p-5 transform transition-transform duration-300 hover:scale-105">
                                 <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                     <div>
                                         <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "1%" }}>
                                             <p style={{ color: `${item?.published === "Published" ? "green" : "red"}` }}>{item?.published}</p>
                                         </div>
-                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "12%" }}>
+                                        <div className="text-sm" style={{ position: "absolute", marginTop: "10px", paddingLeft: "60%" }}>
                                             <button style={{ width: "60px" }} className="border-4 border-white rounded bg-gray-300 z-2 w-20" onClick={() => openUpdateModal(item)}>Edit</button>
                                         </div>
                                         <img className="rounded-t-lg" style={{ height: "150px", width: "100%" }} src={item?.image_url} alt="" />
@@ -173,10 +176,11 @@ export default function Viewcoursecreators() {
                                             </div>
                                         </div>
                                         <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center",fontSize:12, marginTop: "10px" }}>
-                                            <Link href="/viewchaptercreator"
+                                            {/* <Link href="/viewchaptercreator"
                                                 onClick={() => {
                                                     localStorage.setItem("view_chapter_id", item?.chapter_id);
-                                                }}>
+                                                }}> */}
+                                                 <Link href={{ pathname:'/viewchaptercreator', query:  {chapter_id:item?.chapter_id}}}>
                                                 View Chapter
                                             </Link>
                                         </div>

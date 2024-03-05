@@ -1,12 +1,12 @@
 "use client"
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { v4 as uuidv4 } from 'uuid';
 import { addCourseFirestore } from "@/api/Api";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -37,7 +37,6 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function CreateNewCourse() {
     const stackedit = new Stackedit();
-    // const [data, setData] = useState<any>()
     const courseId = uuidv4();
     const [formData, setFormData] = useState({
         title: '',
@@ -49,13 +48,7 @@ export default function CreateNewCourse() {
         oldprice: '',
         course_id: courseId,
     });
-    // useEffect(() => {
-    //     const storedUserData: any = localStorage.getItem("userdata");
-    //     const parsedUserData = JSON.parse(storedUserData);
-    //     setData(parsedUserData)
-    // }, [])
     const { title, imgUrl, summary, level, skills, newprice, oldprice, course_id } = formData;
-
     const handleChange = (e: { target: { name: any; value: any; type: any; checked: any; }; }) => {
         const { name, value, type, checked } = e.target;
         setFormData(prevFormData => ({
@@ -71,14 +64,12 @@ export default function CreateNewCourse() {
             skills: newSkills,
         }));
     };
-
     const addSkill = () => {
         setFormData(prevFormData => ({
             ...prevFormData,
             skills: [...prevFormData.skills, ''],
         }));
     };
-
     const removeSkill = (index: number) => {
         const newSkills = [...skills];
         newSkills.splice(index, 1);
@@ -87,13 +78,13 @@ export default function CreateNewCourse() {
             skills: newSkills,
         }));
     };
-    const [isStackEditOpen, setIsStackEditOpen] = useState(false);
-
-
     const [step, setStep] = useState(1);
     const [newText, setnewText] = useState<any>("")
     const handleNextStep = () => {
         setStep(step + 1);
+    };
+    const preNextStep = () => {
+        setStep(step - 1);
     };
     const [titles, setTitles] = useState<string[]>([]);
     const [selectedTitle, setSelectedTitle] = useState<any>(null);
@@ -114,7 +105,6 @@ export default function CreateNewCourse() {
         }
     };
     useEffect(() => {
-
         if (newText) {
             const newTitles = extractTitles(newText);
             if (!isEqual(newTitles, titles)) {
@@ -125,9 +115,7 @@ export default function CreateNewCourse() {
             }
         }
     }, [newText, titles, selectedTitle]);
-
     const openStackEdit = () => {
-        setIsStackEditOpen(true);
         stackedit.openFile({
             content: {
                 text: "add a text here"
@@ -143,16 +131,12 @@ export default function CreateNewCourse() {
     const addData = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         console.log("Add Data Function Called");
-        // if (isStackEditOpen) {
-        //     setIsStackEditOpen(false)
-        // } else {
-            addCourseFirestore(title, imgUrl, summary, course_id, level, skills, newprice, oldprice, newText)
-                .then((added) => {
-                    if (added) {
-                        alert("Data added");
-                    }
-                });
-        // }
+        addCourseFirestore(title, imgUrl, summary, course_id, level, skills, newprice, oldprice, newText)
+            .then((added) => {
+                if (added) {
+                    alert("Data added");
+                }
+            });
     };
     const components: any = {
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
@@ -176,15 +160,12 @@ export default function CreateNewCourse() {
                     />
                 );
             }
-
             return (
                 <code className={className} {...props}>
                     {children}
                 </code>
             );
         },
-
-
         h1: ({ children }: { children: React.ReactNode }) => {
             const headingText = String(children);
             return (
@@ -222,7 +203,6 @@ export default function CreateNewCourse() {
         ),
 
     };
-
     const renderModalContent = () => {
         switch (step) {
             case 1:
@@ -282,7 +262,7 @@ export default function CreateNewCourse() {
             case 2:
                 return (
                     <div>
-                       <h5 className="p-2">Enter your Course brief here:</h5>
+                        <h5 className="p-2">Enter your Course brief here:</h5>
                         <div className="mb-5">
                             <label className="ml-2 mr-2 text-gray-600 block mb-2 text-sm font-medium  dark:text-white">
                                 Enter Course Level:
@@ -323,10 +303,19 @@ export default function CreateNewCourse() {
                             className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
                             type="button"
                             style={{ width: "40%" }}
+                            onClick={preNextStep}
+                        >
+                            pre
+                        </button>
+                        <button
+                            className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
+                            type="button"
+                            style={{ width: "40%" }}
                             onClick={handleNextStep}
                         >
                             Next
                         </button>
+
                     </div>
                 );
             case 3:
@@ -363,6 +352,14 @@ export default function CreateNewCourse() {
                             className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
                             type="button"
                             style={{ width: "40%" }}
+                            onClick={preNextStep}
+                        >
+                            pre
+                        </button>
+                        <button
+                            className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
+                            type="button"
+                            style={{ width: "40%" }}
                             onClick={handleNextStep}
                         >
                             Next
@@ -372,11 +369,11 @@ export default function CreateNewCourse() {
                 return (
                     <div>
                         <h5 className="p-2">Add Course Markdown</h5>
-                        <div className="w-1/6">
-                            <button onClick={openStackEdit}>Update Chapter</button>
+                        <div className="p-2 w-1/6">
+                            <button onClick={openStackEdit}>Add Markdown</button>
                         </div>
                         <div className='flex flex-row'>
-                            <div className='basis-10/12' style={{ height: '40vh', overflow: 'scroll' }} ref={contentRef}>
+                            <div className='basis-10/12' ref={contentRef}>
                                 <div className={`p-10  rounded border-1 border-gray-200`}>
                                     <ReactMarkdown components={components} children={newText} />
                                 </div>
@@ -395,13 +392,19 @@ export default function CreateNewCourse() {
                                     />
                                 ))}
                             </div>
-
                         </div>
                         <button
                             className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
+                            type="button"
                             style={{ width: "40%" }}
-                            // type="submit"  // Ensure that type is set to "submit"
-                        onClick={addData}
+                            onClick={preNextStep}
+                        >
+                            pre
+                        </button>
+                        <button
+                            className="text-black bg-gray-100 hover:bg-gray-200 rounded-lg px-5 py-2.5 mt-5"
+                            style={{ width: "40%" }}
+                            onClick={addData}
                         >
                             Submit
                         </button>
@@ -411,12 +414,40 @@ export default function CreateNewCourse() {
     };
     return (
         <div className="p-10">
-            {/* <form className="max-w-lg mx-auto" style={{ padding: "10px" }}
-                // onSubmit={addData}
+            <ol className="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse">
+                <li className="flex items-center mr-4" style={{ cursor: "pointer" }} onClick={() => setStep(1)}>
+                    <span className="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400" style={{ padding: 4, borderRadius: "50%", width: "26px", background: `${step === 1 ? "gray" : step > 1 ? "green" : ""}`, color: `${step === 1 ? "white" : step > 1 ? "white" : "gray"}` }}>
+                        1
+                    </span>
+                    Summary
+                    <svg className="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 9 4-4-4-4M1 9l4-4-4-4" />
+                    </svg>
+                </li>
+                <li className="flex items-center mr-4" style={{ cursor: "pointer" }} onClick={() => setStep(2)}>
+                    <span className="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400" style={{ padding: 4, borderRadius: "50%", width: "26px", background: `${step === 2 ? "gray" : step > 2 ? "green" : ""}`, color: `${step === 2 ? "white" : step > 2 ? "white" : "gray"}` }}>
+                        2
+                    </span>
+                    Skills
+                    <svg className="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 9 4-4-4-4M1 9l4-4-4-4" />
+                    </svg>
+                </li>
+                <li className="flex items-center mr-4" style={{ cursor: "pointer" }} onClick={() => setStep(3)}>
+                    <span className="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400" style={{ padding: 4, borderRadius: "50%", width: "26px", background: `${step === 3 ? "gray" : step > 3 ? "green" : ""}`, color: `${step === 3 ? "white" : step > 3 ? "white" : "gray"}` }}>
+                        3
+                    </span>
+                    Price
+                </li>
+                <li className="flex items-center mr-4" style={{ cursor: "pointer" }} onClick={() => setStep(4)}>
+                    <span className="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400" style={{ padding: 4, borderRadius: "50%", width: "26px", background: `${step === 4 ? "gray" : step > 4 ? "green" : ""}`, color: `${step === 4 ? "white" : step > 4 ? "white" : "gray"}` }}>
+                        4
+                    </span>
+                    Markdown
+                </li>
+            </ol>
 
-            > */}
-                {renderModalContent()}
-            {/* </form> */}
+            {renderModalContent()}
         </div>
     );
 }

@@ -44,7 +44,7 @@ const MyCourse = () => {
                     {CourseData.map((item: any) => {
                         const courseCompletionData = userCompletionData?.courses.find((course: any) => course.course_id === item.course_id);
                         return (
-                            <div key={item.id}>
+                            <div key={item.id} className="transform transition-transform duration-300 hover:scale-105">
                                 <div className="p-5">
                                     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                         <div>

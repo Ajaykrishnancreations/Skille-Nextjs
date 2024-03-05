@@ -1,5 +1,5 @@
 'use client'
-import { useEffect,FormEvent, useState, useRef } from "react";
+import { useEffect, FormEvent, useState, useRef } from "react";
 import { getCourseWithCourseid, getUserDetailsByUID, addCourseToUser } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
@@ -231,51 +231,62 @@ export default function ViewCourse() {
     };
     return (
         <div>
-            <div className="p-10">
-                <div className="flex">
-                    <div className="w-5/6">
-                        <h5><span><Link href="/course">{"Back to Course < "}</Link></span>{CourseData?.title}</h5>
-                    </div>
-                    <div className="w-1/6">
-                        <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", margin: "20px" }}>
-                            {isCoursePurchased(CourseData?.course_id) ?
-                                <Link href="/mycourse">
-                                    Open Course
-                                </Link>
-                                :
-                                <>
-                                    {CourseData?.price?.newprice === 0 ?
-                                        <Link href="" onClick={() => { buyCourse(CourseData) }}>
-                                            Enroll Course for free
-                                        </Link>
-                                        :
-                                        <Link href="" onClick={(e: any) => makePayment(e, CourseData)}>
-                                            Enroll Course at ₹ {CourseData?.price?.newprice}
-                                        </Link>
-                                    }
-                                </>
-                            }
-                        </div>
-                    </div>
+            <div style={{ margin: "3% 20% 0% 20%" }}>
+                <div>
+                    <h5><span><Link href="/course">{"Back to Course < "}</Link></span>{CourseData?.title}</h5>
                 </div>
-                <div className='flex flex-row'>
-                    <div className='basis-10/12' style={{ height: '50vh', overflow: 'scroll' }} ref={contentRef}>
-                        <div className={`p-1  rounded border-1 border-gray-200`}>
-                            <ReactMarkdown components={components} children={CourseData?.register_content} />
-                        </div>
-                    </div>
-                    <div className='basis-2/12 p-10'>
-                        {titles.map((title, index) => (
-                            <Title
-                                key={index}
-                                title={title}
-                                selected={selectedTitle === title}
-                                onClick={() => handleTitleClick(title)}
-                                isBold={false}
-                            />
-                        ))}
-                    </div>
 
+                <center className="mt-5 mb-5">
+                        <div style={{ width: "100%" }} className="text-left transform transition-transform duration-300 hover:scale-105 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row dark:border-gray-700 dark:bg-gray-800 ">
+                            <img className="object-cover" style={{ borderRadius: "10px 0px 0px 10px" }} src={CourseData?.imgUrl} alt="" />
+                            <div className="flex flex-col justify-between p-4 leading-normal">
+                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{CourseData?.title}</h5>
+                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{CourseData?.summary}</p>
+                                <div> <b>Skills : {Array.isArray(CourseData?.skills) && CourseData.skills.map((skill: any, index: any) => (
+                                    <span key={index}>
+                                        {skill}{index < CourseData.skills.length - 1 && ', '}
+                                    </span>
+                                ))}</b></div>
+                                <div className="mt-1 font-bold text-red-400 text-xl">
+                                    <span className="font-bold text-gray-600 text-xl mr-2"><s>₹{CourseData?.price?.oldprice}</s></span>
+                                    {isCoursePurchased(CourseData?.course_id) ?
+                                        <span>Already purchased</span>
+                                        :
+                                        <>
+                                            {CourseData?.price?.newprice === 0 ?
+                                                <span> Enroll for Free</span>
+                                                :
+                                                <span> ₹ {CourseData?.price?.newprice}</span>
+                                            }
+                                        </>}
+                                    <span className="float-right mr-5 bg-red-600 text-white p-2 rounded">
+                                        {isCoursePurchased(CourseData?.course_id) ?
+                                            <Link href="/mycourse">
+                                                Open course
+                                            </Link>
+                                            :
+                                            <>
+                                                {CourseData?.price?.newprice === 0 ?
+                                                    <Link href="" onClick={() => { buyCourse(CourseData) }}>
+                                                        Enroll Now
+                                                    </Link>
+                                                    :
+                                                    <Link href="" onClick={(e: any) => makePayment(e, CourseData)}>
+                                                        Enroll Now
+                                                    </Link>
+                                                }
+                                            </>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                </center>
+
+                <div ref={contentRef}>
+                    <div className={`p-1  rounded border-1 border-gray-200`}>
+                        <ReactMarkdown components={components} children={CourseData?.register_content} />
+                    </div>
                 </div>
             </div>
         </div >
