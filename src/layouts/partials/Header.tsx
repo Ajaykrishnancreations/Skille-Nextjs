@@ -117,7 +117,7 @@ const Header = () => {
                 null :
                 <li className="nav-item">
                   <Link href="/creatorcourse">
-                    <div className={`nav-link block ${pathname === "/creatormycourse" ? " text-black" : " text-light font-normal"}`}>
+                    <div className={`nav-link block ${pathname === "/creatorcourse" ? " text-black" : " text-light font-normal"}`}>
                       Create Course
                     </div>
                   </Link>
@@ -148,13 +148,6 @@ const Header = () => {
             </button>
           )}
           <ThemeSwitcher className="mr-5" />
-          {navigation_button.enable && (
-            <Link href={navigation_button.link}>
-              <div className="btn btn-outline-primary btn-sm hidden lg:inline-block">
-                {navigation_button.label}
-              </div>
-            </Link>
-          )}
         </div>
       </nav>
     </header>

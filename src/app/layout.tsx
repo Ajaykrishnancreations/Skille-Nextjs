@@ -9,6 +9,7 @@ import Providers from "@/partials/Providers";
 import "@/styles/main.scss";
 import { usePathname } from "next/navigation";
 import SessionProvider from "./SessionProvider";
+import SeoMeta from "@/partials/SeoMeta";
 
 export default function RootLayout({
   children,
@@ -64,6 +65,7 @@ export default function RootLayout({
           <Providers>
             <Header />
             <SearchModal />
+            <SeoMeta/>
             <main>{children}</main>
             {pathname === "/viewchapter" ?
               "" : <Footer />}

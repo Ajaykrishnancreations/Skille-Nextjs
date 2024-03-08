@@ -1,6 +1,6 @@
 "use client"
 import CreatorCourses from "components/(creator)/creatorcourse/page";
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 function PageNotFound() {
@@ -31,22 +31,34 @@ function PageNotFound() {
   );
 };
 export default function CreatorCourse() {
-    const [data,setData]=useState<any>()
-    useEffect(()=>{
-       const storedUserData:any = localStorage.getItem("userdata");
-       const parsedUserData = JSON.parse(storedUserData);
-       setData(parsedUserData)
-    },[])
-    return (
-        <div>
+  const [data, setData] = useState<any>();
+  const [value, setvalue] = useState<boolean>(true);
+  useEffect(() => {
+    setvalue(true)
+    const storedUserData: any = localStorage.getItem("userdata");
+    const parsedUserData = JSON.parse(storedUserData);
+    setData(parsedUserData)
+    setvalue(false)
+  }, [])
+  return (
+    <>
+      {
+        value === true ?
+          <center style={{ marginTop: "15%", marginBottom: "15%" }}>
+            <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"></div>
+          </center>
+          :
+          <div>
             {data?.login === "true" ? (
-                <>
-                    {data?.role === "user" ? <PageNotFound /> : <CreatorCourses />}
-                </>
+              <>
+                {data?.role === "user" ? <PageNotFound /> : <CreatorCourses />}
+              </>
             ) : (
-                <PageNotFound />
+              <PageNotFound />
             )}
-        </div>
-    );
+          </div>
+      }
+    </>
+  );
 }
 

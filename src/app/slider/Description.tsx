@@ -10,7 +10,7 @@ type Props = {
 
 const Description = ({ activeImage, clickNext, clickPrev }: Props) => {
   return (
-    <div className="grid place-items-start w-full bg-[#f6f6f6] relative md:rounded-tr-3xl md:rounded-br-3xl">
+    <div className="grid place-items-start w-full border relative md:rounded-tr-3xl md:rounded-br-3xl">
       <div className="uppercase text-sm absolute right-4 top-2 underline-offset-4 underline">
       </div>
       {images.map((elem, idx) => (
@@ -38,14 +38,14 @@ const Description = ({ activeImage, clickNext, clickPrev }: Props) => {
             className="w-full"
           >
             <div className="pt-4 pl-3 pr-3 text-2xl font-extrabold">{elem.title}</div>
-            <div className="leading-relaxed font-medium text-base tracking-wide pl-3 p-3 h-60 md:h-40 italic text-gray-600">
+            <div className="leading-relaxed font-medium text-base tracking-wide pl-3 p-3 h-60 md:h-40 ">
               {elem.desc}
             </div>
           </motion.div>
 
-          <button className="bg-black p-2 ml-4 text-white uppercase rounded-md ">
+          {/* <button className="btn btn-primary ml-2">
             Buy now
-          </button>
+          </button> */}
           <div className="absolute md:bottom-1 bottom-5 right-10 md:right-0 w-full flex justify-center items-center">
             <div
               className="absolute bottom-2 ml-2 mr-2 right-10 cursor-pointer"

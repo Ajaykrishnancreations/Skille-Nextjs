@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from "react";
-import { getCourseChapterData, updateCourseChapterData } from "@/api/Api";
+import { getCourseChapterData, updateCourseChapterData, getCourseWithCourseid } from "@/api/Api";
 import React from "react";
 import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
@@ -154,6 +154,9 @@ export default function Viewchaptercreators() {
         const matches = Array.from(source.matchAll(regex), (match) => match[1]);
         return matches;
     };
+    const [PreviousChapter, setPreviousChapter] = useState<any>();
+    const [NextChapter, setNextChapter] = useState<any>();
+
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
@@ -168,7 +171,32 @@ export default function Viewchaptercreators() {
                 handleTitleClick(newTitles[0]);
             }
         }
-    }, [CourseChapterData?.content, titles, selectedTitle]);
+        getCourseWithCourseid(courseId)
+            .then((CourseData: any) => {
+                if (CourseData) {
+                    const selectedChapterId = chapter_id;
+                    const selectedChapterIndex = CourseData.chapters.findIndex(
+                        (chapter: { chapter_id: any; }) => chapter.chapter_id === selectedChapterId
+                    );
+
+                    const previousChapter =
+                        selectedChapterIndex > 0
+                            ? CourseData.chapters[selectedChapterIndex - 1]
+                            : null;
+
+                    const nextChapter =
+                        selectedChapterIndex < CourseData.chapters.length - 1
+                            ? CourseData.chapters[selectedChapterIndex + 1]
+                            : null;
+                    setPreviousChapter(previousChapter?.chapter_id);
+                    setNextChapter(nextChapter?.chapter_id);
+
+                    // console.log(previousChapter?.chapter_id, nextChapter?.chapter_id, "nextChapternextChapternextChapter");
+                } else {
+                    console.log("CourseData not found");
+                }
+            });
+    }, [CourseChapterData?.content, titles, selectedTitle, value]);
 
     const handleTitleClick = (title: string) => {
         setSelectedTitle(title);
@@ -180,7 +208,9 @@ export default function Viewchaptercreators() {
             }
         }
     };
-
+    const refresh = () => {
+        setvalue(true)
+    }
     return (
         <div>
             <div className="p-10">
@@ -205,6 +235,14 @@ export default function Viewchaptercreators() {
                         <div className={`p-10  rounded border-1 border-gray-200`}>
                             <ReactMarkdown components={components} children={CourseChapterData?.content} />
                         </div>
+                        {PreviousChapter ? 
+                        <Link href={{ pathname: '/viewchaptercreator', query: { chapter_id: PreviousChapter } }} onClick={refresh}>
+                            PreviousChapter
+                        </Link> : null}
+                        {NextChapter ? 
+                        <Link href={{ pathname: '/viewchaptercreator', query: { chapter_id: NextChapter } }} onClick={refresh}>
+                            NextChapter
+                        </Link> : null}
                     </div>
                     <div className='basis-2/12 p-10'>
                         {titles.map((title, index) => (
@@ -217,8 +255,8 @@ export default function Viewchaptercreators() {
                             />
                         ))}
                     </div>
-
                 </div>
+
 
             </div>
         </div>

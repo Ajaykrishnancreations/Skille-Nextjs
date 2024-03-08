@@ -8,11 +8,13 @@ import { useSearchParams } from "next/navigation";
 
 export default function Viewcoursecreators() {
     const searchParams = useSearchParams();
-    const Course_id:any = searchParams?.get('course_id')
-    const storedUserData = localStorage.getItem("userdata");
-    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    const Course_id: any = searchParams?.get('course_id')
+    // const storedUserData = localStorage.getItem("userdata");
+    // const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     const chapter_id = uuidv4();
     const [CourseData, setCourseData] = useState<any>({});
+    // console.log(CourseData, "CourseDataCourseData");
+
     // const [Course_id, setCourse_id] = useState<any>();
     const [CourseTitle, setCourseTitle] = useState<any>();
     const [Value, setValue] = useState<boolean>(false);
@@ -37,21 +39,40 @@ export default function Viewcoursecreators() {
     const closeUpdateModal = () => {
         setIsModalUpdateOpen(false);
     };
+    // const course_id = localStorage.getItem("view_course_id");
+    // const [LastchapterId, setLastchapterId] = useState<any>()
+    // console.log(LastchapterId, "setLastchapterId");
 
     useEffect(() => {
-        const course_id: any = localStorage.getItem("view_course_id");
         // setCourse_id(localStorage.getItem("view_course_id"))
-        getCourseWithCourseid(course_id)
+        getCourseWithCourseid(Course_id)
             .then((CourseData: any) => {
                 if (CourseData) {
                     setCourseData(CourseData?.chapters);
                     setCourseTitle(CourseData?.title);
+                    const selectedChapterId = "71ed6ce2-f812-4467-adef-095e82cc23e1";
+                    const selectedChapterIndex = CourseData.chapters.findIndex(
+                      (chapter: { chapter_id: any; }) => chapter.chapter_id === selectedChapterId
+                    );
+          
+                    const previousChapter =
+                      selectedChapterIndex > 0
+                        ? CourseData.chapters[selectedChapterIndex - 1]
+                        : null;
+          
+                    const nextChapter =
+                      selectedChapterIndex < CourseData.chapters.length - 1
+                        ? CourseData.chapters[selectedChapterIndex + 1]
+                        : null;
+          
+                    console.log(previousChapter?.chapter_id, nextChapter?.chapter_id, "nextChapternextChapternextChapter");
+          
                     setValue(false);
-                } else {
+                  } else {
                     console.log("CourseData not found");
-                }
-            })
-    }, [Value]);
+                  }
+                });
+            }, [Value]);
     const [formData, setFormData] = useState({
         title: '',
         image_url: '',
@@ -141,8 +162,8 @@ export default function Viewcoursecreators() {
             <div className="p-10">
                 <div className="flex">
                     <div className="w-5/6">
-                        <h5><span><Link href="/creatorcourse">{"Back to Course > "}</Link></span>{CourseTitle}</h5>
-                        
+                        <h5><span><Link href="/creatorcourse">{"Back to Course < "}</Link></span>{CourseTitle}</h5>
+
                     </div>
                     <div className="w-1/6">
                         <button onClick={openModal}>Add Chapter</button>
@@ -175,12 +196,12 @@ export default function Viewcoursecreators() {
                                                 </p><br />
                                             </div>
                                         </div>
-                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center",fontSize:12, marginTop: "10px" }}>
+                                        <div style={{ borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", fontSize: 12, marginTop: "10px" }}>
                                             {/* <Link href="/viewchaptercreator"
                                                 onClick={() => {
                                                     localStorage.setItem("view_chapter_id", item?.chapter_id);
                                                 }}> */}
-                                                 <Link href={{ pathname:'/viewchaptercreator', query:  {chapter_id:item?.chapter_id}}}>
+                                            <Link href={{ pathname: '/viewchaptercreator', query: { chapter_id: item?.chapter_id } }}>
                                                 View Chapter
                                             </Link>
                                         </div>

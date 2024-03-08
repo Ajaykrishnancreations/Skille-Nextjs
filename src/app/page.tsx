@@ -10,7 +10,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { getUsersDetails, addNewUserData, getUserDetailsByUID } from "@/api/Api";
 import Slider from "./slider/Slider";
-
+import ImageFallback from "@/helpers/ImageFallback";
+import image from "../../public/images/banner.png"
 const Home = () => {
   const data = UserAuth();
   const { user, googleSignIn } = data;
@@ -126,23 +127,7 @@ const Home = () => {
   };
   return (
     <>
-      <SeoMeta />
-      {/* {userdata?.login === "true" ?
-        null
-        : */}
-        <>
-          <div className="mb-10 text-center">
-            {/* <h3 className="mt-3 mb-2">All the skills you need in one place</h3> */}
-            {/* <p className="p-2 mb-4">From critical workplace skills to technical topics, our catalog supports well-rounded professional development.</p> */}
-            <Slider />
-          </div>
-          <center>
-            <hr className="mt-6 w-5/6"></hr>
-          </center>
-        </>
-      {/* } */}
-
-      <section className="mb-5">
+      <section className="mb-5 mt-6">
         <div className="container">
           <div className="row justify-center">
             <div className="mt-5 text-center lg:col-7">
@@ -169,14 +154,23 @@ const Home = () => {
                 className="mb-8"
               >Build projects, gain skill certificates, become a master and get hired.</p>
               {userdata?.login === "true" ?
-                <button onClick={handleSignOut} className="btn btn-primary">
+                <button onClick={handleSignOut} className="btn btn-primary mb-1">
                   SignOut
                 </button>
                 :
-                <button onClick={handlePopToggle} className="btn btn-primary">
-                  Login
+                <button onClick={handlePopToggle} className="btn btn-primary mb-1">
+                  Get Started
                 </button>
               }
+              {userdata?.login === "true" ?
+                null :
+                <ImageFallback
+                  src={image}
+                  className="mx-auto mt-10 mb-10"
+                  width="800"
+                  height="420"
+                  priority
+                />}
               <>
                 {isPopOpen && (
                   <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -275,9 +269,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-
       </section>
-
+      <div className="mb-10 mt-10 text-center">
+        <Slider />
+      </div>
     </>
   );
 };

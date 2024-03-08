@@ -8,6 +8,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -37,17 +38,27 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function LearnPage() {
     const searchParams = useSearchParams();
+    const router = useRouter()
     const chapter_id: any = searchParams?.get('chapter_id')
     const courseId = localStorage.getItem("view_course_id");
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
     const [CompletedChapter, setCompletedChapter] = useState<boolean>();
+    const [value, setvalue] = useState<boolean>()
+    const [PreviousChapter, setPreviousChapter] = useState<any>();
+    const [NextChapter, setNextChapter] = useState<any>();
+    const refresh = () => {
+        setvalue(true)
+    }
     useEffect(() => {
+
+        // setvalue(true)
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
         // const chapter_id: any = localStorage.getItem("view_chapter_id");
+
         getCourseChapterData(chapter_id)
             .then((CourseChapterData: any) => {
                 if (CourseChapterData) {
@@ -64,7 +75,34 @@ export default function LearnPage() {
         checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
             setCompletedChapter(res)
         })
-    }, []);
+        getCourseWithCourseid(courseId)
+            .then((CourseData: any) => {
+                if (CourseData) {
+                    const selectedChapterId = chapter_id;
+                    const selectedChapterIndex = CourseData.chapters.findIndex(
+                        (chapter: { chapter_id: any; }) => chapter.chapter_id === selectedChapterId
+                    );
+
+                    const previousChapter =
+                        selectedChapterIndex > 0
+                            ? CourseData.chapters[selectedChapterIndex - 1]
+                            : null;
+
+                    const nextChapter =
+                        selectedChapterIndex < CourseData.chapters.length - 1
+                            ? CourseData.chapters[selectedChapterIndex + 1]
+                            : null;
+                    setPreviousChapter(previousChapter?.chapter_id);
+                    setNextChapter(nextChapter?.chapter_id);
+
+                    // console.log(previousChapter?.chapter_id, nextChapter?.chapter_id, "nextChapternextChapternextChapter");
+                } else {
+                    console.log("CourseData not found");
+                }
+            })
+
+        setvalue(false)
+    }, [value]);
     const components: any = {
 
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
@@ -156,7 +194,7 @@ export default function LearnPage() {
                 handleTitleClick(newTitles[0]);
             }
         }
-    }, [CourseChapterData?.content, titles, selectedTitle]);
+    }, [CourseChapterData?.content, titles, selectedTitle, value]);
 
     const handleTitleClick = (title: string) => {
         setSelectedTitle(title);
@@ -174,6 +212,7 @@ export default function LearnPage() {
         const completedChapterIds = [chapter_id];
         updateUserCompletedChapters(userUid, courseId, completedChapterIds).then((res: boolean) => {
             if (res == true) {
+                setvalue(true)
                 getCourseWithCourseid(courseId).then((res: any) => {
                     const targetLength = res?.chapters?.length;
                     updateProgressAndCompletionStatus(userUid, courseId, targetLength).then((res) => {
@@ -182,6 +221,9 @@ export default function LearnPage() {
             }
         })
     }
+    const handleNavigation = (chapterId: any) => {
+        window.open(`http://localhost:3000/viewchapter?chapter_id=${chapterId}`, "_self");
+    };
 
     return (
         <div>
@@ -204,27 +246,38 @@ export default function LearnPage() {
                         </div>
                         <div className="m-5">
                             <hr className="m-5"></hr>
-                            {userdata?.role === "user" && (
-                                <>
-                                    {CompletedChapter == false ?
+                            <>
+                                {CompletedChapter == false ?
 
-                                        <div className="m-5">
-                                            <div className="flex items-center me-4">
-                                                <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                                                <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the terms and conditions.</label>
-                                                <button onClick={updateCompletedChapter}>update</button>
-                                            </div>
-                                            <p className="mt-2 ms-2 text-sm font-medium text-gray-900">
-                                                I have successfully completed the course chapter. I have thoroughly reviewed the material, completed all the exercises, and gained a comprehensive understanding of the concepts covered. I am confident in my ability to apply this knowledge effectively in practical scenarios. I look forward to advancing to the next chapter and further expanding my skills and expertise in this subject area.
-                                            </p>
+                                    <div className="m-5">
+                                        <div className="flex items-center me-4">
+                                            <input id="teal-checkbox" type="checkbox" value="" className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                            <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the terms and conditions.</label>
+                                            <button onClick={updateCompletedChapter}>update</button>
                                         </div>
-                                        :
-                                        <div className="m-5">
-                                            You have already completed this course's chapter.
-                                        </div>
-                                    }
-                                </>
-                            )}
+                                        <p className="mt-2 ms-2 text-sm font-medium text-gray-900">
+                                            I have successfully completed the course chapter. I have thoroughly reviewed the material, completed all the exercises, and gained a comprehensive understanding of the concepts covered. I am confident in my ability to apply this knowledge effectively in practical scenarios. I look forward to advancing to the next chapter and further expanding my skills and expertise in this subject area.
+                                        </p>
+                                    </div>
+                                    :
+                                    <div className="m-5">
+                                        You have already completed this course's chapter.
+                                    </div>
+                                }
+                            </>
+                            <h5 className="p-3">Continue Learning</h5>
+                            <div className='flex flex-row'>
+                                <div className='basis-2/12'>
+                                    {PreviousChapter && (
+                                        <button onClick={() => handleNavigation(PreviousChapter)}>PreviousChapter</button>
+                                    )}
+                                </div>
+                                <div className='basis-10/12'>
+                                    {NextChapter && (
+                                        <button onClick={() => handleNavigation(NextChapter)}>NextChapter</button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className='basis-2/12 p-10'>

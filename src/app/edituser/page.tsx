@@ -94,13 +94,14 @@ export default function ViewCourse() {
         <div>
             <div className="p-10">
                 <div className="p-4 md:p-5 space-y-4">
-                    Enter your Name : <input type="text" className="rounded" defaultValue={UserData?.name} onChange={(event) => setnewName(event.target.value)} /><br />
+                    <h5>Update user</h5>
+                    Enter your Name : <input type="text" className="rounded ml-2" defaultValue={UserData?.name} onChange={(event) => setnewName(event.target.value)} /><br />
                     <span className="inline-flex">
                         Select your Role :
                         <select
                             style={{ width: "195px", marginLeft: "14px" }}
                             id="countries"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             defaultValue={UserData?.role}
                             onChange={(event) => setSelectedRole(event.target.value)}
                         >
@@ -108,9 +109,9 @@ export default function ViewCourse() {
                             <option value="creator">creator</option>
                         </select>
                     </span><br />
-                    Organisation_id: <input type="text" className="rounded" defaultValue={UserData?.organisation_id} onChange={(event) => setOrganisation_id(event.target.value)} /><br />
+                    Organisation_id : <input type="text" className="rounded ml-3" defaultValue={UserData?.organisation_id} onChange={(event) => setOrganisation_id(event.target.value)} /><br />
                 </div>
-                <button onClick={updateUser} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+                <button onClick={updateUser} type="button" className="text-white bg-blue-700 ml-4 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
                 <hr className="mt-3" />
                 <div>
                     <div className="p-10">
@@ -133,9 +134,6 @@ export default function ViewCourse() {
                                 <div key={item.id}>
                                     <div className="p-5">
                                         <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                            <div>
-                                                <img className="rounded-t-lg" style={{ height: "150px", width: "100%" }} src={item?.imgUrl} alt="" />
-                                            </div>
                                             <div className="h-50 p-4" >
                                                 <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
                                                 <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
@@ -170,7 +168,7 @@ export default function ViewCourse() {
                                                         <div style={{ fontSize: 12, borderRadius: "5px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", marginTop: "10px", margin: "5px" }}>
                                                             {isCoursePurchased(item.course_id) ?
                                                                 <Link href="">
-                                                                   Buyed Course
+                                                                    Buyed
                                                                 </Link>
                                                                 :
                                                                 <>

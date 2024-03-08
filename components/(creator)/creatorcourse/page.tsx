@@ -98,7 +98,6 @@ export default function CreatorCourses() {
     };
     return (
         <div>
-            {UserData?.login === "true" ?
                 <div className="p-10">
                     <div className="flex">
                         <div className="w-5/6">
@@ -162,7 +161,12 @@ export default function CreatorCourses() {
                                                                 localStorage.setItem("view_course_id", item?.course_id)
                                                                 localStorage.setItem("selectedCourseTitle", item?.title)
                                                             }}> */}
-                                                        <Link href={{ pathname: '/viewcoursecreator', query: { course_id: item?.course_id } }}>
+                                                        <Link href={{ pathname: '/viewcoursecreator', query: { course_id: item?.course_id } }}
+                                                         onClick={() => {
+                                                            localStorage.setItem("view_course_id", item?.course_id)
+                                                            localStorage.setItem("selectedCourseTitle", item?.title)
+                                                        }}
+                                                        >
                                                             View course
                                                         </Link>
                                                     </div>
@@ -187,25 +191,7 @@ export default function CreatorCourses() {
                         ))}
                     </div>
                 </div>
-                :
-                <section className="section pt-14 mb-10">
-                    <div className="container">
-                        <div className="row justify-center">
-                            <div className="mt-10 mb-16 text-center lg:col-7">
-                                <center>
-                                </center>
-                                <h1
-                                    className="mb-4 mt-2"
-                                >{"Hey :) User, you won't be able to access the courses without logging in"}</h1>
-                                <Link href="/" className="btn btn-primary">
-                                    Click to log in
-                                </Link>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            }
+                
             {
                 isModalOpen && (
                     <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">

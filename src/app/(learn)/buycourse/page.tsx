@@ -238,7 +238,7 @@ export default function ViewCourse() {
 
                 <center className="mt-5 mb-5">
                         <div style={{ width: "100%" }} className="text-left transform transition-transform duration-300 hover:scale-105 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row dark:border-gray-700 dark:bg-gray-800 ">
-                            <img className="object-cover" style={{ borderRadius: "10px 0px 0px 10px" }} src={CourseData?.imgUrl} alt="" />
+                            <img className="object-cover" style={{ borderRadius: "10px 0px 0px 10px",width:"50%"}} src={CourseData?.imgUrl} alt="" />
                             <div className="flex flex-col justify-between p-4 leading-normal">
                                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{CourseData?.title}</h5>
                                 <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{CourseData?.summary}</p>
@@ -247,10 +247,10 @@ export default function ViewCourse() {
                                         {skill}{index < CourseData.skills.length - 1 && ', '}
                                     </span>
                                 ))}</b></div>
-                                <div className="mt-1 font-bold text-red-400 text-xl">
+                                <div className="float-right mt-1 font-bold text-red-400 text-xl">
                                     <span className="font-bold text-gray-600 text-xl mr-2"><s>₹{CourseData?.price?.oldprice}</s></span>
                                     {isCoursePurchased(CourseData?.course_id) ?
-                                        <span>Already purchased</span>
+                                        <span>₹ {CourseData?.price?.newprice}</span>
                                         :
                                         <>
                                             {CourseData?.price?.newprice === 0 ?
@@ -259,7 +259,7 @@ export default function ViewCourse() {
                                                 <span> ₹ {CourseData?.price?.newprice}</span>
                                             }
                                         </>}
-                                    <span className="float-right mr-5 bg-red-600 text-white p-2 rounded">
+                                    <span className="float-right mr-5 bg-red-600 text-white p-2 text-sm rounded">
                                         {isCoursePurchased(CourseData?.course_id) ?
                                             <Link href="/mycourse">
                                                 Open course

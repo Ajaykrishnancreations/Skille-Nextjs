@@ -1,9 +1,9 @@
 "use client"
 import MyCourse from "components/mycourse/page";
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
- function PageNotFound() {
+function PageNotFound() {
   return (
     <>
       <section className="section-sm text-center">
@@ -32,23 +32,35 @@ import Link from "next/link";
 };
 
 export default function CreatorCourse() {
-    const [data,setData]=useState<any>()
-    useEffect(()=>{
-       const storedUserData:any = localStorage.getItem("userdata");
-       const parsedUserData = JSON.parse(storedUserData);
-       setData(parsedUserData)
-    },[])
+  const [data, setData] = useState<any>();
+  const [value, setvalue] = useState<boolean>(true);
+  useEffect(() => {
+    setvalue(true)
+    const storedUserData: any = localStorage.getItem("userdata");
+    const parsedUserData = JSON.parse(storedUserData);
+    setData(parsedUserData)
+    setvalue(false)
+  }, [])
 
 
-    return (
-        <div>
-            {data?.login === "true" ? 
-                <>
-                    {data?.role === "admin" ? <PageNotFound /> : <MyCourse />}
-                </>
-             : 
-                <PageNotFound />
+  return (
+    <>
+      {
+        value === true ?
+          <center style={{marginTop:"15%",marginBottom:"15%"}}>
+          <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"></div> 
+          </center>
+          :
+          <div>
+            {data?.login === "true" ?
+              <>
+                {data?.role === "admin" ? <PageNotFound /> : <MyCourse />}
+              </>
+              :
+              <PageNotFound />
             }
-        </div>
-    );
+          </div>
+      }
+    </>
+  );
 }
