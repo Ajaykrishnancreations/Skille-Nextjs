@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import AdminConsole from 'components/adminconsole/page';
+import AddNewUser from 'components/(admin)/addnewuser/page';
 import Link from 'next/link';
 
 const User = () => {
@@ -53,7 +53,7 @@ const User = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </section> : <AdminConsole />
+                            </section> : <AddNewUser />
                             }
                         </>
                         :
