@@ -79,6 +79,37 @@ export async function addBuyerslist(author_id: any, course_id: any, student_id: 
     return false;
   }
 }
+export function getBuyerslist() {
+  return getDocs(collection(db, "buyerslist"))
+    .then((querySnapshot) => {
+      const data: any | PromiseLike<any> = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+export function getBuyersListByAuthor(authorId: any) {
+  return getDocs(collection(db, "buyerslist"))
+    .then((querySnapshot) => {
+      const data: any | PromiseLike<any> = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        if (docData.author_id === authorId) {
+          data.push({ id: doc.id, ...docData });
+        }
+      });
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
 export function getOrganization() {
   return getDocs(collection(db, "organisation"))
     .then((querySnapshot) => {

@@ -136,6 +136,22 @@ const Header = () => {
               </Link>
             </li>
           )}
+          {userdata?.login === "true" ?
+            <>
+              {userdata?.role === "user" ?
+                null :
+                <li className="nav-item">
+                  <Link href="/studyhublist">
+                    <div className={`nav-link block ${pathname === "/studyhublist" ? " text-black" : " text-light font-normal"}`}>
+                      StudyHubList
+                    </div>
+                  </Link>
+                </li>
+              }
+            </>
+            :
+            null
+          }
         </ul>
         <div className="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
           {settings.search && (
