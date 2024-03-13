@@ -1,7 +1,7 @@
 'use client'
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { getcourseFirestore, addCourseToUser, getUserDetailsByUID } from "@/api/Api";
+import { getcourseFirestore, addCourseToUser, getUserDetailsByUID,addBuyerslist } from "@/api/Api";
 import { useRouter } from 'next/navigation';
 import sha256 from "crypto-js/sha256";
 import axios from "axios";
@@ -48,8 +48,13 @@ export default function UserCourse() {
             enrolled_date: null,
             completion_date: null
         };
+           const author_id = item?.author?.user_id;
+           const course_id = item?.course_id;
+           const student_id = uid;
+           const payment = "Free within organization";
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
+            addBuyerslist(author_id,course_id,student_id,payment)
             alert("course buy successfully");
             window.open("http://localhost:3000/mycourse", "_self");
         }
@@ -120,11 +125,8 @@ export default function UserCourse() {
                     </center>
                     :
                     <>
-
-
                         {userdata?.login === "true" ?
                             <>
-
                                 <div className="p-10">
                                     <div className="flex">
                                         <div className="w-5/6">

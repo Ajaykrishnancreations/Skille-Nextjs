@@ -9,12 +9,8 @@ import { useSearchParams } from "next/navigation";
 export default function Viewcoursecreators() {
     const searchParams = useSearchParams();
     const Course_id: any = searchParams?.get('course_id')
-    // const storedUserData = localStorage.getItem("userdata");
-    // const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     const chapter_id = uuidv4();
     const [CourseData, setCourseData] = useState<any>({});
-    // console.log(CourseData, "CourseDataCourseData");
-
     // const [Course_id, setCourse_id] = useState<any>();
     const [CourseTitle, setCourseTitle] = useState<any>();
     const [Value, setValue] = useState<boolean>(false);
@@ -39,9 +35,6 @@ export default function Viewcoursecreators() {
     const closeUpdateModal = () => {
         setIsModalUpdateOpen(false);
     };
-    // const course_id = localStorage.getItem("view_course_id");
-    // const [LastchapterId, setLastchapterId] = useState<any>()
-    // console.log(LastchapterId, "setLastchapterId");
 
     useEffect(() => {
         // setCourse_id(localStorage.getItem("view_course_id"))

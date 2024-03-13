@@ -26,7 +26,10 @@ const User = () => {
             {value === true ?
                 <>
                     <center style={{ marginTop: "15%", marginBottom: "15%" }}>
-                        <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"></div>
+                        <div style={{ backgroundImage: "url(https://avatars.slack-edge.com/2023-12-19/6367407372338_becb06996e976f301a4f_88.png)", width: 90,height:90,borderRadius:"50%" }}>
+                            <div className="h-20 w-20 rounded-full border-4 border-t-blue-600 animate-spin" style={{padding:40}}>
+                            </div>
+                        </div>
                     </center>
                 </>
                 :

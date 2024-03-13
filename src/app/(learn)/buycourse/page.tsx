@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, FormEvent, useState, useRef } from "react";
-import { getCourseWithCourseid, getUserDetailsByUID, addCourseToUser } from "@/api/Api";
+import { getCourseWithCourseid,addBuyerslist, getUserDetailsByUID, addCourseToUser } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -44,15 +44,18 @@ export default function ViewCourse() {
     const searchParams = useSearchParams();
     const course_id = searchParams?.get('course_id')
     const [CourseData, setCourseData] = useState<any>();
+    console.log(CourseData,"CourseDataCourseDataCourseData");
+    
     const [userdata, setuserdata] = useState<any>();
     const [purchasedCourses, setPurchasedCourses] = useState<any[]>([]);
-
+    const [Org_id,setOrg_id]=useState<any>()
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
         getUserDetailsByUID(parsedUserData?.uid).then((res: any) => {
             setPurchasedCourses(res?.courses.map((course: any) => course.course_id));
+            setOrg_id(res?.organisation_id)
         })
         getCourseWithCourseid(course_id)
             .then((CourseData: any) => {
@@ -176,8 +179,14 @@ export default function ViewCourse() {
             enrolled_date: null,
             completion_date: null
         };
+        const author_id = item?.author?.user_id;
+        const course_id = item?.course_id;
+        const student_id = uid;
+        const payment = "Free within organization";
+        
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
+            addBuyerslist(author_id,course_id,student_id,payment)
             alert("course buy successfully");
             window.open("http://localhost:3000/mycourse", "_self");
         }
@@ -253,7 +262,7 @@ export default function ViewCourse() {
                                         <span>₹ {CourseData?.price?.newprice}</span>
                                         :
                                         <>
-                                            {CourseData?.price?.newprice === 0 ?
+                                            {CourseData?.organisation_id===Org_id?
                                                 <span> Enroll for Free</span>
                                                 :
                                                 <span> ₹ {CourseData?.price?.newprice}</span>
@@ -266,9 +275,9 @@ export default function ViewCourse() {
                                             </Link>
                                             :
                                             <>
-                                                {CourseData?.price?.newprice === 0 ?
+                                                     {CourseData?.organisation_id===Org_id?
                                                     <Link href="" onClick={() => { buyCourse(CourseData) }}>
-                                                        Enroll Now
+                                                        Enroll for free
                                                     </Link>
                                                     :
                                                     <Link href="" onClick={(e: any) => makePayment(e, CourseData)}>

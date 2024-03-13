@@ -1,8 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
 import { UserAuth } from "@/context/AuthContext";
-import SeoMeta from "@/partials/SeoMeta";
-import Image from "next/image";
 import { signIn } from 'next-auth/react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "./firebase";

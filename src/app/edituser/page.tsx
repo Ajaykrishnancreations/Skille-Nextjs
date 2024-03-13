@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { getUserDetailsByUID, updateUserData, addCourseToUser, getcourseFirestore } from "@/api/Api";
+import { getUserDetailsByUID, updateUserData, addCourseToUser, getcourseFirestore ,addBuyerslist} from "@/api/Api";
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -72,8 +72,15 @@ export default function ViewCourse() {
             enrolled_date: null,
             completion_date: null
         };
+
+        const author_id = item?.author?.user_id;
+        const course_id = item?.course_id;
+        const student_id = uid;
+        const payment = "Enrolled by the admin";
+       
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
+            addBuyerslist(author_id,course_id,student_id,payment)
             alert("Course Added Successfully");
             setValues(true)
         }

@@ -31,22 +31,79 @@ export function addCourseFirestore(title: string, imgUrl: string, summary: strin
     });
 }
 
+export function addOrganization(org_id: string, logoUrl: string, name: string, email_id: any, info: string) {
+  return addDoc(collection(db, "organisation"), {
+    org_id: org_id,
+    logoUrl: logoUrl,
+    name: name,
+    email_id: email_id,
+    info: info,
+    subscription: null,
+    courses: [],
+    start_date: "",
+    end_date: "",
+    data: serverTimestamp(),
+  })
+    .then((docRef) => {
+      return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
+export async function addBuyerslist(author_id: any, course_id: any, student_id: any, payment: any) {
+  try {
+    const buyerslistCollection = collection(db, "buyerslist");
+    const buyerslistQuery = query(buyerslistCollection, 
+      where("author_id", "==", author_id),
+      where("course_id", "==", course_id),
+    );
+    const querySnapshot = await getDocs(buyerslistQuery);
+    if (!querySnapshot.empty) {
+      console.log("Entry already exists in buyerslist");
+      return false;
+    }
+    await addDoc(buyerslistCollection, {
+      author_id: author_id,
+      course_id: course_id,
+      student_id: student_id,
+      payment: payment,
+      enrolled_date: serverTimestamp(),
+    });
+    console.log("Data added to buyerslist successfully");
+    return true;
+  } catch (error) {
+    console.error("Error adding data to buyerslist:", error);
+    return false;
+  }
+}
+export function getOrganization() {
+  return getDocs(collection(db, "organisation"))
+    .then((querySnapshot) => {
+      const data: any | PromiseLike<any> = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
 export async function getcourseFirestore(organizationId: any) {
   try {
     const querySnapshot = await getDocs(collection(db, "course"));
     const data: { id: any; }[] = [];
-
     querySnapshot.forEach((doc) => {
       const courseData = doc.data();
-
-      // Check if the course is published
       if (courseData.published === "Published") {
-        // Check if the organization ID matches
         if (courseData.organisation_id === organizationId) {
-          // Set the new price to a specific value for organization members
           courseData.price.newprice = 0;
         }
-
         data.push({ id: doc.id, ...courseData });
       }
     });
