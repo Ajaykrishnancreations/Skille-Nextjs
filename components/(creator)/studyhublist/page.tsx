@@ -1,42 +1,87 @@
 "use client"
-
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { getBuyersListByAuthor,getCourseWithCourseid,getUserDetailsByUID } from "@/api/Api";
+import { getBuyersListByAuthor, getCourseWithCourseid, getUserDetailsByUID } from "@/api/Api";
+import CircularProgressChartjs from "@/app/CircularProgressChartjs";
+import CircularProgressChart from "@/app/CircularProgressChart";
+import { useSearchParams } from "next/navigation";
 
 export default function StudyHubList() {
+  const searchParams = useSearchParams();
+  const Course_id: any = searchParams?.get('Course_id')
   const [data, setData] = useState<any>([]);
-
+  const [countData, setCountData] = useState<any>({ organization: 0, admin: 0, purchased: 0 });
   useEffect(() => {
     const fetchData = async () => {
       const storedUserData: any = localStorage.getItem("userdata");
       const parsedUserData = JSON.parse(storedUserData);
-      const buyersList = await getBuyersListByAuthor(parsedUserData?.uid);
+      let buyersList = await getBuyersListByAuthor(parsedUserData?.uid);
+      if (Course_id) {
+        buyersList = buyersList.filter((item: any) => item.course_id === Course_id);
+      }
+      const count = buyersList.reduce((acc: any, buyer: any) => {
+        if (buyer.payment === "Free within organization") {
+          acc.organization++;
+        } else if (buyer.payment === "Enrolled by the admin") {
+          acc.admin++;
+        } else {
+          acc.purchased++;
+          const paymentValue = parseInt(buyer.payment);
+          if (!isNaN(paymentValue)) {
+            acc.totalPayment += paymentValue;
+          } else {
+            console.log("Invalid payment value:", buyer.payment);
+          }
+        }
+        return acc;
+      }, { organization: 0, admin: 0, purchased: 0, totalPayment: 0 });
+      setCountData(count);
+
+      const totalPurchased = buyersList.reduce((total: number, buyer: any) => {
+        if (buyer.payment === "399") {
+          total += parseInt(buyer.payment);
+        }
+        return total;
+      }, 0);
       const processedData = await Promise.all(
-        buyersList.map(async (buyer:any) => {
-          const courseDetails:any = await getCourseWithCourseid(buyer?.course_id);
-          const studentDetails:any = await getUserDetailsByUID(buyer?.student_id);
-          
+        buyersList.map(async (buyer: any) => {
+          const courseDetails: any = await getCourseWithCourseid(buyer?.course_id);
+          const studentDetails: any = await getUserDetailsByUID(buyer?.student_id);
           const progressData: any = studentDetails?.courses;
-          const authorDetails:any = await getUserDetailsByUID(buyer?.author_id);
+          // const authorDetails: any = await getUserDetailsByUID(buyer?.author_id);
           return {
             ...buyer,
             courseTitle: courseDetails?.title,
             studentName: studentDetails?.name,
-            authorName: authorDetails?.name,
+            // authorName: authorDetails?.name,
             progressData: progressData.find((progress: any) => progress.course_id === buyer.course_id),
           };
         })
       );
       setData(processedData);
-      console.log(processedData,"studentDetailsstudentDetails");
     };
 
     fetchData();
   }, []);
   return (
     <div className="p-10">
-      <div className="flex">
+      <div className="flex p-2 border-solid border-2 rounded border-gray-600">
+        <div className="w-3/6 bg-gray-100 p-4 rounded">
+          <CircularProgressChartjs organization={countData.organization} admin={countData.admin} purchased={countData.purchased} />
+        </div>
+        <div className="w-3/6">
+          <center>
+            <div style={{ marginTop: "10%" }}>
+              <h5>Total Number of students enrolled your course is...</h5>
+              <h2>No.{countData.organization + countData.admin + countData.purchased} </h2>
+            </div>
+            <div className="mt-8">
+              <h5>The Total Revenue you earned from enrollment is...</h5>
+              <h2>₹ {countData.totalPayment}</h2>
+            </div>
+          </center>
+        </div>
+      </div>
+      <div className="flex mt-8">
         <div className="w-5/6">
           <h5>
             Buyers list
@@ -54,24 +99,25 @@ export default function StudyHubList() {
       </div>
       <div>
         <div className="grid grid-cols-5">
-        {data.map((item: any) => (
-        <div key={item.id} className='p-2 transform transition-transform duration-300 hover:scale-105'>
-            <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
-              <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
-                <p>
-                  <b>{item.courseTitle}</b>
-                </p>
-                <div className="relative">
-                  <Link href={{ pathname: '/edituser' }}>{/* Add your link details here */}View</Link>
+          {data.map((item: any) => (
+            <div key={item.id} className='p-2 transform transition-transform duration-300 hover:scale-105'>
+              <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-100">
+                <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+                  <p>
+                    <b>{item.courseTitle}</b>
+                  </p>
+                  <div className="relative" style={{ height: 50, width: 50, marginTop: "-20px" }}>
+                    <CircularProgressChart progress={item.progressData?.progress || 0} ></CircularProgressChart>
+                  </div>
                 </div>
+                <p className='mt-3 text-sm'><b>Student name:</b> {item.studentName}</p>
+                {/* <p className='text-sm'><b>Author Name:</b> {item.authorName}</p> */}
+                <p className='text-sm'><b>Enrolled_date:</b> 03/06/2024</p>
+                <p className='text-sm'><b>Progress:</b> {item.progressData?.progress || 0}%</p>
+                <p className='text-sm'><b>Payment:</b> {item?.payment}</p>
               </div>
-              <p className='mt-3 text-sm'><b>Student name:</b> {item.studentName}</p>
-              <p className='text-sm'><b>Author Name:</b> {item.authorName}</p>
-              <p className='text-sm'><b>Enrolled_date:</b> 03/06/2024</p>
-              <p className='text-sm'><b>Progress:</b> {item.progressData?.progress || 0}</p>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
 
       </div>

@@ -1039,6 +1039,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@material-tailwind/react@npm:^2.1.9":
   version: 2.1.9
   resolution: "@material-tailwind/react@npm:2.1.9"
@@ -1521,6 +1528,15 @@ __metadata:
   version: 0.12.5
   resolution: "@types/caseless@npm:0.12.5"
   checksum: f6a3628add76d27005495914c9c3873a93536957edaa5b69c63b46fe10b4649a6fecf16b676c1695f46aab851da47ec6047dcf3570fa8d9b6883492ff6d074e0
+  languageName: node
+  linkType: hard
+
+"@types/chart.js@npm:^2.9.41":
+  version: 2.9.41
+  resolution: "@types/chart.js@npm:2.9.41"
+  dependencies:
+    moment: ^2.10.2
+  checksum: 7c6b29c837d35edaa371e05850e10468d6690dec1128f247b108c3cd15903c80cafb158a3cbd6a90beb0a9e1e33b12759251e1e63d6cbfa5995a0c5dc0df58b1
   languageName: node
   linkType: hard
 
@@ -2615,6 +2631,15 @@ __metadata:
   version: 2.0.1
   resolution: "character-reference-invalid@npm:2.0.1"
   checksum: 98d3b1a52ae510b7329e6ee7f6210df14f1e318c5415975d4c9e7ee0ef4c07875d47c6e74230c64551f12f556b4a8ccc24d9f3691a2aa197019e72a95e9297ee
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "chart.js@npm:4.4.2"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 72506af9abd33dd99484322dd26e854693323959fe2d6e750bf670e3959737bc195807e91a4d939bc04124c05c7a2f3c435e52d1a668e0e945869f37fcba90a8
   languageName: node
   linkType: hard
 
@@ -6939,6 +6964,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"moment@npm:^2.10.2":
+  version: 2.30.1
+  resolution: "moment@npm:2.30.1"
+  checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
+  languageName: node
+  linkType: hard
+
 "mongodb-connection-string-url@npm:^3.0.0":
   version: 3.0.0
   resolution: "mongodb-connection-string-url@npm:3.0.0"
@@ -7208,6 +7240,7 @@ __metadata:
     "@tailwindcss/forms": ^0.5.7
     "@tailwindcss/typography": ^0.5.10
     "@types/bcryptjs": ^2.4.6
+    "@types/chart.js": ^2.9.41
     "@types/crypto-js": ^4.2.2
     "@types/marked": ^5.0.2
     "@types/node": ^20.11.19
@@ -7220,6 +7253,7 @@ __metadata:
     autoprefixer: ^10.4.16
     axios: ^1.6.7
     bcryptjs: ^2.4.3
+    chart.js: ^4.4.2
     crypto-js: ^4.2.0
     date-fns: ^3.0.6
     disqus-react: ^1.1.5

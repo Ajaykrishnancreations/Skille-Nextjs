@@ -1,7 +1,7 @@
 'use client'
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { getcourseFirestore, addCourseToUser, getUserDetailsByUID,addBuyerslist } from "@/api/Api";
+import { getcourseFirestore, addCourseToUser, getUserDetailsByUID, addBuyerslist } from "@/api/Api";
 import { useRouter } from 'next/navigation';
 import sha256 from "crypto-js/sha256";
 import axios from "axios";
@@ -48,13 +48,13 @@ export default function UserCourse() {
             enrolled_date: null,
             completion_date: null
         };
-           const author_id = item?.author?.user_id;
-           const course_id = item?.course_id;
-           const student_id = uid;
-           const payment = "Free within organization";
+        const author_id = item?.author?.user_id;
+        const course_id = item?.course_id;
+        const student_id = uid;
+        const payment = "Free within organization";
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
-            addBuyerslist(author_id,course_id,student_id,payment)
+            addBuyerslist(author_id, course_id, student_id, payment)
             alert("course buy successfully");
             window.open("http://localhost:3000/mycourse", "_self");
         }
@@ -152,7 +152,15 @@ export default function UserCourse() {
                                                         </div>
                                                         <div className="h-50 p-4" >
                                                             <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
-                                                            <p style={{ height: "60px", overflow: "scroll" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">{item?.summary}</p>
+                                                            <p style={{ height: "60px" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">
+                                                                {item?.summary ?
+                                                                    (item.summary.length > 84 ?
+                                                                        item.summary.substring(0, 84).trim() + "..." :
+                                                                        item.summary.split(" ").slice(0, 12).join(" ")
+                                                                    )
+                                                                    : null
+                                                                }
+                                                            </p>
                                                             <div className="flex m-3 mb-1">
                                                                 <div className="w-5/6">
                                                                     <p className="inline-flex items-center">
@@ -232,7 +240,7 @@ export default function UserCourse() {
                                             <h1 className="h2 mb-4">Page not found</h1>
                                             <div className="content">
                                                 <p>
-                                                Sorry, user. Without logging in, we can't process this step. Please log in to start learning. Thank you.
+                                                    Sorry, user. Without logging in, we can't process this step. Please log in to start learning. Thank you.
                                                 </p>
                                             </div>
                                             <Link href="/" className="btn btn-primary mt-8">

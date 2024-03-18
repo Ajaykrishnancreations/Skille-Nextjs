@@ -26,7 +26,7 @@ const page = () => {
             const author_id = CourseData?.author?.user_id;
             const course_id = CourseData?.course_id;
             const student_id = uid;
-            const payment = `Purchased at: ${CourseData?.price?.newprice}`;
+            const payment = CourseData?.price?.newprice;
             addBuyerslist(author_id, course_id, student_id, payment);
           } else {
             console.log("CourseData not found");
