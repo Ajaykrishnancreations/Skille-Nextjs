@@ -8,13 +8,17 @@ import { useSearchParams } from "next/navigation";
 export default function StudyHubList() {
   const searchParams = useSearchParams();
   const Course_id: any = searchParams?.get('Course_id')
+  const UserUid: any = searchParams?.get('UserUid')
   const [data, setData] = useState<any>([]);
   const [countData, setCountData] = useState<any>({ organization: 0, admin: 0, purchased: 0 });
+  const [UserName, setUserName] = useState<string>()
+
   useEffect(() => {
     const fetchData = async () => {
       const storedUserData: any = localStorage.getItem("userdata");
       const parsedUserData = JSON.parse(storedUserData);
-      let buyersList = await getBuyersListByAuthor(parsedUserData?.uid);
+
+      let buyersList = await getBuyersListByAuthor(UserUid ? UserUid : parsedUserData?.uid);
       if (Course_id) {
         buyersList = buyersList.filter((item: any) => item.course_id === Course_id);
       }
@@ -59,11 +63,17 @@ export default function StudyHubList() {
       );
       setData(processedData);
     };
+    if (UserUid) {
+      getUserDetailsByUID(UserUid).then((res: any) => {
+        setUserName(res?.name)
+      })
+    }
 
     fetchData();
   }, []);
   return (
     <div className="p-10">
+      {UserUid ? <h5 className="mb-3">{UserName}'s Revenue</h5> : null}
       <div className="flex p-2 border-solid border-2 rounded border-gray-600">
         <div className="w-3/6 bg-gray-100 p-4 rounded">
           <CircularProgressChartjs organization={countData.organization} admin={countData.admin} purchased={countData.purchased} />
@@ -71,11 +81,11 @@ export default function StudyHubList() {
         <div className="w-3/6">
           <center>
             <div style={{ marginTop: "10%" }}>
-              <h5>Total Number of students enrolled your course is...</h5>
+              <h5>Total Number of students enrolled {UserUid ? <span>{UserName}'s</span> : "your"} course.</h5>
               <h2>No.{countData.organization + countData.admin + countData.purchased} </h2>
             </div>
             <div className="mt-8">
-              <h5>The Total Revenue you earned from enrollment is...</h5>
+              <h5>The Total Revenue {UserUid ? <span>{UserName}</span> : "you"}  earned from enrollment.</h5>
               <h2>₹ {countData.totalPayment}</h2>
             </div>
           </center>

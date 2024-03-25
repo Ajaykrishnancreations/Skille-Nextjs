@@ -125,6 +125,25 @@ export function getOrganization() {
     });
 }
 
+export function getOrganizationbyid(organization_id: any) {
+  const usersCollection = collection(db, "organisation");
+  const userQuery = query(usersCollection, where("org_id", "==", organization_id));
+  return getDocs(userQuery)
+    .then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        return { id: userDoc.id, ...userDoc.data() };
+      } else {
+        console.log("organization not found");
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
 export async function getcourseFirestore(organizationId: any) {
   try {
     const querySnapshot = await getDocs(collection(db, "course"));
@@ -256,6 +275,25 @@ export function addNewUserData(courses: any, imgUrl: string, email: string, name
     role: role,
     uid: uid,
     organisation: "1234567890"
+  })
+    .then((docRef) => {
+      return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
+export function userRegistration(courses: any, imgUrl: string, email: string, name: string, role: string, uid: string,organisation:any) {
+  return addDoc(collection(db, "users"), {
+    courses: courses,
+    imgUrl: imgUrl,
+    email: email,
+    name: name,
+    role: role,
+    uid: uid,
+    organisation: organisation
   })
     .then((docRef) => {
       return true;

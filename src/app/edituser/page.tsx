@@ -101,7 +101,15 @@ export default function ViewCourse() {
         <div>
             <div className="p-10">
                 <div className="p-4 md:p-5 space-y-4">
-                    <h5>Update user</h5>
+                    
+                    <div className="flex">
+                            <div className="w-5/6">
+                            <h5>Update user</h5>
+                            </div>
+                            <div className="w-1/6">
+                            <Link className="bg-white w-full rounded p-1 mt-5" href={{ pathname: '/studyhublist', query: { UserUid: UserData?.uid } }}> View {UserData?.name}'s Revenue</Link>
+                            </div>
+                        </div>
                     Enter your Name : <input type="text" className="rounded ml-2" defaultValue={UserData?.name} onChange={(event) => setnewName(event.target.value)} /><br />
                     <span className="inline-flex">
                         Select your Role :

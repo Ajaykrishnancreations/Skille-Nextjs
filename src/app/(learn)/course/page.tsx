@@ -28,6 +28,8 @@ export default function UserCourse() {
                 const organisation_id = parsedUserData?.organisation_id;
                 await getcourseFirestore(organisation_id).then((res: any) => {
                     setCourseData(res);
+                    console.log(res,"ressssss");
+                    
                 })
             };
             fetchData();
@@ -69,7 +71,11 @@ export default function UserCourse() {
         const level = item.level.toLowerCase();
         const authorName = item.author ? item.author.user_name.toLowerCase() : "";
         const skills = item.skills ? item.skills.map((skill: string) => skill.toLowerCase()).join(",") : "";
-        return title.includes(searchString) || level.includes(searchString) || authorName.includes(searchString) || skills.includes(searchString);
+        const authorId = item.author ? item.author.user_id : null;
+        return (
+            (title.includes(searchString) || level.includes(searchString) || authorName.includes(searchString) || skills.includes(searchString)) &&
+            !(userdata && authorId === userdata.uid)
+        );
     });
     const makePayment = async (e: FormEvent<HTMLButtonElement>, item: any) => {
         e.preventDefault();

@@ -23,7 +23,7 @@ export async function POST(req:any, res:any) {
   // CHECK PAYMENT STATUS
   const response = await axios.request(options);
   if (response.data.code == "PAYMENT_SUCCESS")
-    return NextResponse.redirect("http://localhost:3000/success", {
+    return NextResponse.redirect(`http://localhost:3000/success?transactionId=${transactionId}`, {
       status: 301,
     });
   else

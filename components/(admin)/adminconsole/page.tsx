@@ -4,6 +4,7 @@ import { getUsersDetails, addOrganization ,getOrganization} from '@/api/Api';
 import Link from 'next/link';
 const AdminConsole = () => {
     const [value, setValue] = useState('1');
+    const [values,setvalues]=useState<boolean>();
     const [UserData, setUserData] = useState<any>()
     const handleChange = (newValue: string) => {
         setValue(newValue);
@@ -20,20 +21,28 @@ const AdminConsole = () => {
         getUsersDetails().then((res: any) => {
             setUserData(res)
         })
-
         getOrganization().then((res:any)=>{
             setOrganization(res)
-            console.log(res,"ressssssss1234567890")
         })
-    }, [])
+        setvalues(false)
+    }, [values])
     const [name, setName] = useState<any>("");
     const [email_id, setEmail_id] = useState<any>("");
     const [logoUrl, setlogo_url] = useState<any>("");
-    const [org_id, setOrg_id] = useState<any>("jufty7");
+    const generateRandomNumber = () => {
+        return Math.floor(1000000 + Math.random() * 9000000);
+    };
     const [info, setinfo] = useState<any>();
     const AddNewOrganization = () => {
+        const orgName = name.trim();
+        const org_id = orgName.substring(0, 4) + generateRandomNumber();
         addOrganization(org_id, logoUrl, name, email_id, info).then((res: any) => {
             console.log(res, "resssssss");
+            if(res===true){
+                alert("Organization added")
+                setvalues(true)
+                closeUpdateModal()
+            }
         })
     }
     return (
@@ -138,9 +147,8 @@ const AdminConsole = () => {
                                             <div className="relative">
                                                 <Link
                                                     href={{
-                                                        pathname: '/',
-                                                        // pathname: '/edituser',
-                                                        // query: { user_uid: item?.uid }
+                                                        pathname: '/vieworganization',
+                                                        query: { organization_id: item?.org_id }
                                                     }}
                                                     style={{ borderRadius: "5px",width:"200px", backgroundColor: "#012938", color: "white", padding: "5px", textAlign: "center", fontSize: 12, marginTop: "10px" }}
                                                     >
@@ -193,7 +201,7 @@ const AdminConsole = () => {
                                                         className="rounded w-full"
                                                         type="text"
                                                         onChange={(e) => setEmail_id(e.target.value)}
-                                                        placeholder="ImgUrl"
+                                                        placeholder="Email_id"
                                                     />
                                                 </div>
                                                 <div className="ml-2 mr-2 text-gray-600">
@@ -202,15 +210,15 @@ const AdminConsole = () => {
                                                         className="rounded w-full"
                                                         type="text"
                                                         onChange={(e) => setlogo_url(e.target.value)}
-                                                        placeholder="Summary"
+                                                        placeholder="logo_url"
                                                     />
                                                 </div>
                                                 <div className="ml-2 mr-2 text-gray-600">
-                                                    Enter Organization Name :
+                                                    Enter Organization info :
                                                     <input
                                                         className="rounded w-full"
                                                         onChange={(e) => setinfo(e.target.value)}
-                                                        placeholder="level"
+                                                        placeholder=" Enter Organization info"
                                                     />
                                                 </div>
                                             </div>
