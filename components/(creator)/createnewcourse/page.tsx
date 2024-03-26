@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { addCourseFirestore } from "@/api/Api";
 import Stackedit from 'stackedit-js';
@@ -13,12 +13,6 @@ interface CodeProps {
     className?: string;
     children?: React.ReactNode;
 }
-const isEqual = (array1: any[], array2: any[]): boolean => {
-    return (
-        array1.length === array2.length &&
-        array1.every((value, index) => value === array2[index])
-    );
-};
 export default function CreateNewCourse() {
     const stackedit = new Stackedit();
     const courseId = uuidv4();
@@ -70,7 +64,6 @@ export default function CreateNewCourse() {
     const preNextStep = () => {
         setStep(step - 1);
     };
-    const [titles, setTitles] = useState<string[]>([]);
 
     const openStackEdit = () => {
         stackedit.openFile({

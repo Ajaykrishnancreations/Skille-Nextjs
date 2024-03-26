@@ -2,17 +2,20 @@
 import React, { useEffect, useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/app/firebase';
-import Link from 'next/link';
 import { userRegistration,getUserDetailsByUID } from '@/api/Api';
-import { useSearchParams } from "next/navigation";
 import { signIn } from 'next-auth/react';
-
 const Registration = () => {
-
-    const searchParams = useSearchParams();
-    const organization_id = searchParams?.get('organization_id')
     const [emailid, setEmailid] = useState("");
     const [passwords, setPasswords] = useState("");
+    const [organization_id,setorganization_id]= useState();
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const organizationId:any = searchParams.get('organization_id');
+        if (organizationId) {
+          console.log("Organization ID:", organizationId);
+          setorganization_id(organizationId)
+        }
+      }, []);
     const addNewUser = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         createUserWithEmailAndPassword(auth, emailid, passwords).then(async (res: any) => {

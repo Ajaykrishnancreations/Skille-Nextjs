@@ -133,32 +133,32 @@ export default function UserCourse() {
                     <>
                         {userdata?.login === "true" ?
                             <>
-                                <div className="p-10">
+                               <div className="p-2 sm:p-2 md:p-10 lg:p-10 xl:p-10 2xl:p-10">
                                     <div className="flex">
-                                        <div className="w-5/6">
+                                        <div className="w-3/6 mt-2">
                                             <h5>Search by topics</h5>
                                         </div>
-                                        <div className="w-1/6">
+                                        <div className="w-3/6">
                                             <form>
                                                 <input type="search" id="default-search"
                                                     onChange={(e) => setSearchText(e.target.value)}
-                                                    style={{ paddingTop: "10px", paddingLeft: "20px" }}
-                                                    className="block w-full ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    style={{ paddingTop: "10px", paddingLeft: "20px",width:"200px",float:"right" }}
+                                                    className="block ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                     placeholder="Search by Title, Skills..." required />
                                             </form>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-5 mt-4">
+                                    <div className="grid xl:grid-cols-5 2xl:grid-cols-5 mt-4">
                                         {filteredCourses.map((item: any) => (
                                             <div key={item.id}>
-                                                <div className="p-5 transform transition-transform duration-300 hover:scale-105">
+                                                <div className="p-2 transform transition-transform duration-300 hover:scale-105">
                                                     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                                         <div>
                                                             <img className="rounded-t-lg" style={{ height: "150px", width: "100%" }} src={item?.imgUrl} alt="" />
                                                         </div>
                                                         <div className="h-50 p-4" >
                                                             <p className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{item?.title}</p>
-                                                            <p style={{ height: "60px" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">
+                                                            <p style={{ height: "80px" }} className="mb-3 text-sm text-gray-700 dark:text-gray-400">
                                                                 {item?.summary ?
                                                                     (item.summary.length > 84 ?
                                                                         item.summary.substring(0, 84).trim() + "..." :
@@ -173,19 +173,19 @@ export default function UserCourse() {
                                                                         <svg style={{ width: "12px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                                                                             <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
                                                                         </svg>
-                                                                        <span className="ml-2" style={{ fontSize: "12px" }}>{item?.author?.user_name}</span>
+                                                                        <span className="ml-2" style={{ fontSize: "10px" }}>{item?.author?.user_name}</span>
                                                                     </p><br />
                                                                     <p className="inline-flex items-center">
                                                                         <svg style={{ width: "12px" }} className="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z" />
                                                                         </svg>
-                                                                        <span className="ml-2" style={{ fontSize: "12px" }}>{item?.level}</span>
+                                                                        <span className="ml-2" style={{ fontSize: "10px" }}>{item?.level}</span>
 
                                                                     </p>
                                                                 </div>
                                                                 <div className="w-1/6">
-                                                                    <p style={{ fontWeight: "bold", fontSize: "12px" }}>₹ {item?.price?.newprice}</p>
-                                                                    <p className="text-sm"><s> ₹ {item?.price?.oldprice}</s></p>
+                                                                    <p style={{ fontWeight: "bold", fontSize: "10px" }}>₹ {item?.price?.newprice}</p>
+                                                                    <p style={{ fontWeight: "bold", fontSize: "10px" }}><s> ₹ {item?.price?.oldprice}</s></p>
                                                                 </div>
                                                             </div>
                                                             <div style={{ fontSize: "12px" }}> <b>Skills : {Array.isArray(item?.skills) && item.skills.map((skill: any, index: any) => (

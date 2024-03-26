@@ -2,13 +2,17 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { addCourseToUser, addBuyerslist, getCourseWithCourseid } from "@/api/Api";
-import { useSearchParams } from "next/navigation";
 
 const page = () => {
   const [CourseData, setCourseData] = useState("");
-  const searchParams = useSearchParams();
-  const transactionId = searchParams?.get("transactionId");
+  const [transactionId, settransactionId] = useState("");
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const transactionId = searchParams.get('transactionId');
+    if (transactionId) {
+      console.log("Organization ID:", transactionId);
+      settransactionId(transactionId)
+    }
     const buyCourseId = localStorage.getItem("buyCourseId");
     const storedUserData = localStorage.getItem("userdata");
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;

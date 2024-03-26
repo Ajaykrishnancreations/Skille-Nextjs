@@ -2,13 +2,10 @@
 import { useEffect, useState, useRef } from "react";
 import { getCourseChapterData, getCourseWithCourseid, updateProgressAndCompletionStatus, updateUserCompletedChapters, checkUserCompletedChapters } from "@/api/Api";
 import React from "react";
-import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -37,71 +34,69 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 };
 
 export default function LearnPage() {
-    const searchParams = useSearchParams();
-    const router = useRouter()
-    const chapter_id: any = searchParams?.get('chapter_id')
-    const courseId = localStorage.getItem("view_course_id");
-    const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
+    const [courseId, setcourseId] = useState();
+    const [selectedCourseTitle, setselectedCourseTitles] = useState();
     const [userdata, setuserdata] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
     const [CompletedChapter, setCompletedChapter] = useState<boolean>();
     const [value, setvalue] = useState<boolean>()
     const [PreviousChapter, setPreviousChapter] = useState<any>();
     const [NextChapter, setNextChapter] = useState<any>();
-    const refresh = () => {
-        setvalue(true)
-    }
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const courseIds: any = localStorage.getItem("view_course_id");
+            setcourseId(courseIds)
+            const selectedCourseTitles: any = localStorage.getItem("selectedCourseTitle");
+            setselectedCourseTitles(selectedCourseTitles)
+            const storedUserData = localStorage.getItem("userdata");
+            const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+            setuserdata(parsedUserData);
+            const searchParams = new URLSearchParams(window.location.search);
+            const chapter_id = searchParams.get('chapter_id');
+            getCourseChapterData(chapter_id)
+                .then((CourseChapterData: any) => {
+                    if (CourseChapterData) {
+                        setCourseChapterData(CourseChapterData)
+                    } else {
+                        console.log("getCourseChapterData not found");
+                    }
+                })
 
-        // setvalue(true)
-        const storedUserData = localStorage.getItem("userdata");
-        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setuserdata(parsedUserData);
-        // const chapter_id: any = localStorage.getItem("view_chapter_id");
+            const userUid = parsedUserData?.uid;
+            // const courseId = localStorage.getItem("view_course_id");
+            const chapterIds = [chapter_id];
 
-        getCourseChapterData(chapter_id)
-            .then((CourseChapterData: any) => {
-                if (CourseChapterData) {
-                    setCourseChapterData(CourseChapterData)
-                } else {
-                    console.log("getCourseChapterData not found");
-                }
+            checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
+                setCompletedChapter(res)
             })
+            getCourseWithCourseid(courseId)
+                .then((CourseData: any) => {
+                    if (CourseData) {
+                        const selectedChapterId = chapter_id;
+                        const selectedChapterIndex = CourseData.chapters.findIndex(
+                            (chapter: { chapter_id: any; }) => chapter.chapter_id === selectedChapterId
+                        );
 
-        const userUid = parsedUserData?.uid;
-        const courseId = localStorage.getItem("view_course_id");
-        const chapterIds = [chapter_id];
+                        const previousChapter =
+                            selectedChapterIndex > 0
+                                ? CourseData.chapters[selectedChapterIndex - 1]
+                                : null;
 
-        checkUserCompletedChapters(userUid, courseId, chapterIds).then((res: boolean) => {
-            setCompletedChapter(res)
-        })
-        getCourseWithCourseid(courseId)
-            .then((CourseData: any) => {
-                if (CourseData) {
-                    const selectedChapterId = chapter_id;
-                    const selectedChapterIndex = CourseData.chapters.findIndex(
-                        (chapter: { chapter_id: any; }) => chapter.chapter_id === selectedChapterId
-                    );
+                        const nextChapter =
+                            selectedChapterIndex < CourseData.chapters.length - 1
+                                ? CourseData.chapters[selectedChapterIndex + 1]
+                                : null;
+                        setPreviousChapter(previousChapter?.chapter_id);
+                        setNextChapter(nextChapter?.chapter_id);
 
-                    const previousChapter =
-                        selectedChapterIndex > 0
-                            ? CourseData.chapters[selectedChapterIndex - 1]
-                            : null;
+                        // console.log(previousChapter?.chapter_id, nextChapter?.chapter_id, "nextChapternextChapternextChapter");
+                    } else {
+                        console.log("CourseData not found");
+                    }
+                })
 
-                    const nextChapter =
-                        selectedChapterIndex < CourseData.chapters.length - 1
-                            ? CourseData.chapters[selectedChapterIndex + 1]
-                            : null;
-                    setPreviousChapter(previousChapter?.chapter_id);
-                    setNextChapter(nextChapter?.chapter_id);
-
-                    // console.log(previousChapter?.chapter_id, nextChapter?.chapter_id, "nextChapternextChapternextChapter");
-                } else {
-                    console.log("CourseData not found");
-                }
-            })
-
-        setvalue(false)
+            setvalue(false)
+        }
     }, [value]);
     const components: any = {
 
@@ -181,17 +176,19 @@ export default function LearnPage() {
         return matches;
     };
     useEffect(() => {
-        const storedUserData = localStorage.getItem("userdata");
-        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setuserdata(parsedUserData);
+        if (typeof window !== 'undefined') {
+            const storedUserData = localStorage.getItem("userdata");
+            const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+            setuserdata(parsedUserData);
 
-        if (CourseChapterData?.content) {
-            const newTitles = extractTitles(CourseChapterData.content);
-            if (!isEqual(newTitles, titles)) {
-                setTitles(newTitles);
-            }
-            if (!selectedTitle && newTitles.length > 0) {
-                handleTitleClick(newTitles[0]);
+            if (CourseChapterData?.content) {
+                const newTitles = extractTitles(CourseChapterData.content);
+                if (!isEqual(newTitles, titles)) {
+                    setTitles(newTitles);
+                }
+                if (!selectedTitle && newTitles.length > 0) {
+                    handleTitleClick(newTitles[0]);
+                }
             }
         }
     }, [CourseChapterData?.content, titles, selectedTitle, value]);
@@ -208,7 +205,9 @@ export default function LearnPage() {
     };
     const updateCompletedChapter = () => {
         const userUid = userdata?.uid;
-        const courseId = localStorage.getItem("view_course_id");
+        // const courseId = localStorage.getItem("view_course_id");
+        const searchParams = new URLSearchParams(window.location.search);
+        const chapter_id = searchParams.get('chapter_id');
         const completedChapterIds = [chapter_id];
         updateUserCompletedChapters(userUid, courseId, completedChapterIds).then((res: boolean) => {
             if (res == true) {

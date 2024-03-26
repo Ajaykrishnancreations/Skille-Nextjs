@@ -1,6 +1,6 @@
 "use client"
 import CreateNewCourse from "components/(creator)/createnewcourse/page";
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 function PageNotFound() {
@@ -31,22 +31,22 @@ function PageNotFound() {
   );
 };
 export default function CreatorCourse() {
-    const [data,setData]=useState<any>()
-    useEffect(()=>{
-       const storedUserData:any = localStorage.getItem("userdata");
-       const parsedUserData = JSON.parse(storedUserData);
-       setData(parsedUserData)
-    },[])
-    return (
-        <div>
-            {data?.login === "true" ? (
-                <>
-                    {data?.role === "user" ? <PageNotFound /> : <CreateNewCourse />}
-                </>
-            ) : (
-                <PageNotFound />
-            )}
-        </div>
-    );
+  const [data, setData] = useState<any>()
+  useEffect(() => {
+    const storedUserData: any = localStorage.getItem("userdata");
+    const parsedUserData = JSON.parse(storedUserData);
+    setData(parsedUserData)
+  }, [])
+  return (
+    <div>
+      {data?.login === "true" ? (
+        <>
+          {data?.role === "user" ? <PageNotFound /> : <CreateNewCourse />}
+        </>
+      ) : (
+        <PageNotFound />
+      )}
+    </div>
+  );
 }
 

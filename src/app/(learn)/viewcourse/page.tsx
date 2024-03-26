@@ -3,11 +3,8 @@ import { useEffect, useState } from "react";
 import { getCourseWithCourseid, getUserDetailsByUID } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 export default function ViewCourse() {
-    const searchParams = useSearchParams();
-    const course_id = searchParams?.get('course_id')
     const [CourseData, setCourseData] = useState<any>({});
     const [CourseTitle, setCourseTitle] = useState<string>();
     const [userCompletionData, setUserCompletionData] = useState<any>(null);
@@ -15,7 +12,8 @@ export default function ViewCourse() {
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        // const course_id: any = localStorage.getItem("view_course_id");
+        const searchParams = new URLSearchParams(window.location.search);
+        const course_id = searchParams.get('course_id');
         getUserDetailsByUID(parsedUserData?.uid)
             .then((userDetails: any) => {
                 setUserCompletionData(userDetails);

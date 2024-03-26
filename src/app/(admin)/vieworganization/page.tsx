@@ -1,16 +1,17 @@
 'use client'
 import { useEffect, useState } from "react";
 import React from "react";
-import { useSearchParams } from "next/navigation";
 import { getOrganizationbyid } from "@/api/Api";
 
 export default function ViewCourse() {
-    const searchParams = useSearchParams();
-    const organization_id = searchParams?.get('organization_id')
     const [organization, setorganization] = useState<any>();
-    console.log(organization, "organization");
     useEffect(() => {
-        getOrganizationbyid(organization_id).then((res) => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const organizationId:any = searchParams.get('organization_id');
+        if (organizationId) {
+          console.log("Organization ID:", organizationId);
+        }
+        getOrganizationbyid(organizationId).then((res) => {
             setorganization(res)
         })
     }, []);

@@ -2,12 +2,12 @@
 import { useEffect, useState, useRef } from "react";
 import { getCourseWithCourseid } from "@/api/Api";
 import React from "react";
-import Stackedit from 'stackedit-js';
+// import Stackedit from 'stackedit-js';
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 interface TitleProps {
     title: string;
     selected: boolean;
@@ -36,43 +36,48 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 };
 
 export default function Viewchaptercreators() {
-    const searchParams = useSearchParams();
-    const course_id = searchParams?.get('course_id')
-    const courseId = localStorage.getItem("view_course_id");
-    const stackedit = new Stackedit();
-    const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
+    // const searchParams = useSearchParams();
+    // const course_id = searchParams?.get('course_id')
+    // const stackedit = new Stackedit();
+    // const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
+    const [courseId, setcourseId] = useState()
     const [CourseChapterData, setCourseChapterData] = useState<any>();
-    const [CourseRegisterContent,setCourseRegisterContent]=useState<any>()
+    const [CourseRegisterContent, setCourseRegisterContent] = useState<any>()
     console.log(CourseChapterData);
 
     const [value, setvalue] = useState<boolean>(true);
     useEffect(() => {
-        const storedUserData = localStorage.getItem("userdata");
-        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setuserdata(parsedUserData);
-        getCourseWithCourseid(course_id)
-            .then((CourseData: any) => {
-                setCourseChapterData(CourseData)
-                setCourseRegisterContent(CourseData?.register_content)
-                setvalue(false)
-            })
+        if (typeof window !== 'undefined') {
+            const storedUserData = localStorage.getItem("userdata");
+            const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+            setuserdata(parsedUserData);
+            const courseIds: any = localStorage.getItem("view_course_id");
+            setcourseId(courseIds)
+            const searchParams = new URLSearchParams(window.location.search);
+            const course_id = searchParams.get('course_id');
+            getCourseWithCourseid(course_id)
+                .then((CourseData: any) => {
+                    setCourseChapterData(CourseData)
+                    setCourseRegisterContent(CourseData?.register_content)
+                    setvalue(false)
+                })
+        }
     }, [value]);
-    const openStackEdit = () => {
-        stackedit.openFile({
-            content: {
-                text: CourseRegisterContent,
-            },
-            name: 'MyFile.md',
-            isTemporary: true,
-        });
-    };
-    const [newText,setnewText] =useState()
-    stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
-        const newText = file.content.text;
-        setnewText(newText)
-        setCourseRegisterContent(newText)
-    })
+    // const openStackEdit = () => {
+    //     stackedit.openFile({
+    //         content: {
+    //             text: CourseRegisterContent,
+    //         },
+    //         name: 'MyFile.md',
+    //         isTemporary: true,
+    //     });
+    // };
+    // stackedit.on('fileChange', (file: { content: { text: any; }; }) => {
+    //     const newText = file.content.text;
+    //     setnewText(newText)
+    //     setCourseRegisterContent(newText)
+    // })
     const components: any = {
         code: ({ node, inline, className, children, ...props }: CodeProps) => {
             const customStyle = {
@@ -187,7 +192,7 @@ export default function Viewchaptercreators() {
                                         query: { course_id: courseId }
                                     }}
 
-                                >{CourseChapterData?.title?CourseChapterData?.title:null}</Link></span></h5>
+                                >{CourseChapterData?.title ? CourseChapterData?.title : null}</Link></span></h5>
                     </div>
                     <div className="w-1/6">
                         {/* <button onClick={openStackEdit}>Update Chapter</button> */}

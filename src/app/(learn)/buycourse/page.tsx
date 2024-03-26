@@ -3,7 +3,6 @@ import { useEffect, FormEvent, useState, useRef } from "react";
 import { getCourseWithCourseid,addBuyerslist, getUserDetailsByUID, addCourseToUser } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -41,8 +40,6 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 
 export default function ViewCourse() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const course_id = searchParams?.get('course_id')
     const [CourseData, setCourseData] = useState<any>();
     console.log(CourseData,"CourseDataCourseDataCourseData");
     
@@ -52,6 +49,8 @@ export default function ViewCourse() {
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        const searchParams = new URLSearchParams(window.location.search);
+        const course_id = searchParams.get('course_id');
         setuserdata(parsedUserData);
         getUserDetailsByUID(parsedUserData?.uid).then((res: any) => {
             setPurchasedCourses(res?.courses.map((course: any) => course.course_id));

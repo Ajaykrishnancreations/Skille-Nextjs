@@ -1,15 +1,11 @@
 'use client'
 import { useEffect, useState } from "react";
-import { getUserDetailsByUID, updateUserData, addCourseToUser, getcourseFirestore ,addBuyerslist} from "@/api/Api";
+import { getUserDetailsByUID, updateUserData, addCourseToUser, getcourseFirestore, addBuyerslist } from "@/api/Api";
 import React from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from 'next/navigation';
 
 export default function ViewCourse() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const user_uid = searchParams?.get('user_uid')
+    // const user_uid = searchParams?.get('user_uid')
     const [UserData, getUserData] = useState<any>();
     console.log(UserData, "UserDataUserData");
     const [newName, setnewName] = useState<string>();
@@ -38,27 +34,31 @@ export default function ViewCourse() {
         return purchasedCourses.includes(courseId);
     };
     useEffect(() => {
-        const storedUserData = localStorage.getItem("userdata");
-        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-        setuserdata(parsedUserData);
-        getUserDetailsByUID(user_uid)
-            .then((CourseData: any) => {
-                if (CourseData) {
-                    getUserData(CourseData);
-                } else {
-                    console.log("CourseData not found");
-                }
+        const searchParams = new URLSearchParams(window.location.search);
+        const user_uid: any = searchParams.get('user_uid');
+        if (user_uid) {
+            const storedUserData = localStorage.getItem("userdata");
+            const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+            setuserdata(parsedUserData);
+            getUserDetailsByUID(user_uid)
+                .then((CourseData: any) => {
+                    if (CourseData) {
+                        getUserData(CourseData);
+                    } else {
+                        console.log("CourseData not found");
+                    }
+                })
+            getUserDetailsByUID(user_uid).then((res: any) => {
+                setPurchasedCourses(res?.courses.map((course: any) => course.course_id));
             })
-        getUserDetailsByUID(user_uid).then((res: any) => {
-            setPurchasedCourses(res?.courses.map((course: any) => course.course_id));
-        })
-        const fetchData = async () => {
-            const organisation_id = parsedUserData?.organisation_id;
-            await getcourseFirestore(organisation_id).then((res: any) => {
-                setCourseData(res);
-            })
-        };
-        fetchData();
+            const fetchData = async () => {
+                const organisation_id = parsedUserData?.organisation_id;
+                await getcourseFirestore(organisation_id).then((res: any) => {
+                    setCourseData(res);
+                })
+            };
+            fetchData();
+        }
         setValues(false)
     }, [Values]);
 
@@ -77,10 +77,10 @@ export default function ViewCourse() {
         const course_id = item?.course_id;
         const student_id = uid;
         const payment = "Enrolled by the admin";
-       
+
         const updated = await addCourseToUser(uid, updatedData);
         if (updated) {
-            addBuyerslist(author_id,course_id,student_id,payment)
+            addBuyerslist(author_id, course_id, student_id, payment)
             alert("Course Added Successfully");
             setValues(true)
         }
@@ -101,15 +101,15 @@ export default function ViewCourse() {
         <div>
             <div className="p-10">
                 <div className="p-4 md:p-5 space-y-4">
-                    
+
                     <div className="flex">
-                            <div className="w-5/6">
+                        <div className="w-5/6">
                             <h5>Update user</h5>
-                            </div>
-                            <div className="w-1/6">
-                            <Link className="bg-white w-full rounded p-1 mt-5" href={{ pathname: '/studyhublist', query: { UserUid: UserData?.uid } }}> View {UserData?.name}'s Revenue</Link>
-                            </div>
                         </div>
+                        <div className="w-1/6">
+                            <Link className="bg-white w-full rounded p-1 mt-5" href={{ pathname: '/studyhublist', query: { UserUid: UserData?.uid } }}> View {UserData?.name}'s Revenue</Link>
+                        </div>
+                    </div>
                     Enter your Name : <input type="text" className="rounded ml-2" defaultValue={UserData?.name} onChange={(event) => setnewName(event.target.value)} /><br />
                     <span className="inline-flex">
                         Select your Role :

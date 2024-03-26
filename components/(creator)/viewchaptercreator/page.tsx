@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 
 interface TitleProps {
     title: string;
@@ -37,18 +37,22 @@ const isEqual = (array1: any[], array2: any[]): boolean => {
 };
 
 export default function Viewchaptercreators() {
-    const searchParams = useSearchParams();
-    const chapter_id: any = searchParams?.get('chapter_id')
+    // const searchParams = useSearchParams();
+    // const chapter_id: any = searchParams?.get('chapter_id')
     const courseId = localStorage.getItem("view_course_id");
     const stackedit = new Stackedit();
     const selectedCourseTitle = localStorage.getItem("selectedCourseTitle");
     const [userdata, setuserdata] = useState<any>();
+    const [chapter_id, setchapter_id] = useState<any>();
     const [CourseChapterData, setCourseChapterData] = useState<any>();
     const [value, setvalue] = useState<boolean>(true);
     useEffect(() => {
         const storedUserData = localStorage.getItem("userdata");
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         setuserdata(parsedUserData);
+        const searchParams = new URLSearchParams(window.location.search);
+        const chapter_id:any = searchParams.get('chapter_id');
+        setchapter_id(chapter_id)
         // const chapter_id: any = localStorage.getItem("view_chapter_id");
         getCourseChapterData(chapter_id)
             .then((CourseChapterData: any) => {
